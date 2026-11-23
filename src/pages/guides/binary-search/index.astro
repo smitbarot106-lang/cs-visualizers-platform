@@ -1,24 +1,382 @@
 ---
+// ============================================================================
+// Understanding Binary Search Guide (Route: /guides/binary-search/)
+// ============================================================================
+
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../../components/common/RouteScaffold.astro';
 ---
 
 <BaseLayout
-  title="Understanding Binary Search Guide"
-  description="Master binary search logic, pointer mechanics, mid calculation overflow prevention, and logarithmic complexity."
+  title="Understanding Binary Search & O(log n) Efficiency"
+  description="A deep dive into divide-and-conquer searching, pointer tracking (Low, Mid, High), integer overflow prevention, and logarithmic complexity."
   currentRoute="/guides/binary-search/"
 >
-  <RouteScaffold
-    title="Understanding Binary Search & O(log n) Efficiency"
-    category="EDUCATIONAL GUIDE"
-    badge="ALGORITHM THEORY"
-    description="A deep dive into divide-and-conquer searching, loop invariants, pointer mechanics (Low, Mid, High), and why O(log n) scales to billions of elements."
-    scheduledPhase="Phase 4 Implementation"
-    features={[
-      'Divide-and-conquer principles and sorted array prerequisites',
-      'Preventing integer overflow: low + Math.floor((high - low) / 2)',
-      'Step-by-step trace comparison with linear search O(n)',
-      'Direct cross-link to our interactive Binary Search Visualizer',
-    ]}
-  />
+  <div class="guide-article-container container">
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="/">Home</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li><a href="/guides/">Guides</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li aria-current="page">Binary Search</li>
+      </ol>
+    </nav>
+
+    <header class="article-header">
+      <div class="badge-row">
+        <span class="category-badge">SEARCH ALGORITHMS</span>
+        <span class="badge-pill">O(log n) COMPLEXITY</span>
+      </div>
+      <h1 class="article-title">Understanding Binary Search & O(log n) Efficiency</h1>
+      <p class="article-lead">
+        Learn how Binary Search divides sorted arrays in half with each comparison, finding elements in billions of records in under 32 operations.
+      </p>
+    </header>
+
+    <!-- Interactive Callout -->
+    <div class="interactive-callout">
+      <div class="callout-icon" aria-hidden="true">🎯</div>
+      <div class="callout-content">
+        <h2 class="callout-title">Interactive Tool Available</h2>
+        <p class="callout-desc">Step through pointers, array dimming, and synchronized code line-by-line.</p>
+      </div>
+      <a href="/visualizers/binary-search/" class="btn-callout">Launch Visualizer →</a>
+    </div>
+
+    <!-- Section 1: The Core Mechanism -->
+    <section class="guide-section">
+      <h2 class="section-title">1. The Divide-and-Conquer Principle</h2>
+      <p class="guide-text">
+        In linear search, an algorithm examines every item sequentially from index 0 to $n - 1$, taking up to $n$ comparisons in the worst case. 
+        If the data is sorted, we can do dramatically better by inspecting the <strong>middle element</strong>:
+      </p>
+
+      <ul class="guide-bullets">
+        <li>If <code>array[mid] == target</code>: The target is found; terminate immediately.</li>
+        <li>If <code>array[mid] &lt; target</code>: Because the array is sorted, the target cannot exist in the left half. Discard indices $[0 \dots mid]$ and search $[mid + 1 \dots high]$.</li>
+        <li>If <code>array[mid] &gt; target</code>: The target cannot exist in the right half. Discard indices $[mid \dots high]$ and search $[low \dots mid - 1]$.</li>
+      </ul>
+    </section>
+
+    <!-- Section 2: Integer Overflow -->
+    <section class="guide-section">
+      <h2 class="section-title">2. Why We Calculate Mid as low + floor((high - low) / 2)</h2>
+      <p class="guide-text">
+        Many textbooks write the midpoint calculation as <code>(low + high) / 2</code>. While algebraically equivalent, in systems with 32-bit signed integers, 
+        adding <code>low + high</code> will overflow to negative numbers when their sum exceeds $2^{31} - 1 = 2,147,483,647$.
+      </p>
+
+      <div class="code-comparison-box">
+        <div class="code-col bad">
+          <span class="code-col-label">❌ Naive (Overflow Bug):</span>
+          <code>const mid = Math.floor((low + high) / 2);</code>
+        </div>
+        <div class="code-col good">
+          <span class="code-col-label">✔ Robust (Overflow Safe):</span>
+          <code>const mid = low + Math.floor((high - low) / 2);</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: The 3 Most Common Pitfalls -->
+    <section class="guide-section">
+      <h2 class="section-title">3. The Three Most Common Beginner Bugs</h2>
+      <div class="pitfalls-grid">
+        <div class="pitfall-card">
+          <h3 class="pitfall-title">1. Loop Condition: low &lt; high vs. low &le; high</h3>
+          <p class="pitfall-desc">
+            Using <code>while (low &lt; high)</code> fails when the search narrows to a single-element range where <code>low == high</code>. Always use <code>while (low &le; high)</code> unless writing an exclusive upper-bound bisect.
+          </p>
+        </div>
+
+        <div class="pitfall-card">
+          <h3 class="pitfall-title">2. Forgetting to Shift Past Mid (mid &plusmn; 1)</h3>
+          <p class="pitfall-desc">
+            Writing <code>low = mid</code> or <code>high = mid</code> instead of <code>mid + 1</code> / <code>mid - 1</code> causes an infinite loop when <code>high - low == 1</code>, because <code>mid</code> evaluates to <code>low</code> repeatedly.
+          </p>
+        </div>
+
+        <div class="pitfall-card">
+          <h3 class="pitfall-title">3. Running on Unsorted Arrays</h3>
+          <p class="pitfall-desc">
+            If the array is unsorted, the elimination assumption is false and binary search will return incorrect "not found" results. Sorting first takes $O(n \log n)$, which is only worthwhile if searching multiple times.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Complexity Summary Table -->
+    <section class="guide-section">
+      <h2 class="section-title">Complexity Summary</h2>
+      <div class="table-scroll-wrapper">
+        <table class="data-table" aria-label="Binary Search Complexity">
+          <thead>
+            <tr>
+              <th scope="col">Case</th>
+              <th scope="col">Comparisons</th>
+              <th scope="col">Explanation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Best Case</strong></td>
+              <td><code>O(1)</code></td>
+              <td>Target is located directly at the initial midpoint.</td>
+            </tr>
+            <tr>
+              <td><strong>Average Case</strong></td>
+              <td><code>O(log n)</code></td>
+              <td>Interval halves each step; on $n = 1,000,000$, $\approx 20$ comparisons.</td>
+            </tr>
+            <tr>
+              <td><strong>Worst Case</strong></td>
+              <td><code>O(log n)</code></td>
+              <td>Target is at boundaries or absent; interval reduced to 0 elements.</td>
+            </tr>
+            <tr>
+              <td><strong>Space Complexity</strong></td>
+              <td><code>O(1)</code></td>
+              <td>Iterative algorithm uses only 3 pointer variables in memory.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="article-footer">
+      <div class="footer-nav-row">
+        <a href="/guides/big-o-cheat-sheet/" class="footer-link-back">← Big-O Cheat Sheet</a>
+        <a href="/guides/sorting-algorithms/" class="footer-link-next">Next Guide: Comparison Sorting Demystified →</a>
+      </div>
+    </footer>
+  </div>
 </BaseLayout>
+
+<style>
+  .guide-article-container {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-16);
+    max-width: var(--reading-max);
+  }
+
+  .breadcrumb-nav { margin-bottom: var(--space-6); }
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .breadcrumb-list a { color: var(--color-text-secondary); transition: color var(--transition-fast); }
+  .breadcrumb-list a:hover { color: var(--color-primary-400); }
+  .separator { color: var(--color-border); }
+
+  .article-header { margin-bottom: var(--space-8); }
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  .category-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .badge-pill {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-cyan-400);
+    background-color: rgba(6, 182, 212, 0.1);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .article-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-4);
+  }
+  .article-lead {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Interactive Callout */
+  .interactive-callout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    margin-bottom: var(--space-10);
+  }
+  .callout-icon { font-size: 2rem; }
+  .callout-content { flex: 1; min-width: 200px; }
+  .callout-title {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 2px;
+  }
+  .callout-desc {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+  .btn-callout {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: #ffffff;
+    background-color: var(--color-primary-600);
+    border: 1px solid var(--color-primary-500);
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    transition: all var(--transition-fast);
+  }
+  .btn-callout:hover {
+    background-color: var(--color-primary-500);
+    transform: translateY(-1px);
+  }
+
+  .guide-section { margin-bottom: var(--space-10); }
+  .section-title {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .guide-text {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    margin-bottom: var(--space-4);
+  }
+  .guide-bullets {
+    list-style: disc;
+    padding-left: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Code Comparison */
+  .code-comparison-box {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+  @media (min-width: 640px) {
+    .code-comparison-box { grid-template-columns: 1fr 1fr; }
+  }
+  .code-col {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .code-col.bad { border-color: rgba(239, 68, 68, 0.3); }
+  .code-col.good { border-color: rgba(16, 185, 129, 0.3); }
+  .code-col-label { font-size: var(--text-xs); font-weight: 700; }
+  .code-col.bad .code-col-label { color: #f87171; }
+  .code-col.good .code-col-label { color: var(--color-emerald-400); }
+  .code-col code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    background-color: var(--color-slate-950);
+    padding: var(--space-2);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+  }
+
+  /* Pitfalls Grid */
+  .pitfalls-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  .pitfall-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+  .pitfall-title {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-amber-400);
+    margin-bottom: var(--space-2);
+  }
+  .pitfall-desc {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .table-scroll-wrapper { overflow-x: auto; }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-xs);
+    text-align: left;
+  }
+  .data-table th {
+    background-color: var(--color-bg-elevated);
+    color: var(--color-text-secondary);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 700;
+  }
+  .data-table td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+  }
+  .data-table code {
+    font-family: var(--font-mono);
+    color: var(--color-cyan-400);
+    background-color: rgba(6, 182, 212, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .article-footer {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  .footer-nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+  .footer-link-back { color: var(--color-text-secondary); }
+  .footer-link-back:hover { color: var(--color-primary-400); }
+  .footer-link-next { color: var(--color-primary-400); }
+  .footer-link-next:hover { color: #ffffff; }
+</style>

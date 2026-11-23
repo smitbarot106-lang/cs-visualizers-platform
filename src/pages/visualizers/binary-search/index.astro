@@ -1,24 +1,1248 @@
 ---
+// ============================================================================
+// Binary Search Visualizer (Route: /visualizers/binary-search/)
+// Reversible step engine tracking Low, Mid, High pointers, range elimination, and pseudocode
+// ============================================================================
+
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+import { BINARY_SEARCH_PSEUDOCODE } from '../../../core/algorithms/binary-search';
 ---
 
 <BaseLayout
-  title="Binary Search Visualizer"
-  description="Step-by-step binary search visualization with Low, Mid, and High pointers."
+  title="Binary Search Visualizer — Interactive CS Algorithm"
+  description="Step-by-step interactive Binary Search visualizer with pointer tracking (Low, Mid, High), range elimination, synchronized pseudocode, and reversible playback."
   currentRoute="/visualizers/binary-search/"
 >
-  <RouteScaffold
-    title="Binary Search Visualizer"
-    category="VISUALIZER"
-    badge="O(log n) SEARCH"
-    description="Step-by-step logarithmic search visualization. Watch Low, Mid, and High pointer indices converge toward the target value."
-    scheduledPhase="Phase 3 Implementation"
-    features={[
-      'Low, Mid, and High pointer tracking with visual flags',
-      'Step-by-step plain-English comparison narration',
-      'Synchronized pseudocode highlighting matching active step',
-      'Preloaded sorted arrays and edge-case targets (boundary, missing)',
-    ]}
-  />
+  <div class="visualizer-page container">
+    <!-- 1. Breadcrumbs -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="/">Home</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li><a href="/visualizers/">Visualizers</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li aria-current="page">Binary Search</li>
+      </ol>
+    </nav>
+
+    <!-- 2. Header -->
+    <header class="tool-header">
+      <div class="header-badge-row">
+        <span class="category-badge">SEARCH ALGORITHM</span>
+        <span class="complexity-badge">Time: O(log n) • Space: O(1)</span>
+      </div>
+      <h1 class="tool-title">Binary Search Visualizer</h1>
+      <p class="tool-lead">
+        Observe how divide-and-conquer searching halves the search interval at every step. 
+        Follow the Low, Mid, and High pointers in real-time with reversible stepping and synchronized pseudocode.
+      </p>
+    </header>
+
+    <!-- 3. Presets & Custom Input Toolbar -->
+    <section class="toolbar-section" aria-label="Presets and Array Configuration">
+      <div class="presets-row">
+        <span class="toolbar-label">Presets:</span>
+        <button type="button" class="preset-btn active" data-preset="standard">Standard (9 items)</button>
+        <button type="button" class="preset-btn" data-preset="first">First Element</button>
+        <button type="button" class="preset-btn" data-preset="last">Last Element</button>
+        <button type="button" class="preset-btn" data-preset="absent">Target Absent</button>
+        <button type="button" class="preset-btn" data-preset="negative">Negative Numbers</button>
+        <button type="button" class="preset-btn" data-preset="single">Single Item</button>
+      </div>
+
+      <div class="input-controls-row">
+        <div class="input-group">
+          <label for="custom-array-input" class="input-label">Sorted Array:</label>
+          <input
+            type="text"
+            id="custom-array-input"
+            class="config-input font-mono"
+            value="2, 5, 8, 12, 16, 23, 38, 56, 72"
+            aria-label="Comma-separated sorted numbers"
+          />
+        </div>
+
+        <div class="input-group target-group">
+          <label for="target-input" class="input-label">Target:</label>
+          <input
+            type="number"
+            id="target-input"
+            class="config-input font-mono"
+            value="23"
+            aria-label="Target number to find"
+          />
+        </div>
+
+        <div class="input-actions">
+          <button type="button" id="apply-btn" class="btn-apply">Apply & Reset</button>
+          <button type="button" id="sort-fix-btn" class="btn-sort-fix" style="display: none;">Sort Array</button>
+        </div>
+      </div>
+
+      <div id="validation-error" class="validation-error" role="alert" style="display: none;"></div>
+    </section>
+
+    <!-- 4. Main Interactive Lab Bench -->
+    <main class="lab-bench-grid">
+      <!-- Left Column: Visual Stage & Playback -->
+      <div class="primary-col">
+        <!-- Visualizer Stage -->
+        <section class="stage-container" aria-label="Binary Search Visual Stage">
+          <div class="stage-top-bar">
+            <span class="stage-legend-item"><span class="legend-dot cyan"></span>Low</span>
+            <span class="stage-legend-item"><span class="legend-dot indigo"></span>Mid (Current)</span>
+            <span class="stage-legend-item"><span class="legend-dot amber"></span>High</span>
+            <span class="stage-legend-item"><span class="legend-dot emerald"></span>Found</span>
+            <span class="stage-legend-item"><span class="legend-dot muted"></span>Eliminated</span>
+          </div>
+
+          <!-- Pointer Track Area -->
+          <div class="pointer-track-area">
+            <div id="pointer-labels-container" class="pointer-labels-row"></div>
+          </div>
+
+          <!-- Array Elements Visual Row -->
+          <div class="array-scroll-wrapper">
+            <div id="array-elements-container" class="array-elements-row" role="region" aria-label="Array elements"></div>
+          </div>
+
+          <!-- Status Result Callout -->
+          <div id="search-status-banner" class="search-status-banner status-in-progress" role="status" aria-live="polite">
+            <span id="status-icon" class="status-icon">🔍</span>
+            <span id="status-text" class="status-text">Ready to search. Click Play or Step Forward.</span>
+          </div>
+        </section>
+
+        <!-- Playback Controls -->
+        <section class="playback-panel" aria-label="Playback Controls">
+          <div class="playback-controls-group">
+            <button type="button" id="btn-reset" class="ctrl-btn" title="Reset to start" aria-label="Reset to beginning">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+            </button>
+
+            <button type="button" id="btn-step-back" class="ctrl-btn" title="Step backward" aria-label="Step backward">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                <line x1="5" y1="19" x2="5" y2="5"></line>
+              </svg>
+            </button>
+
+            <button type="button" id="btn-play-pause" class="btn-play-primary" title="Play or Pause" aria-label="Play search animation">
+              <span id="play-pause-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </span>
+              <span id="play-pause-label">Play</span>
+            </button>
+
+            <button type="button" id="btn-step-forward" class="ctrl-btn" title="Step forward" aria-label="Step forward">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                <line x1="19" y1="5" x2="19" y2="19"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="scrubber-group">
+            <input
+              type="range"
+              id="step-scrubber"
+              class="step-slider"
+              min="0"
+              max="1"
+              value="0"
+              aria-label="Step progress slider"
+            />
+            <span id="step-counter" class="step-counter-text font-mono">Step 0 / 0</span>
+          </div>
+
+          <div class="speed-group">
+            <label for="speed-select" class="speed-label">Speed:</label>
+            <select id="speed-select" class="speed-select" aria-label="Playback speed">
+              <option value="1000">0.5x (Slow)</option>
+              <option value="600" selected>1.0x (Normal)</option>
+              <option value="250">2.0x (Fast)</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- Step Narration Card -->
+        <article class="narration-card" aria-label="Step Narration">
+          <div class="narration-header">
+            <span class="narration-badge">STEP NARRATION</span>
+            <span id="narration-action" class="action-tag">INIT</span>
+          </div>
+          <p id="narration-text" class="narration-body">Initial state. Press Step Forward or Play to begin searching.</p>
+        </article>
+      </div>
+
+      <!-- Right Column: Pseudocode & Variable Watch -->
+      <aside class="sidebar-col">
+        <!-- Variable Watch Card -->
+        <section class="panel-box" aria-label="Variable Watch">
+          <h2 class="panel-title">Variable Watch</h2>
+          <div class="variables-table">
+            <div class="var-row">
+              <span class="var-name font-mono">Target:</span>
+              <span id="watch-target" class="var-value font-mono highlight-amber">23</span>
+            </div>
+            <div class="var-row">
+              <span class="var-name font-mono">Low Index:</span>
+              <span id="watch-low" class="var-value font-mono">0</span>
+            </div>
+            <div class="var-row">
+              <span class="var-name font-mono">Mid Index:</span>
+              <span id="watch-mid" class="var-value font-mono">—</span>
+            </div>
+            <div class="var-row">
+              <span class="var-name font-mono">High Index:</span>
+              <span id="watch-high" class="var-value font-mono">8</span>
+            </div>
+            <div class="var-row">
+              <span class="var-name font-mono">array[Mid]:</span>
+              <span id="watch-mid-val" class="var-value font-mono">—</span>
+            </div>
+            <div class="var-row">
+              <span class="var-name font-mono">Comparisons:</span>
+              <span id="watch-comparisons" class="var-value font-mono">0</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Pseudocode Panel -->
+        <section class="panel-box" aria-label="Synchronized Pseudocode">
+          <h2 class="panel-title">Synchronized Pseudocode</h2>
+          <ol class="pseudocode-list" aria-label="Binary search algorithm lines">
+            {BINARY_SEARCH_PSEUDOCODE.map((line, idx) => (
+              <li id={`code-line-${idx + 1}`} class="code-line font-mono">
+                <span class="line-num">{idx + 1}</span>
+                <span class="line-code">{line}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <!-- Complexity Quick Facts -->
+        <section class="panel-box" aria-label="Algorithmic Complexity">
+          <h2 class="panel-title">Complexity Reference</h2>
+          <ul class="complexity-list">
+            <li><strong>Best Case:</strong> <code>O(1)</code> (Target at mid)</li>
+            <li><strong>Average Case:</strong> <code>O(log n)</code></li>
+            <li><strong>Worst Case:</strong> <code>O(log n)</code></li>
+            <li><strong>Space (Auxiliary):</strong> <code>O(1)</code> (Iterative)</li>
+            <li><strong>Prerequisite:</strong> Elements must be sorted</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+
+    <!-- 5. Educational In-Depth Guide Section -->
+    <article class="educational-section">
+      <header class="edu-header">
+        <span class="edu-badge">ALGORITHM THEORY & INTERVIEW ESSENTIALS</span>
+        <h2 class="edu-title">How Binary Search Achieves Logarithmic Time O(log n)</h2>
+        <p class="edu-lead">
+          Binary Search is the prototypical divide-and-conquer algorithm. By comparing the target with the middle element of a sorted sequence, 
+          it eliminates half of the remaining elements in a single comparison.
+        </p>
+      </header>
+
+      <div class="edu-grid">
+        <div class="edu-card">
+          <h3 class="edu-card-title">1. Why Sorted Data Is Strictly Required</h3>
+          <p class="edu-text">
+            Binary Search relies on the <strong>transitive property of inequality</strong>. If <code>array[mid] &lt; target</code>, 
+            then because the array is sorted, every element at or before <code>mid</code> is also strictly less than the target. 
+            Without sorted order, discarding an entire half would risk dropping the target value.
+          </p>
+        </div>
+
+        <div class="edu-card">
+          <h3 class="edu-card-title">2. Preventing Integer Overflow</h3>
+          <p class="edu-text">
+            In languages with fixed-width integers (like C, Java, or Rust), computing <code>(low + high) / 2</code> can overflow if their sum exceeds $2^{31} - 1$. 
+            The industry standard formula <code>low + Math.floor((high - low) / 2)</code> prevents overflow while yielding the exact same index.
+          </p>
+        </div>
+      </div>
+
+      <footer class="related-links-bar">
+        <div class="related-item">
+          <span class="related-label">Learn Theory:</span>
+          <a href="/guides/binary-search/" class="related-link">
+            Understanding Binary Search & O(log n) Guide →
+          </a>
+        </div>
+        <div class="related-item">
+          <span class="related-label">Next Algorithm:</span>
+          <a href="/visualizers/sorting/" class="related-link">
+            Sorting Visualizer (Bubble, Selection, Insertion) →
+          </a>
+        </div>
+      </footer>
+    </article>
+  </div>
 </BaseLayout>
+
+<script>
+  import {
+    generateBinarySearchSteps,
+    isSortedArray,
+    BINARY_SEARCH_PRESETS,
+    type BinarySearchState,
+  } from '../../../core/algorithms/binary-search';
+  import { VisualizerController } from '../../../core/engine/controller';
+
+  // DOM Elements
+  const arrayInput = document.getElementById('custom-array-input') as HTMLInputElement | null;
+  const targetInput = document.getElementById('target-input') as HTMLInputElement | null;
+  const applyBtn = document.getElementById('apply-btn');
+  const sortFixBtn = document.getElementById('sort-fix-btn');
+  const validationError = document.getElementById('validation-error');
+  const presetButtons = document.querySelectorAll<HTMLButtonElement>('[data-preset]');
+
+  const pointerLabelsContainer = document.getElementById('pointer-labels-container');
+  const arrayElementsContainer = document.getElementById('array-elements-container');
+  const searchStatusBanner = document.getElementById('search-status-banner');
+  const statusIcon = document.getElementById('status-icon');
+  const statusText = document.getElementById('status-text');
+
+  const btnPlayPause = document.getElementById('btn-play-pause');
+  const playPauseLabel = document.getElementById('play-pause-label');
+  const playPauseIcon = document.getElementById('play-pause-icon');
+  const btnStepForward = document.getElementById('btn-step-forward') as HTMLButtonElement | null;
+  const btnStepBack = document.getElementById('btn-step-back') as HTMLButtonElement | null;
+  const btnReset = document.getElementById('btn-reset');
+  const stepScrubber = document.getElementById('step-scrubber') as HTMLInputElement | null;
+  const stepCounter = document.getElementById('step-counter');
+  const speedSelect = document.getElementById('speed-select') as HTMLSelectElement | null;
+
+  const narrationAction = document.getElementById('narration-action');
+  const narrationText = document.getElementById('narration-text');
+
+  const watchTarget = document.getElementById('watch-target');
+  const watchLow = document.getElementById('watch-low');
+  const watchMid = document.getElementById('watch-mid');
+  const watchHigh = document.getElementById('watch-high');
+  const watchMidVal = document.getElementById('watch-mid-val');
+  const watchComparisons = document.getElementById('watch-comparisons');
+
+  let controller: VisualizerController<BinarySearchState> | null = null;
+  let currentArray: number[] = [2, 5, 8, 12, 16, 23, 38, 56, 72];
+  let currentTarget: number = 23;
+
+  function clearError() {
+    if (validationError) {
+      validationError.style.display = 'none';
+      validationError.textContent = '';
+    }
+    if (sortFixBtn) sortFixBtn.style.display = 'none';
+  }
+
+  function showError(msg: string, showSortFix: boolean = false) {
+    if (validationError) {
+      validationError.textContent = msg;
+      validationError.style.display = 'block';
+    }
+    if (sortFixBtn) {
+      sortFixBtn.style.display = showSortFix ? 'inline-flex' : 'none';
+    }
+  }
+
+  function initVisualizer(arr: number[], target: number) {
+    clearError();
+    if (controller) {
+      controller.destroy();
+    }
+
+    const steps = generateBinarySearchSteps({ array: arr, target });
+    const speed = speedSelect ? parseInt(speedSelect.value, 10) : 600;
+    controller = new VisualizerController(steps, speed);
+
+    if (stepScrubber) {
+      stepScrubber.max = String(steps.length - 1);
+      stepScrubber.value = '0';
+    }
+
+    controller.subscribe((step, state) => {
+      renderStep(step, state);
+    });
+  }
+
+  function renderStep(step: any, state: any) {
+    const s: BinarySearchState = step.state;
+
+    // Update Scrubber & Buttons
+    if (stepScrubber) stepScrubber.value = String(state.currentStepIndex);
+    if (stepCounter) stepCounter.textContent = `Step ${state.currentStepIndex + 1} / ${state.totalSteps}`;
+    if (btnStepBack) btnStepBack.disabled = state.isAtStart;
+    if (btnStepForward) btnStepForward.disabled = state.isAtEnd;
+
+    // Play/Pause icon & label
+    if (playPauseLabel && playPauseIcon) {
+      if (state.isPlaying) {
+        playPauseLabel.textContent = 'Pause';
+        playPauseIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+      } else {
+        playPauseLabel.textContent = 'Play';
+        playPauseIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+      }
+    }
+
+    // Render Array Elements
+    if (arrayElementsContainer) {
+      arrayElementsContainer.innerHTML = '';
+      s.array.forEach((val, idx) => {
+        const elBox = document.createElement('div');
+        const isMid = idx === s.mid;
+        const isLow = idx === s.low;
+        const isHigh = idx === s.high;
+        const isFound = idx === s.foundIndex;
+        const isEliminated = s.eliminatedIndices.includes(idx);
+
+        let classNames = 'array-element';
+        if (isFound) classNames += ' found';
+        else if (isMid) classNames += ' active-mid';
+        else if (isLow || isHigh) classNames += ' in-range';
+
+        if (isEliminated && !isFound) classNames += ' eliminated';
+
+        elBox.className = classNames;
+        elBox.innerHTML = `
+          <div class="element-box">
+            <span class="element-val font-mono">${val}</span>
+          </div>
+          <span class="element-idx font-mono">${idx}</span>
+        `;
+        arrayElementsContainer.appendChild(elBox);
+      });
+    }
+
+    // Render Pointer Track
+    if (pointerLabelsContainer) {
+      pointerLabelsContainer.innerHTML = '';
+      s.array.forEach((_, idx) => {
+        const col = document.createElement('div');
+        col.className = 'pointer-col';
+        const badges: string[] = [];
+        if (idx === s.foundIndex) badges.push('<span class="ptr-pill emerald">Found</span>');
+        if (idx === s.mid && idx !== s.foundIndex) badges.push('<span class="ptr-pill indigo">Mid</span>');
+        if (idx === s.low) badges.push('<span class="ptr-pill cyan">Low</span>');
+        if (idx === s.high) badges.push('<span class="ptr-pill amber">High</span>');
+
+        col.innerHTML = badges.join('');
+        pointerLabelsContainer.appendChild(col);
+      });
+    }
+
+    // Status Banner
+    if (searchStatusBanner && statusIcon && statusText) {
+      if (step.actionType === 'FOUND') {
+        searchStatusBanner.className = 'search-status-banner status-success';
+        statusIcon.textContent = '✔';
+        statusText.textContent = `Found target ${s.target} at index ${s.foundIndex}!`;
+      } else if (step.actionType === 'NOT_FOUND') {
+        searchStatusBanner.className = 'search-status-banner status-error';
+        statusIcon.textContent = '✖';
+        statusText.textContent = `Target ${s.target} not found in array.`;
+      } else {
+        searchStatusBanner.className = 'search-status-banner status-in-progress';
+        statusIcon.textContent = '🔍';
+        statusText.textContent = `Searching range [${s.low} .. ${s.high}] (Mid: ${s.mid ?? '—'})`;
+      }
+    }
+
+    // Narration
+    if (narrationAction) narrationAction.textContent = step.actionType;
+    if (narrationText) narrationText.textContent = step.narration;
+
+    // Pseudocode line highlight
+    document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
+    if (step.pseudocodeLine > 0) {
+      const activeLine = document.getElementById(`code-line-${step.pseudocodeLine}`);
+      if (activeLine) activeLine.classList.add('active');
+    }
+
+    // Variable Watch
+    if (watchTarget) watchTarget.textContent = String(s.target);
+    if (watchLow) watchLow.textContent = String(s.low);
+    if (watchMid) watchMid.textContent = s.mid !== null ? String(s.mid) : '—';
+    if (watchHigh) watchHigh.textContent = String(s.high);
+    if (watchMidVal) watchMidVal.textContent = s.mid !== null ? String(s.array[s.mid]) : '—';
+    if (watchComparisons) watchComparisons.textContent = String(s.comparisons);
+  }
+
+  // Handle Apply Custom Inputs
+  function handleApply() {
+    if (!arrayInput || !targetInput) return;
+    const rawArr = arrayInput.value.split(',').map(v => v.trim()).filter(Boolean);
+    const nums = rawArr.map(Number);
+
+    if (nums.some(isNaN)) {
+      showError('All array elements must be valid numbers.');
+      return;
+    }
+    if (nums.length === 0) {
+      showError('Please enter at least one number.');
+      return;
+    }
+    if (nums.length > 30) {
+      showError('Maximum 30 elements supported for clear visualization.');
+      return;
+    }
+
+    if (!isSortedArray(nums)) {
+      showError('Binary Search requires a sorted array. Elements are not in non-decreasing order.', true);
+      return;
+    }
+
+    const targetVal = Number(targetInput.value.trim());
+    if (isNaN(targetVal)) {
+      showError('Target must be a valid number.');
+      return;
+    }
+
+    currentArray = nums;
+    currentTarget = targetVal;
+    initVisualizer(currentArray, currentTarget);
+  }
+
+  // Handle Sort Fix
+  sortFixBtn?.addEventListener('click', () => {
+    if (!arrayInput) return;
+    const nums = arrayInput.value.split(',').map(v => Number(v.trim())).filter(n => !isNaN(n));
+    nums.sort((a, b) => a - b);
+    arrayInput.value = nums.join(', ');
+    handleApply();
+  });
+
+  // Controls Event Listeners
+  applyBtn?.addEventListener('click', handleApply);
+  btnPlayPause?.addEventListener('click', () => {
+    if (!controller) return;
+    if (controller.currentState.isPlaying) controller.pause();
+    else controller.play();
+  });
+  btnStepForward?.addEventListener('click', () => controller?.stepForward());
+  btnStepBack?.addEventListener('click', () => controller?.stepBackward());
+  btnReset?.addEventListener('click', () => controller?.reset());
+  stepScrubber?.addEventListener('input', (e) => {
+    const idx = parseInt((e.target as HTMLInputElement).value, 10);
+    controller?.goToStep(idx);
+  });
+  speedSelect?.addEventListener('change', () => {
+    if (speedSelect && controller) {
+      controller.setSpeed(parseInt(speedSelect.value, 10));
+    }
+  });
+
+  // Presets
+  presetButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      presetButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const presetKey = btn.dataset.preset;
+      const preset = BINARY_SEARCH_PRESETS.find(p => {
+        if (presetKey === 'standard') return p.name.includes('Standard');
+        if (presetKey === 'first') return p.name.includes('First');
+        if (presetKey === 'last') return p.name.includes('Last');
+        if (presetKey === 'absent') return p.name.includes('Absent');
+        if (presetKey === 'negative') return p.name.includes('Negative');
+        if (presetKey === 'single') return p.name.includes('Single');
+        return false;
+      }) ?? BINARY_SEARCH_PRESETS[0];
+
+      if (arrayInput && targetInput) {
+        arrayInput.value = preset.array.join(', ');
+        targetInput.value = String(preset.target);
+        currentArray = [...preset.array];
+        currentTarget = preset.target;
+        initVisualizer(currentArray, currentTarget);
+      }
+    });
+  });
+
+  // Initialize on page load
+  initVisualizer(currentArray, currentTarget);
+</script>
+
+<style>
+  .visualizer-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-16);
+  }
+
+  /* Breadcrumbs */
+  .breadcrumb-nav {
+    margin-bottom: var(--space-6);
+  }
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .breadcrumb-list a {
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast);
+  }
+  .breadcrumb-list a:hover {
+    color: var(--color-primary-400);
+  }
+  .separator {
+    color: var(--color-border);
+  }
+
+  /* Header */
+  .tool-header {
+    margin-bottom: var(--space-8);
+  }
+  .header-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .category-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .complexity-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-emerald-400);
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+  .tool-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-3);
+  }
+  .tool-lead {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    max-width: 800px;
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Toolbar */
+  .toolbar-section {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .presets-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .toolbar-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+  .preset-btn {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    min-height: 32px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .preset-btn:hover, .preset-btn.active {
+    color: #ffffff;
+    background-color: rgba(99, 102, 241, 0.2);
+    border-color: var(--color-primary-500);
+  }
+
+  .input-controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-3);
+  }
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 220px;
+  }
+  .target-group {
+    flex: 0 0 120px;
+    min-width: 100px;
+  }
+  .input-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+  .config-input {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    outline: none;
+    transition: border-color var(--transition-fast);
+  }
+  .config-input:focus {
+    border-color: var(--color-primary-500);
+  }
+  .btn-apply {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: #ffffff;
+    background-color: var(--color-primary-600);
+    border: 1px solid var(--color-primary-500);
+    border-radius: var(--radius-sm);
+    padding: 9px 16px;
+    min-height: 38px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .btn-apply:hover {
+    background-color: var(--color-primary-500);
+  }
+  .btn-sort-fix {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-amber-400);
+    background-color: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-sm);
+    padding: 9px 14px;
+    min-height: 38px;
+    cursor: pointer;
+  }
+  .validation-error {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: #f87171;
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  /* Lab Bench Grid */
+  .lab-bench-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    margin-bottom: var(--space-12);
+  }
+  @media (min-width: 960px) {
+    .lab-bench-grid {
+      grid-template-columns: 1.6fr 1fr;
+    }
+  }
+
+  /* Primary Column */
+  .primary-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  /* Stage Container */
+  .stage-container {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-card);
+  }
+  .stage-top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border-subtle);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+  .stage-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .legend-dot.cyan { background-color: var(--color-cyan-400); }
+  .legend-dot.indigo { background-color: var(--color-primary-400); }
+  .legend-dot.amber { background-color: var(--color-amber-400); }
+  .legend-dot.emerald { background-color: var(--color-emerald-400); }
+  .legend-dot.muted { background-color: var(--color-slate-600); }
+
+  /* Pointer Track & Array */
+  .pointer-track-area {
+    overflow-x: auto;
+    margin-bottom: var(--space-2);
+  }
+  .pointer-labels-row {
+    display: flex;
+    gap: var(--space-3);
+    min-width: max-content;
+    min-height: 28px;
+    align-items: flex-end;
+  }
+  .pointer-col {
+    width: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .ptr-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .ptr-pill.cyan { background-color: rgba(6, 182, 212, 0.2); color: var(--color-cyan-400); border: 1px solid var(--color-cyan-400); }
+  .ptr-pill.indigo { background-color: rgba(99, 102, 241, 0.2); color: var(--color-primary-400); border: 1px solid var(--color-primary-400); }
+  .ptr-pill.amber { background-color: rgba(245, 158, 11, 0.2); color: var(--color-amber-400); border: 1px solid var(--color-amber-400); }
+  .ptr-pill.emerald { background-color: rgba(16, 185, 129, 0.2); color: var(--color-emerald-400); border: 1px solid var(--color-emerald-400); }
+
+  .array-scroll-wrapper {
+    overflow-x: auto;
+    padding: var(--space-2) 0 var(--space-4);
+  }
+  .array-elements-row {
+    display: flex;
+    gap: var(--space-3);
+    min-width: max-content;
+  }
+  .array-element {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 48px;
+    transition: all var(--transition-fast);
+  }
+  .element-box {
+    width: 48px;
+    height: 52px;
+    background-color: var(--color-bg-elevated);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    transition: all var(--transition-fast);
+  }
+  .element-idx {
+    font-size: 11px;
+    color: var(--color-text-muted);
+  }
+
+  .array-element.active-mid .element-box {
+    border-color: var(--color-primary-400);
+    background-color: rgba(99, 102, 241, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+  }
+  .array-element.found .element-box {
+    border-color: var(--color-emerald-400);
+    background-color: rgba(16, 185, 129, 0.25);
+    color: var(--color-emerald-400);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+  }
+  .array-element.in-range .element-box {
+    border-color: rgba(148, 163, 184, 0.5);
+  }
+  .array-element.eliminated .element-box {
+    opacity: 0.3;
+    border-style: dashed;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  /* Status Banner */
+  .search-status-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    margin-top: var(--space-4);
+  }
+  .status-in-progress {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+  .status-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--color-emerald-400);
+  }
+  .status-error {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+  }
+
+  /* Playback Controls Panel */
+  .playback-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-5);
+  }
+  .playback-controls-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .ctrl-btn {
+    width: 44px; /* Accessible 44px touch target */
+    height: 44px;
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .ctrl-btn:hover:not(:disabled) {
+    background-color: var(--color-bg-hover);
+    border-color: var(--color-primary-500);
+  }
+  .ctrl-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .btn-play-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    background-color: var(--color-primary-600);
+    border: 1px solid var(--color-primary-500);
+    border-radius: var(--radius-md);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .btn-play-primary:hover {
+    background-color: var(--color-primary-500);
+    transform: translateY(-1px);
+  }
+
+  .scrubber-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+    min-width: 180px;
+  }
+  .step-slider {
+    flex: 1;
+    cursor: pointer;
+  }
+  .step-counter-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .speed-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .speed-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+  .speed-select {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    padding: 6px 8px;
+    min-height: 36px;
+    cursor: pointer;
+  }
+
+  /* Narration Card */
+  .narration-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+  }
+  .narration-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+  }
+  .narration-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .action-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: var(--color-primary-300);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+  .narration-body {
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    line-height: var(--leading-relaxed);
+    margin: 0;
+  }
+
+  /* Sidebar Column */
+  .sidebar-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .panel-box {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+  }
+  .panel-title {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  /* Variables Table */
+  .variables-table {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .var-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--text-xs);
+    padding: 3px 0;
+  }
+  .var-name {
+    color: var(--color-text-muted);
+  }
+  .var-value {
+    color: var(--color-text-primary);
+    font-weight: 700;
+  }
+  .highlight-amber {
+    color: var(--color-amber-400);
+  }
+
+  /* Pseudocode List */
+  .pseudocode-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--text-xs);
+  }
+  .code-line {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
+  }
+  .code-line.active {
+    background-color: rgba(99, 102, 241, 0.2);
+    color: #ffffff;
+    font-weight: 700;
+    border-left: 3px solid var(--color-primary-400);
+  }
+  .line-num {
+    color: var(--color-text-dim);
+    min-width: 16px;
+    user-select: none;
+  }
+  .line-code {
+    white-space: pre;
+  }
+
+  /* Complexity List */
+  .complexity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+  .complexity-list code {
+    font-family: var(--font-mono);
+    color: var(--color-emerald-400);
+    background-color: rgba(16, 185, 129, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  /* Educational Section */
+  .educational-section {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+  }
+  .edu-header {
+    margin-bottom: var(--space-6);
+  }
+  .edu-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .edu-title {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    margin: var(--space-2) 0;
+  }
+  .edu-lead {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 800px;
+  }
+  .edu-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+  @media (min-width: 768px) {
+    .edu-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .edu-card {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+  .edu-card-title {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+  .edu-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Related Links Bar */
+  .related-links-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  .related-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+  }
+  .related-label {
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+  .related-link {
+    color: var(--color-primary-400);
+    font-weight: 600;
+    transition: color var(--transition-fast);
+  }
+  .related-link:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+</style>

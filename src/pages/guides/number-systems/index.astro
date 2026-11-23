@@ -1,24 +1,461 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../../components/common/RouteScaffold.astro';
 ---
 
 <BaseLayout
-  title="Number Systems & Radix Math Guide"
-  description="Master binary, octal, decimal, and hexadecimal representations, positional notation, and bitwise fundamentals."
+  title="Number Systems & Radix Conversion Guide"
+  description="Master binary, octal, decimal, and hexadecimal representations. Understand positional weights, repeated division, byte nibbles, and BigInt precision beyond 64-bit floats."
   currentRoute="/guides/number-systems/"
 >
-  <RouteScaffold
-    title="Number Systems: Binary, Octal, Decimal & Hexadecimal"
-    category="EDUCATIONAL GUIDE"
-    badge="RADIX ARITHMETIC"
-    description="Demystifying positional number systems in computer architecture, repeated division algorithms, and power-of-two groupings."
-    scheduledPhase="Phase 4 Implementation"
-    features={[
-      'Positional weighting and polynomial expansion across arbitrary bases',
-      'Repeated division-by-radix algorithm explained step-by-step',
-      'Direct binary-to-hex nibble mapping (4-bit chunks)',
-      'Arbitrary precision integer representation and Two’s Complement negative numbers',
-    ]}
-  />
+  <main class="guide-page">
+    <div class="guide-header">
+      <div class="badge-row">
+        <span class="guide-badge">Computer Architecture</span>
+        <span class="guide-badge">Discrete Mathematics</span>
+      </div>
+      <h1 class="guide-title">Number Systems, Radix & Bitwise Foundations</h1>
+      <p class="guide-lead">
+        Digital computers represent all information in binary electrical charges. Learn the mathematical foundations of positional notation across bases 2, 8, 10, and 16, the repeated division algorithm, and why 64-bit IEEE 754 floats fail without BigInt.
+      </p>
+      <div class="action-banner">
+        <div>
+          <span class="action-title">High-Precision Developer Tool</span>
+          <p class="action-desc">Convert unlimited integers between binary, octal, decimal, and hex with live bit breakdown.</p>
+        </div>
+        <a href="/tools/number-base-converter/" class="btn-primary">Open Base Converter &rarr;</a>
+      </div>
+    </div>
+
+    <div class="guide-body">
+      <!-- Section 1: The Core Number Systems -->
+      <section class="guide-section">
+        <h2 class="section-title">1. The Four Fundamental Computing Bases</h2>
+        <p class="text-secondary">
+          A radix (or base) defines the number of unique digits available to represent values. Positional notation means a digit's value depends on its place relative to the radix point.
+        </p>
+
+        <div class="radix-grid">
+          <div class="radix-card">
+            <div class="radix-head">
+              <span class="radix-name">Binary (Base 2)</span>
+              <span class="radix-prefix">0b</span>
+            </div>
+            <p class="radix-symbols">Digits: <code>0, 1</code></p>
+            <p class="radix-desc">Direct representation of transistor logic gates (low/high voltage state). The native physical language of digital electronics.</p>
+          </div>
+
+          <div class="radix-card">
+            <div class="radix-head">
+              <span class="radix-name">Octal (Base 8)</span>
+              <span class="radix-prefix">0o</span>
+            </div>
+            <p class="radix-symbols">Digits: <code>0-7</code></p>
+            <p class="radix-desc">Groups 3 bits into a single digit (\(2^3 = 8\)). Historically used in PDP minicomputers and modern POSIX UNIX file permissions (e.g. <code>chmod 755</code>).</p>
+          </div>
+
+          <div class="radix-card">
+            <div class="radix-head">
+              <span class="radix-name">Decimal (Base 10)</span>
+              <span class="radix-prefix">&mdash;</span>
+            </div>
+            <p class="radix-symbols">Digits: <code>0-9</code></p>
+            <p class="radix-desc">Standard human counting system derived from ten fingers. Standard notation for human-facing interfaces and financial accounting.</p>
+          </div>
+
+          <div class="radix-card">
+            <div class="radix-head">
+              <span class="radix-name">Hexadecimal (Base 16)</span>
+              <span class="radix-prefix">0x</span>
+            </div>
+            <p class="radix-symbols">Digits: <code>0-9, A-F</code></p>
+            <p class="radix-desc">Compact shorthand where 1 hex character encodes exactly 4 bits (1 nibble). Used in memory addresses, UUIDs, IPv6, and CSS colors.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Mathematical Positional Formula -->
+      <section class="guide-section">
+        <h2 class="section-title">2. Mathematical Positional Weight Formula</h2>
+        <p class="text-secondary">
+          Any integer <em>N</em> in base <em>r</em> composed of digits <em>d<sub>n</sub> d<sub>n-1</sub> ... d<sub>1</sub> d<sub>0</sub></em> evaluates to decimal via the polynomial expansion:
+        </p>
+
+        <div class="formula-box">
+          <div class="math-display">
+            N<sub>10</sub> = &sum; (d<sub>i</sub> &times; r<sup>i</sup>) = (d<sub>n</sub> &times; r<sup>n</sup>) + (d<sub>n-1</sub> &times; r<sup>n-1</sup>) + ... + (d<sub>0</sub> &times; r<sup>0</sup>)
+          </div>
+        </div>
+
+        <p class="text-secondary">
+          <strong>Example:</strong> Evaluating the hexadecimal number <code>0x2AF</code> in decimal:
+        </p>
+        <div class="code-card">
+          <pre><code>2AF (base 16) = (2 * 16^2) + (10 * 16^1) + (15 * 16^0)
+              = (2 * 256)  + (10 * 16)   + (15 * 1)
+              = 512        + 160         + 15
+              = 687 (base 10)</code></pre>
+        </div>
+      </section>
+
+      <!-- Section 3: Decimal to Radix via Repeated Division -->
+      <section class="guide-section">
+        <h2 class="section-title">3. Decimal to Base-R: Repeated Division Algorithm</h2>
+        <p class="text-secondary">
+          To convert a decimal integer to any base \(R\), divide repeatedly by \(R\), recording the remainder at each step. The remainders read in reverse order (from bottom to top) yield the target digits.
+        </p>
+
+        <div class="division-example">
+          <div class="division-header">Example: Converting 45 to Binary (Base 2)</div>
+          <div class="step-trace">
+            <div class="trace-row"><span>45 &divide; 2 = 22</span><span class="rem">remainder 1 (LSB)</span></div>
+            <div class="trace-row"><span>22 &divide; 2 = 11</span><span class="rem">remainder 0</span></div>
+            <div class="trace-row"><span>11 &divide; 2 = 5</span><span class="rem">remainder 1</span></div>
+            <div class="trace-row"><span>5 &divide; 2 = 2</span><span class="rem">remainder 1</span></div>
+            <div class="trace-row"><span>2 &divide; 2 = 1</span><span class="rem">remainder 0</span></div>
+            <div class="trace-row"><span>1 &divide; 2 = 0</span><span class="rem">remainder 1 (MSB)</span></div>
+          </div>
+          <div class="division-result">
+            Read from bottom to top: <code>101101_2 = 45_10</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Bits, Nibbles, and Bytes -->
+      <section class="guide-section">
+        <h2 class="section-title">4. Bits, Nibbles, and Hex Alignment</h2>
+        <p class="text-secondary">
+          Because \(16 = 2^4\), exactly 4 bits can express any value from 0 to 15 (a <strong>nibble</strong>). One standard 8-bit byte consists of two nibbles, represented cleanly by two hex digits:
+        </p>
+
+        <div class="byte-diagram">
+          <div class="nibble-box">
+            <span class="nibble-label">High Nibble (4 bits)</span>
+            <div class="bit-cells">
+              <span>1</span><span>1</span><span>0</span><span>0</span>
+            </div>
+            <span class="hex-val">Hex: C (12)</span>
+          </div>
+          <div class="nibble-box">
+            <span class="nibble-label">Low Nibble (4 bits)</span>
+            <div class="bit-cells">
+              <span>0</span><span>1</span><span>0</span><span>1</span>
+            </div>
+            <span class="hex-val">Hex: 5 (5)</span>
+          </div>
+        </div>
+        <p class="byte-caption">Byte <code>11000101_2</code> = <code>0xC5</code> = <code>197_10</code></p>
+      </section>
+
+      <!-- Section 5: The IEEE 754 Float Hazard and BigInt -->
+      <section class="guide-section">
+        <h2 class="section-title">5. The IEEE 754 Precision Cliff & BigInt</h2>
+        <p class="text-secondary">
+          Standard JavaScript numbers are IEEE 754 double-precision 64-bit floating point values. They allocate 52 bits for the mantissa, providing exact integer representation only up to:
+        </p>
+        <div class="formula-box">
+          <code>Number.MAX_SAFE_INTEGER = 2^53 - 1 = 9,007,199,254,740,991</code>
+        </div>
+        <p class="text-secondary">
+          Any integer larger than \(2^{53} - 1\) suffers silent rounding errors (e.g. <code>9007199254740992 + 1 === 9007199254740992</code>). To support cryptographic keys (256-bit, 512-bit) and large memory offsets, our platform's <a href="/tools/number-base-converter/">Number Base Converter</a> leverages native <code>BigInt</code> for arbitrary precision arithmetic with zero numeric degradation.
+        </p>
+      </section>
+    </div>
+  </main>
 </BaseLayout>
+
+<style>
+  .guide-page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-4) var(--space-16);
+  }
+
+  .guide-header {
+    margin-bottom: var(--space-10);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .badge-row {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .guide-badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-secondary);
+  }
+
+  .guide-title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin-bottom: var(--space-4);
+  }
+
+  .guide-lead {
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+    max-width: 820px;
+    margin-bottom: var(--space-6);
+  }
+
+  .action-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-primary-subtle);
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-lg);
+    flex-wrap: wrap;
+  }
+
+  .action-title {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+  }
+
+  .action-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: 2px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-primary-hover);
+  }
+
+  .guide-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  .section-title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .text-secondary {
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-4);
+  }
+
+  .text-secondary a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .radix-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .radix-card {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .radix-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .radix-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+  }
+
+  .radix-prefix {
+    font-family: var(--font-family-mono);
+    color: var(--color-primary);
+    font-size: var(--font-size-xs);
+    background: var(--color-surface-overlay);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+
+  .radix-symbols {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+  }
+
+  .radix-desc {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  .formula-box {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-6);
+    margin-bottom: var(--space-4);
+    overflow-x: auto;
+  }
+
+  .math-display {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+  }
+
+  .code-card {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  pre {
+    margin: 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
+  }
+
+  .division-example {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+
+  .division-header {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    font-size: var(--font-size-sm);
+  }
+
+  .step-trace {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+  }
+
+  .trace-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-1) var(--space-3);
+    background: var(--color-surface-overlay);
+    border-radius: var(--radius-sm);
+  }
+
+  .rem {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .division-result {
+    font-family: var(--font-family-mono);
+    padding: var(--space-3);
+    background: var(--color-surface-overlay);
+    border-left: 3px solid var(--color-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+  }
+
+  .byte-diagram {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    max-width: 480px;
+  }
+
+  .nibble-box {
+    flex: 1;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    text-align: center;
+  }
+
+  .nibble-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+  }
+
+  .bit-cells {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .bit-cells span {
+    width: 28px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    background: var(--color-surface-overlay);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--color-primary);
+  }
+
+  .hex-val {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+  }
+
+  .byte-caption {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-2);
+  }
+</style>

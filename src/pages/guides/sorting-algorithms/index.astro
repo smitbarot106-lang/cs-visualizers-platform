@@ -1,24 +1,339 @@
 ---
+// ============================================================================
+// Comparison Sorting Demystified Guide (Route: /guides/sorting-algorithms/)
+// ============================================================================
+
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../../components/common/RouteScaffold.astro';
 ---
 
 <BaseLayout
-  title="Comparison Sorting Algorithms Guide"
-  description="Compare Bubble Sort, Selection Sort, and Insertion Sort: time complexities, swap mechanics, and stability."
+  title="Comparison Sorting Demystified — Bubble, Selection & Insertion"
+  description="Learn how Bubble Sort, Selection Sort, and Insertion Sort work, their swap mechanics, stability trade-offs, and why Insertion Sort excels on nearly sorted data."
   currentRoute="/guides/sorting-algorithms/"
 >
-  <RouteScaffold
-    title="Comparison Sorting Demystified: Bubble, Selection & Insertion"
-    category="EDUCATIONAL GUIDE"
-    badge="ALGORITHM THEORY"
-    description="Understand the fundamental mechanics, comparisons, swaps, stability, and trade-offs of elementary O(n²) comparison sorting algorithms."
-    scheduledPhase="Phase 4 Implementation"
-    features={[
-      'Bubble Sort: Adjacent comparisons, early exit optimization, and bubbling effect',
-      'Selection Sort: Finding the minimum element and invariant sorted sub-arrays',
-      'Insertion Sort: Adaptive online sorting and why it excels on nearly-sorted data',
-      'Direct cross-link to our interactive Sorting Visualizer',
-    ]}
-  />
+  <div class="guide-article-container container">
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="/">Home</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li><a href="/guides/">Guides</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li aria-current="page">Sorting Demystified</li>
+      </ol>
+    </nav>
+
+    <header class="article-header">
+      <div class="badge-row">
+        <span class="category-badge">SORTING ALGORITHMS</span>
+        <span class="badge-pill">ELEMENTARY O(n²)</span>
+      </div>
+      <h1 class="article-title">Comparison Sorting Demystified: Bubble, Selection & Insertion</h1>
+      <p class="article-lead">
+        Explore the mechanics, comparisons, swaps, stability, and algorithmic trade-offs of the three foundational comparison sorting algorithms.
+      </p>
+    </header>
+
+    <!-- Interactive Callout -->
+    <div class="interactive-callout">
+      <div class="callout-icon" aria-hidden="true">📊</div>
+      <div class="callout-content">
+        <h2 class="callout-title">Interactive Tool Available</h2>
+        <p class="callout-desc">Observe dynamic bar heights, swap counters, and pass animations live.</p>
+      </div>
+      <a href="/visualizers/sorting/" class="btn-callout">Launch Visualizer →</a>
+    </div>
+
+    <!-- Section 1: Algorithmic Comparison Matrix -->
+    <section class="guide-section">
+      <h2 class="section-title">1. The Three Elementary Sorts at a Glance</h2>
+      <div class="table-scroll-wrapper">
+        <table class="data-table" aria-label="Sorting Comparison Matrix">
+          <thead>
+            <tr>
+              <th scope="col">Algorithm</th>
+              <th scope="col">Best Time</th>
+              <th scope="col">Worst Time</th>
+              <th scope="col">Space</th>
+              <th scope="col">Stable?</th>
+              <th scope="col">Key Mechanism</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Bubble Sort</strong></td>
+              <td><code>O(n)</code> (early exit)</td>
+              <td><code>O(n²)</code></td>
+              <td><code>O(1)</code></td>
+              <td><span class="tag-stable">Yes</span></td>
+              <td>Repeatedly swaps adjacent out-of-order elements</td>
+            </tr>
+            <tr>
+              <td><strong>Selection Sort</strong></td>
+              <td><code>O(n²)</code></td>
+              <td><code>O(n²)</code></td>
+              <td><code>O(1)</code></td>
+              <td><span class="tag-unstable">No</span></td>
+              <td>Finds minimum element in unsorted portion; 1 swap per pass</td>
+            </tr>
+            <tr>
+              <td><strong>Insertion Sort</strong></td>
+              <td><code>O(n)</code> (adaptive)</td>
+              <td><code>O(n²)</code></td>
+              <td><code>O(1)</code></td>
+              <td><span class="tag-stable">Yes</span></td>
+              <td>Inserts key into already-sorted left subarray</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 2: In-Depth Breakdowns -->
+    <section class="guide-section">
+      <h2 class="section-title">2. Deep-Dive: How Each Algorithm Works</h2>
+
+      <div class="algo-breakdown-card">
+        <h3 class="algo-name">Bubble Sort: Adjacent Comparisons</h3>
+        <p class="algo-desc">
+          Bubble Sort iterates through the array, comparing pairs of adjacent elements ($j$ and $j+1$). If an element is greater than its right neighbor, 
+          they are swapped. By the end of pass $i$, the $i$-th largest element has "bubbled" to index $n - 1 - i$.
+        </p>
+        <p class="algo-tip">
+          <strong>Optimization:</strong> By tracking whether any swaps occurred during a pass, the algorithm can terminate immediately if the array is already sorted, running in $O(n)$ time.
+        </p>
+      </div>
+
+      <div class="algo-breakdown-card">
+        <h3 class="algo-name">Selection Sort: Minimum Selection</h3>
+        <p class="algo-desc">
+          Selection Sort divides the array into a sorted prefix and an unsorted suffix. In each pass $i$, it scans the entire unsorted suffix $[i \dots n-1]$ 
+          to find the index of the absolute minimum element, and then performs a single swap with index $i$.
+        </p>
+        <p class="algo-tip">
+          <strong>Trade-off:</strong> It minimizes swaps to exactly <em>n &minus; 1</em>, but always performs <em>n(n &minus; 1) / 2</em> comparisons regardless of initial array ordering.
+        </p>
+      </div>
+
+      <div class="algo-breakdown-card">
+        <h3 class="algo-name">Insertion Sort: Online Adaptive Sorting</h3>
+        <p class="algo-desc">
+          Insertion Sort builds the sorted array one element at a time. It takes the current element (`key`) and shifts all greater elements in the sorted subarray to the right, 
+          inserting `key` into its correct slot.
+        </p>
+        <p class="algo-tip">
+          <strong>Production relevance:</strong> Because it takes only $O(n)$ comparisons on nearly-sorted data, it is used as the base case in hybrid algorithms like <em>Timsort</em> and <em>Introsort</em>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 3: Stability -->
+    <section class="guide-section">
+      <h2 class="section-title">3. Why Stability Matters</h2>
+      <p class="guide-text">
+        A sorting algorithm is <strong>stable</strong> if duplicate keys maintain their original relative order. For example, if you sort a list of students by Grade after already sorting by Name, 
+        a stable sort preserves the alphabetical ordering of students who share the same grade.
+      </p>
+      <div class="stability-box">
+        <p><strong>Selection Sort is Unstable:</strong> Consider sorting <code>[ (4, 'A'), (4, 'B'), (2, 'C') ]</code>. In pass 0, the minimum is 2, so <code>(4, 'A')</code> swaps with <code>(2, 'C')</code>. The resulting array is <code>[ (2, 'C'), (4, 'B'), (4, 'A') ]</code>, inverting the original order of the two 4s!</p>
+      </div>
+    </section>
+
+    <footer class="article-footer">
+      <div class="footer-nav-row">
+        <a href="/guides/binary-search/" class="footer-link-back">← Binary Search Guide</a>
+        <a href="/guides/bfs-dfs/" class="footer-link-next">Next Guide: Graph Traversals (BFS vs DFS) →</a>
+      </div>
+    </footer>
+  </div>
 </BaseLayout>
+
+<style>
+  .guide-article-container {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-16);
+    max-width: var(--reading-max);
+  }
+
+  .breadcrumb-nav { margin-bottom: var(--space-6); }
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .breadcrumb-list a { color: var(--color-text-secondary); transition: color var(--transition-fast); }
+  .breadcrumb-list a:hover { color: var(--color-primary-400); }
+  .separator { color: var(--color-border); }
+
+  .article-header { margin-bottom: var(--space-8); }
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  .category-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .badge-pill {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-indigo-300);
+    background-color: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .article-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-4);
+  }
+  .article-lead {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .interactive-callout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    margin-bottom: var(--space-10);
+  }
+  .callout-icon { font-size: 2rem; }
+  .callout-content { flex: 1; min-width: 200px; }
+  .callout-title { font-size: var(--text-base); font-weight: 700; color: var(--color-text-primary); margin-bottom: 2px; }
+  .callout-desc { font-size: var(--text-xs); color: var(--color-text-secondary); }
+  .btn-callout {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: #ffffff;
+    background-color: var(--color-primary-600);
+    border: 1px solid var(--color-primary-500);
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    transition: all var(--transition-fast);
+  }
+  .btn-callout:hover { background-color: var(--color-primary-500); transform: translateY(-1px); }
+
+  .guide-section { margin-bottom: var(--space-10); }
+  .section-title {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .guide-text {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    margin-bottom: var(--space-4);
+  }
+
+  .table-scroll-wrapper { overflow-x: auto; margin-bottom: var(--space-6); }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-xs);
+    text-align: left;
+  }
+  .data-table th {
+    background-color: var(--color-bg-elevated);
+    color: var(--color-text-secondary);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 700;
+  }
+  .data-table td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+  }
+  .data-table code {
+    font-family: var(--font-mono);
+    color: var(--color-emerald-400);
+    background-color: rgba(16, 185, 129, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  .tag-stable { color: var(--color-emerald-400); font-weight: 700; }
+  .tag-unstable { color: #f87171; font-weight: 700; }
+
+  .algo-breakdown-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+  }
+  .algo-name {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+  .algo-desc {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    margin-bottom: var(--space-3);
+  }
+  .algo-tip {
+    font-size: var(--text-xs);
+    color: var(--color-amber-400);
+    background-color: rgba(245, 158, 11, 0.08);
+    border-left: 3px solid var(--color-amber-400);
+    padding: var(--space-2) var(--space-3);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+
+  .stability-box {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+  .stability-box code { font-family: var(--font-mono); color: var(--color-indigo-300); }
+
+  .article-footer {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  .footer-nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+  .footer-link-back { color: var(--color-text-secondary); }
+  .footer-link-back:hover { color: var(--color-primary-400); }
+  .footer-link-next { color: var(--color-primary-400); }
+  .footer-link-next:hover { color: #ffffff; }
+</style>

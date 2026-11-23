@@ -1,24 +1,1335 @@
 ---
+// ============================================================================
+// BFS & DFS Graph Visualizer (Route: /visualizers/bfs-dfs/)
+// Interactive SVG graph traversal with live Queue (FIFO) and Stack (LIFO) inspectors
+// ============================================================================
+
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../../components/common/RouteScaffold.astro';
 ---
 
 <BaseLayout
-  title="BFS & DFS Graph Visualizer"
-  description="Breadth-First Search and Depth-First Search graph traversal visualizer."
+  title="BFS & DFS Graph Visualizer — Interactive Graph Traversal"
+  description="Step-by-step interactive Breadth-First Search (Queue) and Depth-First Search (Stack) graph traversal visualizer with cycle detection and visited sets."
   currentRoute="/visualizers/bfs-dfs/"
 >
-  <RouteScaffold
-    title="BFS & DFS Visualizer"
-    category="VISUALIZER"
-    badge="GRAPHS & TREES"
-    description="Interactive graph traversal visualizer comparing Queue-based Breadth-First Search against Stack-based Depth-First Search."
-    scheduledPhase="Phase 3 Implementation"
-    features={[
-      'Queue and Stack live inspection panels',
-      'Visited-node set tracking with color-coded node states',
-      'Beginner-friendly preset graphs (Binary Tree, Grid, Cycle Graph)',
-      'Step-by-step traversal order and path reconstruction',
-    ]}
-  />
+  <div class="visualizer-page container">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="/">Home</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li><a href="/visualizers/">Visualizers</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li aria-current="page">BFS & DFS Graphs</li>
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="tool-header">
+      <div class="header-badge-row">
+        <span class="category-badge">GRAPH TRAVERSAL</span>
+        <span class="complexity-badge">Time: O(V + E) • Space: O(V)</span>
+      </div>
+      <h1 class="tool-title">BFS & DFS Graph Visualizer</h1>
+      <p class="tool-lead">
+        Explore fundamental graph traversal paradigms. Observe how a FIFO Queue explores level-by-level (BFS), 
+        while a LIFO Stack explores branches deeply before backtracking (DFS).
+      </p>
+    </header>
+
+    <!-- Algorithm & Preset Configuration -->
+    <section class="toolbar-section" aria-label="Algorithm and Graph Configuration">
+      <div class="algo-tabs-row" role="tablist" aria-label="Choose traversal algorithm">
+        <span class="toolbar-label">Traversal:</span>
+        <button type="button" class="algo-tab active" data-algo="bfs" role="tab" aria-selected="true">
+          Breadth-First Search (Queue)
+        </button>
+        <button type="button" class="algo-tab" data-algo="dfs" role="tab" aria-selected="false">
+          Depth-First Search (Stack)
+        </button>
+      </div>
+
+      <div class="presets-row">
+        <span class="toolbar-label">Preset Graphs:</span>
+        <button type="button" class="preset-btn active" data-preset="connected">Simple Connected</button>
+        <button type="button" class="preset-btn" data-preset="branching">Branching Tree</button>
+        <button type="button" class="preset-btn" data-preset="cycle">Contains Cycle</button>
+        <button type="button" class="preset-btn" data-preset="disconnected">Disconnected Graph</button>
+      </div>
+
+      <div class="start-node-row">
+        <div class="input-group start-group">
+          <label for="start-node-select" class="input-label">Start Node:</label>
+          <select id="start-node-select" class="config-select font-mono" aria-label="Select start node"></select>
+        </div>
+        <p id="preset-desc" class="preset-description">A 5-node connected mesh. Demonstrates basic neighbor exploration.</p>
+      </div>
+
+      <div id="validation-error" class="validation-error" role="alert" style="display: none;"></div>
+    </section>
+
+    <!-- Main Lab Bench Grid -->
+    <main class="lab-bench-grid">
+      <!-- Left Column: Visual Stage & Playback -->
+      <div class="primary-col">
+        <!-- SVG Visual Stage -->
+        <section class="stage-container" aria-label="Graph Traversal Visual Stage">
+          <div class="stage-top-bar">
+            <span class="stage-legend-item"><span class="legend-dot emerald"></span>Current Node</span>
+            <span class="stage-legend-item"><span class="legend-dot amber"></span>Examining Edge</span>
+            <span class="stage-legend-item"><span class="legend-dot indigo"></span>Enqueued / In-Stack</span>
+            <span class="stage-legend-item"><span class="legend-dot purple"></span>Visited</span>
+            <span class="stage-legend-item"><span class="legend-dot slate"></span>Unvisited</span>
+          </div>
+
+          <!-- SVG Canvas Area -->
+          <div class="graph-svg-wrapper">
+            <svg id="graph-svg" class="graph-svg" viewBox="0 0 500 280" role="img" aria-label="Graph diagram">
+              <!-- Rendered via JavaScript -->
+            </svg>
+          </div>
+
+          <!-- Data Structure Inspector (Live Queue or Stack) -->
+          <div class="data-structure-inspector">
+            <div class="ds-header">
+              <span id="ds-type-label" class="ds-title font-mono">Queue (FIFO): Front ← [ ] ← Rear</span>
+              <span id="ds-count-badge" class="ds-badge font-mono">0 items</span>
+            </div>
+            <div id="ds-items-container" class="ds-items-row" role="region" aria-label="Memory data structure items">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Traversal Order Strip -->
+          <div class="traversal-order-strip">
+            <span class="order-label">Traversal Sequence:</span>
+            <div id="traversal-order-list" class="order-items-row font-mono">—</div>
+          </div>
+
+          <!-- Status Banner -->
+          <div id="graph-status-banner" class="graph-status-banner status-in-progress" role="status" aria-live="polite">
+            <span id="status-icon" class="status-icon">🔍</span>
+            <span id="status-text" class="status-text">Ready to traverse. Click Play or Step Forward.</span>
+          </div>
+        </section>
+
+        <!-- Playback Controls -->
+        <section class="playback-panel" aria-label="Playback Controls">
+          <div class="playback-controls-group">
+            <button type="button" id="btn-reset" class="ctrl-btn" title="Reset to start" aria-label="Reset to beginning">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+            </button>
+
+            <button type="button" id="btn-step-back" class="ctrl-btn" title="Step backward" aria-label="Step backward">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                <line x1="5" y1="19" x2="5" y2="5"></line>
+              </svg>
+            </button>
+
+            <button type="button" id="btn-play-pause" class="btn-play-primary" title="Play or Pause" aria-label="Play traversal animation">
+              <span id="play-pause-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </span>
+              <span id="play-pause-label">Play</span>
+            </button>
+
+            <button type="button" id="btn-step-forward" class="ctrl-btn" title="Step forward" aria-label="Step forward">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                <line x1="19" y1="5" x2="19" y2="19"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="scrubber-group">
+            <input
+              type="range"
+              id="step-scrubber"
+              class="step-slider"
+              min="0"
+              max="1"
+              value="0"
+              aria-label="Step progress slider"
+            />
+            <span id="step-counter" class="step-counter-text font-mono">Step 0 / 0</span>
+          </div>
+
+          <div class="speed-group">
+            <label for="speed-select" class="speed-label">Speed:</label>
+            <select id="speed-select" class="speed-select" aria-label="Playback speed">
+              <option value="900">0.5x (Slow)</option>
+              <option value="500" selected>1.0x (Normal)</option>
+              <option value="200">2.5x (Fast)</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- Narration Card -->
+        <article class="narration-card" aria-label="Step Narration">
+          <div class="narration-header">
+            <span class="narration-badge">STEP NARRATION</span>
+            <span id="narration-action" class="action-tag">INIT</span>
+          </div>
+          <p id="narration-text" class="narration-body">Select a graph and press Play or Step Forward.</p>
+        </article>
+      </div>
+
+      <!-- Right Column: Pseudocode & Visited State -->
+      <aside class="sidebar-col">
+        <!-- Live State Watch -->
+        <section class="panel-box" aria-label="Traversal State Watch">
+          <h2 class="panel-title">Graph State Watch</h2>
+          <div class="variables-table">
+            <div class="var-row">
+              <span class="var-name font-mono">Current Node:</span>
+              <span id="watch-current" class="var-value font-mono highlight-emerald">—</span>
+            </div>
+            <div class="var-row">
+              <span class="var-name font-mono">Examining Edge:</span>
+              <span id="watch-edge" class="var-value font-mono highlight-amber">—</span>
+            </div>
+            <div class="var-row">
+              <span class="var-name font-mono">Visited Nodes:</span>
+              <span id="watch-visited" class="var-value font-mono">{}</span>
+            </div>
+            <div class="var-row">
+              <span class="var-name font-mono">Unreached Nodes:</span>
+              <span id="watch-unreached" class="var-value font-mono">none</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Pseudocode Panel -->
+        <section class="panel-box" aria-label="Synchronized Pseudocode">
+          <h2 id="pseudocode-title" class="panel-title">Breadth-First Search Pseudocode</h2>
+          <ol id="pseudocode-list" class="pseudocode-list" aria-label="Algorithm pseudocode lines"></ol>
+        </section>
+
+        <!-- Complexity & Characteristics -->
+        <section class="panel-box" aria-label="Algorithm Properties">
+          <h2 class="panel-title">Characteristics</h2>
+          <ul class="properties-list">
+            <li><strong>Data Structure:</strong> <span id="prop-ds">Queue (FIFO)</span></li>
+            <li><strong>Time Complexity:</strong> <code>O(V + E)</code></li>
+            <li><strong>Space Complexity:</strong> <code>O(V)</code></li>
+            <li><strong>Primary Use:</strong> Level-order exploration / Unweighted shortest path</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+
+    <!-- Educational Deep-Dive -->
+    <article class="educational-section">
+      <header class="edu-header">
+        <span class="edu-badge">GRAPH THEORY & DATA STRUCTURES</span>
+        <h2 class="edu-title">BFS vs. DFS: Contrasting Queue & Stack Exploration</h2>
+        <p class="edu-lead">
+          Both algorithms visit every reachable vertex in $O(V + E)$ time, but their underlying memory structures produce drastically different search patterns.
+        </p>
+      </header>
+
+      <div class="edu-grid">
+        <div class="edu-card">
+          <h3 class="edu-card-title">1. FIFO Queue: Level-by-Level Discovery</h3>
+          <p class="edu-text">
+            Breadth-First Search uses a <strong>First-In, First-Out (FIFO) queue</strong>. It systematically explores all immediate neighbors at distance 1 before moving to distance 2. 
+            Because edges are examined in order of increasing distance, BFS guarantees the shortest path in unweighted graphs.
+          </p>
+        </div>
+
+        <div class="edu-card">
+          <h3 class="edu-card-title">2. LIFO Stack: Deep Branch Exploration</h3>
+          <p class="edu-text">
+            Depth-First Search uses a <strong>Last-In, First-Out (LIFO) stack</strong> (often via recursion). It dives as deeply as possible along each branch before backtracking. 
+            DFS is ideal for topological sorting, cycle detection, and maze generation.
+          </p>
+        </div>
+      </div>
+
+      <footer class="related-links-bar">
+        <div class="related-item">
+          <span class="related-label">Learn Theory:</span>
+          <a href="/guides/bfs-dfs/" class="related-link">
+            Graph Traversal Foundations: BFS vs DFS Guide →
+          </a>
+        </div>
+        <div class="related-item">
+          <span class="related-label">First Visualizer:</span>
+          <a href="/visualizers/binary-search/" class="related-link">
+            Binary Search Visualizer →
+          </a>
+        </div>
+      </footer>
+    </article>
+  </div>
 </BaseLayout>
+
+<script>
+  import {
+    generateGraphSteps,
+    GRAPH_PRESETS,
+    GRAPH_METADATA,
+    type GraphAlgorithmType,
+    type GraphState,
+    type GraphData,
+  } from '../../../core/algorithms/graph';
+  import { VisualizerController } from '../../../core/engine/controller';
+
+  // DOM Elements
+  const algoTabs = document.querySelectorAll<HTMLButtonElement>('.algo-tab');
+  const presetButtons = document.querySelectorAll<HTMLButtonElement>('[data-preset]');
+  const startNodeSelect = document.getElementById('start-node-select') as HTMLSelectElement | null;
+  const presetDesc = document.getElementById('preset-desc');
+
+  const graphSvg = document.getElementById('graph-svg');
+  const dsTypeLabel = document.getElementById('ds-type-label');
+  const dsCountBadge = document.getElementById('ds-count-badge');
+  const dsItemsContainer = document.getElementById('ds-items-container');
+  const traversalOrderList = document.getElementById('traversal-order-list');
+  const statusBanner = document.getElementById('graph-status-banner');
+  const statusIcon = document.getElementById('status-icon');
+  const statusText = document.getElementById('status-text');
+
+  const btnPlayPause = document.getElementById('btn-play-pause');
+  const playPauseLabel = document.getElementById('play-pause-label');
+  const playPauseIcon = document.getElementById('play-pause-icon');
+  const btnStepForward = document.getElementById('btn-step-forward') as HTMLButtonElement | null;
+  const btnStepBack = document.getElementById('btn-step-back') as HTMLButtonElement | null;
+  const btnReset = document.getElementById('btn-reset');
+  const stepScrubber = document.getElementById('step-scrubber') as HTMLInputElement | null;
+  const stepCounter = document.getElementById('step-counter');
+  const speedSelect = document.getElementById('speed-select') as HTMLSelectElement | null;
+
+  const narrationAction = document.getElementById('narration-action');
+  const narrationText = document.getElementById('narration-text');
+
+  const watchCurrent = document.getElementById('watch-current');
+  const watchEdge = document.getElementById('watch-edge');
+  const watchVisited = document.getElementById('watch-visited');
+  const watchUnreached = document.getElementById('watch-unreached');
+
+  const pseudocodeTitle = document.getElementById('pseudocode-title');
+  const pseudocodeList = document.getElementById('pseudocode-list');
+  const propDs = document.getElementById('prop-ds');
+
+  let currentAlgo: GraphAlgorithmType = 'bfs';
+  let currentPreset = GRAPH_PRESETS[0];
+  let currentStartNode = currentPreset.startNode;
+  let controller: VisualizerController<GraphState> | null = null;
+
+  function updateAlgorithmMeta(algo: GraphAlgorithmType) {
+    const meta = GRAPH_METADATA[algo];
+    if (pseudocodeTitle) pseudocodeTitle.textContent = `${meta.name} Pseudocode`;
+    if (propDs) propDs.textContent = meta.dataStructure;
+    if (dsTypeLabel) {
+      dsTypeLabel.textContent = algo === 'bfs'
+        ? 'Queue (FIFO): Front ← [ Enqueued Nodes ] ← Rear'
+        : 'Call Stack (LIFO): Top [ In-Memory Call Frames ] Bottom';
+    }
+
+    if (pseudocodeList) {
+      pseudocodeList.innerHTML = '';
+      meta.pseudocode.forEach((line, idx) => {
+        const li = document.createElement('li');
+        li.id = `code-line-${idx + 1}`;
+        li.className = 'code-line font-mono';
+        li.innerHTML = `<span class="line-num">${idx + 1}</span><span class="line-code">${line}</span>`;
+        pseudocodeList.appendChild(li);
+      });
+    }
+  }
+
+  function updateStartNodeOptions(graph: GraphData, selected: string) {
+    if (!startNodeSelect) return;
+    startNodeSelect.innerHTML = '';
+    graph.nodes.forEach(node => {
+      const opt = document.createElement('option');
+      opt.value = node.id;
+      opt.textContent = `Node ${node.id} (${node.label})`;
+      if (node.id === selected) opt.selected = true;
+      startNodeSelect.appendChild(opt);
+    });
+  }
+
+  function initVisualizer(graph: GraphData, startNode: string, algo: GraphAlgorithmType) {
+    if (controller) {
+      controller.destroy();
+    }
+
+    updateAlgorithmMeta(algo);
+    const steps = generateGraphSteps(graph, startNode, algo);
+    const speed = speedSelect ? parseInt(speedSelect.value, 10) : 500;
+    controller = new VisualizerController(steps, speed);
+
+    if (stepScrubber) {
+      stepScrubber.max = String(steps.length - 1);
+      stepScrubber.value = '0';
+    }
+
+    controller.subscribe((step, state) => {
+      renderStep(step, state);
+    });
+  }
+
+  function renderStep(step: any, state: any) {
+    const s: GraphState = step.state;
+
+    // Scrubber & Buttons
+    if (stepScrubber) stepScrubber.value = String(state.currentStepIndex);
+    if (stepCounter) stepCounter.textContent = `Step ${state.currentStepIndex + 1} / ${state.totalSteps}`;
+    if (btnStepBack) btnStepBack.disabled = state.isAtStart;
+    if (btnStepForward) btnStepForward.disabled = state.isAtEnd;
+
+    // Play/Pause icon
+    if (playPauseLabel && playPauseIcon) {
+      if (state.isPlaying) {
+        playPauseLabel.textContent = 'Pause';
+        playPauseIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+      } else {
+        playPauseLabel.textContent = 'Play';
+        playPauseIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+      }
+    }
+
+    // Render SVG Graph
+    if (graphSvg) {
+      renderSvgGraph(s);
+    }
+
+    // Render Data Structure Items (Queue or Stack)
+    if (dsItemsContainer && dsCountBadge) {
+      dsCountBadge.textContent = `${s.queueOrStack.length} items`;
+      dsItemsContainer.innerHTML = '';
+      if (s.queueOrStack.length === 0) {
+        dsItemsContainer.innerHTML = '<span class="empty-ds-text font-mono">(empty)</span>';
+      } else {
+        s.queueOrStack.forEach((nodeId, idx) => {
+          const item = document.createElement('div');
+          const isHead = idx === 0;
+          item.className = `ds-item font-mono ${isHead ? 'head-item' : ''}`;
+          item.innerHTML = `<span class="ds-item-id">${nodeId}</span>${isHead ? `<span class="ds-pointer">${s.algorithm === 'bfs' ? 'FRONT' : 'TOP'}</span>` : ''}`;
+          dsItemsContainer.appendChild(item);
+        });
+      }
+    }
+
+    // Traversal Order
+    if (traversalOrderList) {
+      traversalOrderList.innerHTML = s.traversalOrder.length > 0
+        ? s.traversalOrder.map(id => `<span class="order-node-pill">${id}</span>`).join('<span class="order-arrow">→</span>')
+        : '<span class="empty-order font-mono">(none yet)</span>';
+    }
+
+    // Status Banner
+    if (statusBanner && statusIcon && statusText) {
+      if (step.actionType === 'COMPLETE') {
+        statusBanner.className = 'graph-status-banner status-success';
+        statusIcon.textContent = '✔';
+        statusText.textContent = `Traversal complete! Visited: ${s.traversalOrder.join(' → ')}`;
+      } else if (step.actionType === 'VISIT' || step.actionType === 'DEQUEUE') {
+        statusBanner.className = 'graph-status-banner status-visit';
+        statusIcon.textContent = '●';
+        statusText.textContent = `Processing node ${s.currentNode}.`;
+      } else {
+        statusBanner.className = 'graph-status-banner status-in-progress';
+        statusIcon.textContent = '🔍';
+        statusText.textContent = `Exploring from ${s.currentNode ?? s.startNode}...`;
+      }
+    }
+
+    // Narration
+    if (narrationAction) narrationAction.textContent = step.actionType;
+    if (narrationText) narrationText.textContent = step.narration;
+
+    // Pseudocode line highlight
+    document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
+    if (step.pseudocodeLine > 0) {
+      const activeLine = document.getElementById(`code-line-${step.pseudocodeLine}`);
+      if (activeLine) activeLine.classList.add('active');
+    }
+
+    // Variable Watch
+    if (watchCurrent) watchCurrent.textContent = s.currentNode ?? '—';
+    if (watchEdge) watchEdge.textContent = s.activeEdge ? `${s.activeEdge[0]} — ${s.activeEdge[1]}` : '—';
+    if (watchVisited) watchVisited.textContent = `{${s.visitedNodes.join(', ')}}`;
+    if (watchUnreached) watchUnreached.textContent = s.unvisitedNodes.length > 0 ? `[${s.unvisitedNodes.join(', ')}]` : 'none';
+  }
+
+  function renderSvgGraph(s: GraphState) {
+    if (!graphSvg) return;
+    const w = 500;
+    const h = 280;
+
+    // Convert node percentage coordinates to SVG canvas pixels
+    const nodeCoords = new Map<string, { x: number; y: number }>();
+    s.graph.nodes.forEach(n => {
+      nodeCoords.set(n.id, {
+        x: Math.round((n.x / 100) * (w - 80) + 40),
+        y: Math.round((n.y / 100) * (h - 60) + 30),
+      });
+    });
+
+    let edgesSvg = '';
+    s.graph.edges.forEach(e => {
+      const p1 = nodeCoords.get(e.from);
+      const p2 = nodeCoords.get(e.to);
+      if (!p1 || !p2) return;
+
+      const isActiveEdge = s.activeEdge && (
+        (s.activeEdge[0] === e.from && s.activeEdge[1] === e.to) ||
+        (s.activeEdge[0] === e.to && s.activeEdge[1] === e.from)
+      );
+
+      const edgeClass = isActiveEdge ? 'graph-edge active-edge' : 'graph-edge';
+      edgesSvg += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" class="${edgeClass}" />`;
+    });
+
+    let nodesSvg = '';
+    s.graph.nodes.forEach(n => {
+      const p = nodeCoords.get(n.id);
+      if (!p) return;
+
+      const isCurrent = n.id === s.currentNode;
+      const isNeighbor = n.id === s.examiningNeighbor;
+      const isVisited = s.visitedNodes.includes(n.id);
+      const inQueueOrStack = s.queueOrStack.includes(n.id);
+      const isUnreached = s.unvisitedNodes.includes(n.id);
+
+      let nodeClass = 'graph-node';
+      if (isCurrent) nodeClass += ' current-node';
+      else if (isNeighbor) nodeClass += ' neighbor-node';
+      else if (isVisited) nodeClass += ' visited-node';
+      else if (inQueueOrStack) nodeClass += ' queued-node';
+      else if (isUnreached) nodeClass += ' unreached-node';
+
+      nodesSvg += `
+        <g class="${nodeClass}" transform="translate(${p.x}, ${p.y})">
+          ${isCurrent ? '<circle r="26" class="current-pulse-ring" />' : ''}
+          <circle r="20" class="node-circle" />
+          <text dy="5" text-anchor="middle" class="node-text font-mono">${n.id}</text>
+        </g>
+      `;
+    });
+
+    graphSvg.innerHTML = edgesSvg + nodesSvg;
+  }
+
+  // Event Listeners
+  algoTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      algoTabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      currentAlgo = tab.dataset.algo as GraphAlgorithmType;
+      initVisualizer(currentPreset.graph, currentStartNode, currentAlgo);
+    });
+  });
+
+  presetButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      presetButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const presetKey = btn.dataset.preset;
+      currentPreset = GRAPH_PRESETS.find(p => {
+        if (presetKey === 'connected') return p.name.includes('Connected');
+        if (presetKey === 'branching') return p.name.includes('Branching');
+        if (presetKey === 'cycle') return p.name.includes('Cycle');
+        if (presetKey === 'disconnected') return p.name.includes('Disconnected');
+        return false;
+      }) ?? GRAPH_PRESETS[0];
+
+      currentStartNode = currentPreset.startNode;
+      if (presetDesc) presetDesc.textContent = currentPreset.description;
+      updateStartNodeOptions(currentPreset.graph, currentStartNode);
+      initVisualizer(currentPreset.graph, currentStartNode, currentAlgo);
+    });
+  });
+
+  startNodeSelect?.addEventListener('change', () => {
+    if (startNodeSelect) {
+      currentStartNode = startNodeSelect.value;
+      initVisualizer(currentPreset.graph, currentStartNode, currentAlgo);
+    }
+  });
+
+  btnPlayPause?.addEventListener('click', () => {
+    if (!controller) return;
+    if (controller.currentState.isPlaying) controller.pause();
+    else controller.play();
+  });
+  btnStepForward?.addEventListener('click', () => controller?.stepForward());
+  btnStepBack?.addEventListener('click', () => controller?.stepBackward());
+  btnReset?.addEventListener('click', () => controller?.reset());
+  stepScrubber?.addEventListener('input', (e) => {
+    const idx = parseInt((e.target as HTMLInputElement).value, 10);
+    controller?.goToStep(idx);
+  });
+  speedSelect?.addEventListener('change', () => {
+    if (speedSelect && controller) {
+      controller.setSpeed(parseInt(speedSelect.value, 10));
+    }
+  });
+
+  // Initialize
+  updateStartNodeOptions(currentPreset.graph, currentStartNode);
+  initVisualizer(currentPreset.graph, currentStartNode, currentAlgo);
+</script>
+
+<style>
+  .visualizer-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-16);
+  }
+
+  /* Breadcrumbs */
+  .breadcrumb-nav {
+    margin-bottom: var(--space-6);
+  }
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .breadcrumb-list a {
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast);
+  }
+  .breadcrumb-list a:hover {
+    color: var(--color-primary-400);
+  }
+  .separator {
+    color: var(--color-border);
+  }
+
+  /* Header */
+  .tool-header {
+    margin-bottom: var(--space-8);
+  }
+  .header-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .category-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .complexity-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-purple-400);
+    background-color: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+  .tool-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-3);
+  }
+  .tool-lead {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    max-width: 800px;
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Toolbar */
+  .toolbar-section {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .algo-tabs-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .algo-tab {
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
+    min-height: 40px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .algo-tab:hover, .algo-tab.active {
+    color: #ffffff;
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-500);
+  }
+
+  .presets-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .toolbar-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+  .preset-btn {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    min-height: 32px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .preset-btn:hover, .preset-btn.active {
+    color: #ffffff;
+    background-color: rgba(99, 102, 241, 0.2);
+    border-color: var(--color-primary-500);
+  }
+
+  .start-node-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .start-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .input-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+  .config-select {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    color: var(--color-text-primary);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    min-height: 34px;
+    cursor: pointer;
+  }
+  .preset-description {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+  .validation-error {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: #f87171;
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  /* Lab Bench Grid */
+  .lab-bench-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    margin-bottom: var(--space-12);
+  }
+  @media (min-width: 960px) {
+    .lab-bench-grid {
+      grid-template-columns: 1.6fr 1fr;
+    }
+  }
+
+  .primary-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  /* Stage Container */
+  .stage-container {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-card);
+  }
+  .stage-top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border-subtle);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+  .stage-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .legend-dot.emerald { background-color: var(--color-emerald-400); }
+  .legend-dot.amber { background-color: var(--color-amber-400); }
+  .legend-dot.indigo { background-color: var(--color-primary-400); }
+  .legend-dot.purple { background-color: var(--color-purple-400); }
+  .legend-dot.slate { background-color: var(--color-slate-600); }
+
+  /* Graph SVG */
+  .graph-svg-wrapper {
+    background-color: var(--color-slate-950);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .graph-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  :global(.graph-edge) {
+    stroke: rgba(148, 163, 184, 0.25);
+    stroke-width: 2.5;
+    transition: stroke 200ms ease, stroke-width 200ms ease;
+  }
+  :global(.graph-edge.active-edge) {
+    stroke: var(--color-amber-400);
+    stroke-width: 4.5;
+  }
+  :global(.graph-node) {
+    cursor: default;
+    transition: transform 200ms ease;
+  }
+  :global(.graph-node .node-circle) {
+    fill: var(--color-slate-800);
+    stroke: var(--color-slate-600);
+    stroke-width: 2.5;
+    transition: all 200ms ease;
+  }
+  :global(.graph-node .node-text) {
+    fill: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  :global(.graph-node.current-node .node-circle) {
+    fill: var(--color-emerald-500);
+    stroke: #ffffff;
+    stroke-width: 3;
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.6));
+  }
+  :global(.graph-node.neighbor-node .node-circle) {
+    fill: var(--color-amber-500);
+    stroke: #ffffff;
+    stroke-width: 3;
+  }
+  :global(.graph-node.visited-node .node-circle) {
+    fill: var(--color-purple-500);
+    stroke: var(--color-purple-400);
+  }
+  :global(.graph-node.queued-node .node-circle) {
+    fill: var(--color-primary-600);
+    stroke: var(--color-primary-400);
+  }
+  :global(.graph-node.unreached-node .node-circle) {
+    stroke-dasharray: 4;
+    opacity: 0.5;
+  }
+  :global(.current-pulse-ring) {
+    fill: none;
+    stroke: var(--color-emerald-400);
+    stroke-width: 2;
+    opacity: 0.7;
+    animation: pulseRing 1.5s infinite;
+  }
+  @keyframes pulseRing {
+    0% { r: 22px; opacity: 0.8; }
+    100% { r: 30px; opacity: 0; }
+  }
+
+  /* Data Structure Inspector */
+  .data-structure-inspector {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  .ds-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+  }
+  .ds-title {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+  }
+  .ds-badge {
+    font-size: 11px;
+    color: var(--color-text-muted);
+  }
+  .ds-items-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 36px;
+  }
+  :global(.ds-item) {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background-color: var(--color-slate-900);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 3px 8px;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: #ffffff;
+  }
+  :global(.ds-item.head-item) {
+    border-color: var(--color-primary-400);
+    background-color: rgba(99, 102, 241, 0.2);
+  }
+  :global(.ds-pointer) {
+    font-size: 9px;
+    background-color: var(--color-primary-600);
+    padding: 1px 4px;
+    border-radius: 2px;
+  }
+  :global(.empty-ds-text) {
+    font-size: var(--text-xs);
+    color: var(--color-text-dim);
+  }
+
+  /* Traversal Order Strip */
+  .traversal-order-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    margin-bottom: var(--space-3);
+  }
+  .order-label {
+    font-weight: 700;
+    color: var(--color-text-muted);
+  }
+  .order-items-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-primary);
+  }
+  :global(.order-node-pill) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: var(--color-purple-900);
+    border: 1px solid var(--color-purple-500);
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: 50%;
+    font-size: 11px;
+  }
+  :global(.order-arrow) {
+    color: var(--color-text-dim);
+  }
+  :global(.empty-order) {
+    color: var(--color-text-dim);
+  }
+
+  /* Status Banner */
+  .graph-status-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
+    font-weight: 600;
+  }
+  .status-in-progress {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+  .status-visit {
+    background-color: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: var(--color-purple-400);
+  }
+  .status-success {
+    background-color: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #ffffff;
+  }
+
+  /* Playback Controls Panel */
+  .playback-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-5);
+  }
+  .playback-controls-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .ctrl-btn {
+    width: 44px; /* Accessible 44px target */
+    height: 44px;
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .ctrl-btn:hover:not(:disabled) {
+    background-color: var(--color-bg-hover);
+    border-color: var(--color-primary-500);
+  }
+  .ctrl-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .btn-play-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    background-color: var(--color-primary-600);
+    border: 1px solid var(--color-primary-500);
+    border-radius: var(--radius-md);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .btn-play-primary:hover {
+    background-color: var(--color-primary-500);
+    transform: translateY(-1px);
+  }
+
+  .scrubber-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+    min-width: 180px;
+  }
+  .step-slider {
+    flex: 1;
+    cursor: pointer;
+  }
+  .step-counter-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .speed-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .speed-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+  .speed-select {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    padding: 6px 8px;
+    min-height: 36px;
+    cursor: pointer;
+  }
+
+  /* Narration Card */
+  .narration-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+  }
+  .narration-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+  }
+  .narration-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .action-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: var(--color-primary-300);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+  .narration-body {
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    line-height: var(--leading-relaxed);
+    margin: 0;
+  }
+
+  /* Sidebar */
+  .sidebar-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .panel-box {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+  }
+  .panel-title {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .variables-table {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .var-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--text-xs);
+    padding: 3px 0;
+  }
+  .var-name {
+    color: var(--color-text-muted);
+  }
+  .var-value {
+    color: var(--color-text-primary);
+    font-weight: 700;
+  }
+  .highlight-emerald { color: var(--color-emerald-400); }
+  .highlight-amber { color: var(--color-amber-400); }
+
+  /* Pseudocode List */
+  .pseudocode-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--text-xs);
+  }
+  .code-line {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
+  }
+  .code-line.active {
+    background-color: rgba(99, 102, 241, 0.2);
+    color: #ffffff;
+    font-weight: 700;
+    border-left: 3px solid var(--color-primary-400);
+  }
+  .line-num {
+    color: var(--color-text-dim);
+    min-width: 16px;
+    user-select: none;
+  }
+  .line-code {
+    white-space: pre;
+  }
+
+  /* Properties List */
+  .properties-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+  .properties-list code {
+    font-family: var(--font-mono);
+    color: var(--color-purple-400);
+    background-color: rgba(168, 85, 247, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  /* Educational Section */
+  .educational-section {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+  }
+  .edu-header {
+    margin-bottom: var(--space-6);
+  }
+  .edu-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .edu-title {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    margin: var(--space-2) 0;
+  }
+  .edu-lead {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 800px;
+  }
+  .edu-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+  @media (min-width: 768px) {
+    .edu-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .edu-card {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+  .edu-card-title {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+  .edu-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Related Links Bar */
+  .related-links-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  .related-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+  }
+  .related-label {
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+  .related-link {
+    color: var(--color-primary-400);
+    font-weight: 600;
+    transition: color var(--transition-fast);
+  }
+  .related-link:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+</style>

@@ -1,24 +1,1233 @@
 ---
+// ============================================================================
+// Sorting Visualizer (Route: /visualizers/sorting/)
+// Interactive bar visualization for Bubble Sort, Selection Sort, and Insertion Sort
+// ============================================================================
+
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../../components/common/RouteScaffold.astro';
 ---
 
 <BaseLayout
-  title="Sorting Visualizer"
-  description="Interactive sorting algorithm visualizer for Bubble Sort, Selection Sort, and Insertion Sort."
+  title="Sorting Visualizer — Bubble, Selection & Insertion Sort"
+  description="Step-by-step interactive sorting visualizer. Compare Bubble Sort, Selection Sort, and Insertion Sort with comparison/swap metrics and synchronized pseudocode."
   currentRoute="/visualizers/sorting/"
 >
-  <RouteScaffold
-    title="Sorting Visualizer"
-    category="VISUALIZER"
-    badge="BUBBLE • SELECTION • INSERTION"
-    description="Interactive visualizer for elementary comparison-based sorting algorithms. Observe array comparisons, element swaps, and sorted boundary growth."
-    scheduledPhase="Phase 3 Implementation"
-    features={[
-      'Bubble Sort: Adjacent comparisons, bubbling passes, and early-exit optimization',
-      'Selection Sort: Minimum-element scanning and boundary expansion',
-      'Insertion Sort: Key selection, element shifting, and sorted partition insertion',
-      'Active comparison & swap counters with Big-O complexity notes',
-    ]}
-  />
+  <div class="visualizer-page container">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="/">Home</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li><a href="/visualizers/">Visualizers</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li aria-current="page">Sorting Visualizer</li>
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="tool-header">
+      <div class="header-badge-row">
+        <span class="category-badge">COMPARISON SORTING</span>
+        <span class="complexity-badge">Elementary O(n²) Algorithms</span>
+      </div>
+      <h1 class="tool-title">Sorting Visualizer</h1>
+      <p class="tool-lead">
+        Observe how fundamental comparison sorting algorithms arrange data. 
+        Track element comparisons, swaps, key shifts, and sorted invariants step-by-step.
+      </p>
+    </header>
+
+    <!-- Algorithm Selector & Presets Toolbar -->
+    <section class="toolbar-section" aria-label="Algorithm and Array Configuration">
+      <div class="algo-tabs-row" role="tablist" aria-label="Choose sorting algorithm">
+        <span class="toolbar-label">Algorithm:</span>
+        <button type="button" class="algo-tab active" data-algo="bubble" role="tab" aria-selected="true">
+          Bubble Sort
+        </button>
+        <button type="button" class="algo-tab" data-algo="selection" role="tab" aria-selected="false">
+          Selection Sort
+        </button>
+        <button type="button" class="algo-tab" data-algo="insertion" role="tab" aria-selected="false">
+          Insertion Sort
+        </button>
+      </div>
+
+      <div class="presets-row">
+        <span class="toolbar-label">Presets:</span>
+        <button type="button" class="preset-btn active" data-preset="random">Random (7 items)</button>
+        <button type="button" class="preset-btn" data-preset="nearly">Nearly Sorted</button>
+        <button type="button" class="preset-btn" data-preset="reversed">Reversed</button>
+        <button type="button" class="preset-btn" data-preset="duplicates">Duplicates</button>
+        <button type="button" class="preset-btn" data-preset="equal">All Equal</button>
+        <button type="button" class="preset-btn" data-preset="small">Small (4 items)</button>
+        <button type="button" id="btn-randomize" class="preset-btn btn-randomize" title="Generate new random array">
+          🎲 Randomize
+        </button>
+      </div>
+
+      <div class="custom-input-row">
+        <div class="input-group">
+          <label for="custom-array-input" class="input-label">Custom Array (comma-separated):</label>
+          <input
+            type="text"
+            id="custom-array-input"
+            class="config-input font-mono"
+            value="45, 12, 85, 32, 89, 39, 69"
+            aria-label="Comma-separated numbers to sort"
+          />
+        </div>
+        <button type="button" id="apply-btn" class="btn-apply">Apply & Reset</button>
+      </div>
+
+      <div id="validation-error" class="validation-error" role="alert" style="display: none;"></div>
+    </section>
+
+    <!-- Main Lab Bench Grid -->
+    <main class="lab-bench-grid">
+      <!-- Left Column: Visual Stage & Playback -->
+      <div class="primary-col">
+        <!-- Visualizer Stage -->
+        <section class="stage-container" aria-label="Sorting Visual Stage">
+          <div class="stage-top-bar">
+            <span class="stage-legend-item"><span class="legend-dot indigo"></span>Comparing</span>
+            <span class="stage-legend-item"><span class="legend-dot amber"></span>Swapping / Key</span>
+            <span class="stage-legend-item"><span class="legend-dot emerald"></span>Sorted</span>
+            <span class="stage-legend-item"><span class="legend-dot slate"></span>Unsorted</span>
+          </div>
+
+          <!-- Visual Bars Container -->
+          <div class="bars-viewport">
+            <div id="sorting-bars-container" class="bars-container" role="region" aria-label="Array bars visual representation"></div>
+          </div>
+
+          <!-- Status Result Callout -->
+          <div id="sorting-status-banner" class="sorting-status-banner status-in-progress" role="status" aria-live="polite">
+            <span id="status-icon" class="status-icon">⚙</span>
+            <span id="status-text" class="status-text">Ready to sort. Click Play or Step Forward.</span>
+          </div>
+        </section>
+
+        <!-- Playback Controls -->
+        <section class="playback-panel" aria-label="Playback Controls">
+          <div class="playback-controls-group">
+            <button type="button" id="btn-reset" class="ctrl-btn" title="Reset to start" aria-label="Reset to beginning">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+            </button>
+
+            <button type="button" id="btn-step-back" class="ctrl-btn" title="Step backward" aria-label="Step backward">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                <line x1="5" y1="19" x2="5" y2="5"></line>
+              </svg>
+            </button>
+
+            <button type="button" id="btn-play-pause" class="btn-play-primary" title="Play or Pause" aria-label="Play sorting animation">
+              <span id="play-pause-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </span>
+              <span id="play-pause-label">Play</span>
+            </button>
+
+            <button type="button" id="btn-step-forward" class="ctrl-btn" title="Step forward" aria-label="Step forward">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                <line x1="19" y1="5" x2="19" y2="19"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="scrubber-group">
+            <input
+              type="range"
+              id="step-scrubber"
+              class="step-slider"
+              min="0"
+              max="1"
+              value="0"
+              aria-label="Step progress slider"
+            />
+            <span id="step-counter" class="step-counter-text font-mono">Step 0 / 0</span>
+          </div>
+
+          <div class="speed-group">
+            <label for="speed-select" class="speed-label">Speed:</label>
+            <select id="speed-select" class="speed-select" aria-label="Playback speed">
+              <option value="800">0.5x (Slow)</option>
+              <option value="400" selected>1.0x (Normal)</option>
+              <option value="150">2.5x (Fast)</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- Narration Card -->
+        <article class="narration-card" aria-label="Step Narration">
+          <div class="narration-header">
+            <span class="narration-badge">STEP NARRATION</span>
+            <span id="narration-action" class="action-tag">INIT</span>
+          </div>
+          <p id="narration-text" class="narration-body">Select an algorithm and press Play or Step Forward.</p>
+        </article>
+      </div>
+
+      <!-- Right Column: Variables & Pseudocode -->
+      <aside class="sidebar-col">
+        <!-- Live Metrics Card -->
+        <section class="panel-box" aria-label="Algorithm Metrics">
+          <h2 class="panel-title">Algorithm Metrics</h2>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <span class="metric-label">Comparisons</span>
+              <span id="metric-comparisons" class="metric-val font-mono">0</span>
+            </div>
+            <div class="metric-item">
+              <span id="metric-swaps-label" class="metric-label">Swaps</span>
+              <span id="metric-swaps" class="metric-val font-mono">0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Passes / Cycles</span>
+              <span id="metric-passes" class="metric-val font-mono">0</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Pseudocode Panel -->
+        <section class="panel-box" aria-label="Synchronized Pseudocode">
+          <h2 id="pseudocode-title" class="panel-title">Bubble Sort Pseudocode</h2>
+          <ol id="pseudocode-list" class="pseudocode-list" aria-label="Algorithm pseudocode lines"></ol>
+        </section>
+
+        <!-- Algorithm Properties -->
+        <section class="panel-box" aria-label="Algorithm Complexity & Properties">
+          <h2 class="panel-title">Characteristics</h2>
+          <ul class="properties-list">
+            <li><strong>Best Time:</strong> <code id="prop-best">O(n)</code></li>
+            <li><strong>Average Time:</strong> <code id="prop-avg">O(n²)</code></li>
+            <li><strong>Worst Time:</strong> <code id="prop-worst">O(n²)</code></li>
+            <li><strong>Auxiliary Space:</strong> <code>O(1)</code> (In-place)</li>
+            <li><strong>Stability:</strong> <span id="prop-stable">Stable</span></li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+
+    <!-- Educational Deep-Dive -->
+    <article class="educational-section">
+      <header class="edu-header">
+        <span class="edu-badge">ALGORITHM THEORY & TRADE-OFFS</span>
+        <h2 class="edu-title">Comparing Elementary Sorting Algorithms</h2>
+        <p class="edu-lead">
+          While modern production libraries use $O(n \log n)$ algorithms (such as Timsort or Quickselect), 
+          Bubble, Selection, and Insertion Sort provide foundational insight into comparisons, inversions, and stability.
+        </p>
+      </header>
+
+      <div class="edu-grid">
+        <div class="edu-card">
+          <h3 class="edu-card-title">1. Stability in Sorting</h3>
+          <p class="edu-text">
+            A sorting algorithm is <strong>stable</strong> if two objects with equal keys appear in the same order in sorted output as in the input. 
+            Bubble Sort and Insertion Sort are stable because they only swap adjacent elements when strictly greater. 
+            Selection Sort is unstable due to long-distance swaps across identical elements.
+          </p>
+        </div>
+
+        <div class="edu-card">
+          <h3 class="edu-card-title">2. Why Insertion Sort Excels on Nearly Sorted Data</h3>
+          <p class="edu-text">
+            When an array is already sorted or nearly sorted, Insertion Sort's inner while-loop terminates in $O(1)$ comparisons per pass, 
+            yielding an overall linear time complexity of $O(n)$. This makes it ideal for small arrays ($n \le 16$) in hybrid algorithms.
+          </p>
+        </div>
+      </div>
+
+      <footer class="related-links-bar">
+        <div class="related-item">
+          <span class="related-label">Learn Theory:</span>
+          <a href="/guides/sorting-algorithms/" class="related-link">
+            Comparison Sorting Demystified Guide →
+          </a>
+        </div>
+        <div class="related-item">
+          <span class="related-label">Next Algorithm:</span>
+          <a href="/visualizers/bfs-dfs/" class="related-link">
+            BFS & DFS Graph Visualizer →
+          </a>
+        </div>
+      </footer>
+    </article>
+  </div>
 </BaseLayout>
+
+<script>
+  import {
+    generateSortingSteps,
+    SORTING_METADATA,
+    SORTING_PRESETS,
+    type SortingAlgorithmType,
+    type SortingState,
+  } from '../../../core/algorithms/sorting';
+  import { VisualizerController } from '../../../core/engine/controller';
+
+  // DOM Elements
+  const arrayInput = document.getElementById('custom-array-input') as HTMLInputElement | null;
+  const applyBtn = document.getElementById('apply-btn');
+  const randomizeBtn = document.getElementById('btn-randomize');
+  const validationError = document.getElementById('validation-error');
+  const algoTabs = document.querySelectorAll<HTMLButtonElement>('.algo-tab');
+  const presetButtons = document.querySelectorAll<HTMLButtonElement>('[data-preset]');
+
+  const barsContainer = document.getElementById('sorting-bars-container');
+  const statusBanner = document.getElementById('sorting-status-banner');
+  const statusIcon = document.getElementById('status-icon');
+  const statusText = document.getElementById('status-text');
+
+  const btnPlayPause = document.getElementById('btn-play-pause');
+  const playPauseLabel = document.getElementById('play-pause-label');
+  const playPauseIcon = document.getElementById('play-pause-icon');
+  const btnStepForward = document.getElementById('btn-step-forward') as HTMLButtonElement | null;
+  const btnStepBack = document.getElementById('btn-step-back') as HTMLButtonElement | null;
+  const btnReset = document.getElementById('btn-reset');
+  const stepScrubber = document.getElementById('step-scrubber') as HTMLInputElement | null;
+  const stepCounter = document.getElementById('step-counter');
+  const speedSelect = document.getElementById('speed-select') as HTMLSelectElement | null;
+
+  const narrationAction = document.getElementById('narration-action');
+  const narrationText = document.getElementById('narration-text');
+
+  const metricComparisons = document.getElementById('metric-comparisons');
+  const metricSwaps = document.getElementById('metric-swaps');
+  const metricSwapsLabel = document.getElementById('metric-swaps-label');
+  const metricPasses = document.getElementById('metric-passes');
+
+  const pseudocodeTitle = document.getElementById('pseudocode-title');
+  const pseudocodeList = document.getElementById('pseudocode-list');
+  const propBest = document.getElementById('prop-best');
+  const propAvg = document.getElementById('prop-avg');
+  const propWorst = document.getElementById('prop-worst');
+  const propStable = document.getElementById('prop-stable');
+
+  let currentAlgo: SortingAlgorithmType = 'bubble';
+  let currentArray: number[] = [45, 12, 85, 32, 89, 39, 69];
+  let controller: VisualizerController<SortingState> | null = null;
+
+  function clearError() {
+    if (validationError) {
+      validationError.style.display = 'none';
+      validationError.textContent = '';
+    }
+  }
+
+  function showError(msg: string) {
+    if (validationError) {
+      validationError.textContent = msg;
+      validationError.style.display = 'block';
+    }
+  }
+
+  function updateAlgorithmMeta(algo: SortingAlgorithmType) {
+    const meta = SORTING_METADATA[algo];
+    if (pseudocodeTitle) pseudocodeTitle.textContent = `${meta.name} Pseudocode`;
+    if (propBest) propBest.textContent = meta.bestTime;
+    if (propAvg) propAvg.textContent = meta.averageTime;
+    if (propWorst) propWorst.textContent = meta.worstTime;
+    if (propStable) propStable.textContent = meta.isStable ? 'Stable (preserves relative order)' : 'Unstable';
+    if (metricSwapsLabel) metricSwapsLabel.textContent = algo === 'insertion' ? 'Shifts' : 'Swaps';
+
+    if (pseudocodeList) {
+      pseudocodeList.innerHTML = '';
+      meta.pseudocode.forEach((line, idx) => {
+        const li = document.createElement('li');
+        li.id = `code-line-${idx + 1}`;
+        li.className = 'code-line font-mono';
+        li.innerHTML = `<span class="line-num">${idx + 1}</span><span class="line-code">${line}</span>`;
+        pseudocodeList.appendChild(li);
+      });
+    }
+  }
+
+  function initVisualizer(arr: number[], algo: SortingAlgorithmType) {
+    clearError();
+    if (controller) {
+      controller.destroy();
+    }
+
+    updateAlgorithmMeta(algo);
+    const steps = generateSortingSteps(arr, algo);
+    const speed = speedSelect ? parseInt(speedSelect.value, 10) : 400;
+    controller = new VisualizerController(steps, speed);
+
+    if (stepScrubber) {
+      stepScrubber.max = String(steps.length - 1);
+      stepScrubber.value = '0';
+    }
+
+    controller.subscribe((step, state) => {
+      renderStep(step, state);
+    });
+  }
+
+  function renderStep(step: any, state: any) {
+    const s: SortingState = step.state;
+
+    // Scrubber & Buttons
+    if (stepScrubber) stepScrubber.value = String(state.currentStepIndex);
+    if (stepCounter) stepCounter.textContent = `Step ${state.currentStepIndex + 1} / ${state.totalSteps}`;
+    if (btnStepBack) btnStepBack.disabled = state.isAtStart;
+    if (btnStepForward) btnStepForward.disabled = state.isAtEnd;
+
+    // Play/Pause icon
+    if (playPauseLabel && playPauseIcon) {
+      if (state.isPlaying) {
+        playPauseLabel.textContent = 'Pause';
+        playPauseIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+      } else {
+        playPauseLabel.textContent = 'Play';
+        playPauseIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+      }
+    }
+
+    // Render Bars
+    if (barsContainer) {
+      barsContainer.innerHTML = '';
+      const maxVal = Math.max(...s.array, 1);
+      const minVal = Math.min(...s.array, 0);
+      const range = maxVal - minVal || 1;
+
+      s.array.forEach((val, idx) => {
+        const barWrapper = document.createElement('div');
+        barWrapper.className = 'bar-col';
+
+        const isCompared = s.comparedIndices?.includes(idx);
+        const isSwapped = s.swappedIndices?.includes(idx);
+        const isSorted = s.sortedIndices.includes(idx);
+        const isKeyOrMin = idx === s.minOrKeyIndex;
+
+        let statusClass = 'unsorted';
+        if (isSwapped) statusClass = 'swapping';
+        else if (isCompared) statusClass = 'comparing';
+        else if (isKeyOrMin) statusClass = 'key-min';
+        else if (isSorted) statusClass = 'sorted';
+
+        // Proportional height scaling between 28px and 170px
+        const normalized = (val - minVal) / range;
+        const barHeight = Math.max(28, Math.round(normalized * 142) + 28);
+
+        barWrapper.innerHTML = `
+          <div class="bar-tag font-mono">${isKeyOrMin ? (s.algorithm === 'insertion' ? 'Key' : 'Min') : ''}</div>
+          <div class="visual-bar ${statusClass}" style="height: ${barHeight}px;" title="Index ${idx}: value ${val}">
+            <span class="bar-val font-mono">${val}</span>
+          </div>
+          <span class="bar-idx font-mono">${idx}</span>
+        `;
+        barsContainer.appendChild(barWrapper);
+      });
+    }
+
+    // Status Banner
+    if (statusBanner && statusIcon && statusText) {
+      if (step.actionType === 'COMPLETE') {
+        statusBanner.className = 'sorting-status-banner status-success';
+        statusIcon.textContent = '✔';
+        statusText.textContent = `Sorting complete! All elements in non-decreasing order.`;
+      } else if (step.actionType === 'SWAP') {
+        statusBanner.className = 'sorting-status-banner status-swap';
+        statusIcon.textContent = '⇄';
+        statusText.textContent = `Swapping elements at indices [${s.swappedIndices?.[0]}, ${s.swappedIndices?.[1]}].`;
+      } else {
+        statusBanner.className = 'sorting-status-banner status-in-progress';
+        statusIcon.textContent = '⚙';
+        statusText.textContent = `Pass ${s.passes} in progress: comparisons: ${s.comparisons}, ${s.algorithm === 'insertion' ? 'shifts' : 'swaps'}: ${s.swaps}`;
+      }
+    }
+
+    // Narration
+    if (narrationAction) narrationAction.textContent = step.actionType;
+    if (narrationText) narrationText.textContent = step.narration;
+
+    // Pseudocode line highlight
+    document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
+    if (step.pseudocodeLine > 0) {
+      const activeLine = document.getElementById(`code-line-${step.pseudocodeLine}`);
+      if (activeLine) activeLine.classList.add('active');
+    }
+
+    // Metrics
+    if (metricComparisons) metricComparisons.textContent = String(s.comparisons);
+    if (metricSwaps) metricSwaps.textContent = String(s.swaps);
+    if (metricPasses) metricPasses.textContent = String(s.passes);
+  }
+
+  // Handle Apply Custom Input
+  function handleApply() {
+    if (!arrayInput) return;
+    const raw = arrayInput.value.split(',').map(v => v.trim()).filter(Boolean);
+    const nums = raw.map(Number);
+
+    if (nums.some(isNaN)) {
+      showError('All array elements must be valid numbers.');
+      return;
+    }
+    if (nums.length === 0) {
+      showError('Please enter at least one number.');
+      return;
+    }
+    if (nums.length > 25) {
+      showError('Maximum 25 elements supported for clean visual bar presentation.');
+      return;
+    }
+
+    currentArray = nums;
+    initVisualizer(currentArray, currentAlgo);
+  }
+
+  // Event Listeners
+  applyBtn?.addEventListener('click', handleApply);
+
+  randomizeBtn?.addEventListener('click', () => {
+    const len = 7;
+    const randomNums = Array.from({ length: len }, () => Math.floor(Math.random() * 90) + 10);
+    if (arrayInput) arrayInput.value = randomNums.join(', ');
+    currentArray = randomNums;
+    initVisualizer(currentArray, currentAlgo);
+  });
+
+  algoTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      algoTabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      currentAlgo = tab.dataset.algo as SortingAlgorithmType;
+      initVisualizer(currentArray, currentAlgo);
+    });
+  });
+
+  presetButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.id === 'btn-randomize') return;
+      presetButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const presetKey = btn.dataset.preset;
+      const preset = SORTING_PRESETS.find(p => {
+        if (presetKey === 'random') return p.name.includes('Random');
+        if (presetKey === 'nearly') return p.name.includes('Nearly');
+        if (presetKey === 'reversed') return p.name.includes('Reversed');
+        if (presetKey === 'duplicates') return p.name.includes('Duplicate');
+        if (presetKey === 'equal') return p.name.includes('Equal');
+        if (presetKey === 'small') return p.name.includes('Small');
+        return false;
+      }) ?? SORTING_PRESETS[0];
+
+      if (arrayInput) {
+        arrayInput.value = preset.array.join(', ');
+        currentArray = [...preset.array];
+        initVisualizer(currentArray, currentAlgo);
+      }
+    });
+  });
+
+  btnPlayPause?.addEventListener('click', () => {
+    if (!controller) return;
+    if (controller.currentState.isPlaying) controller.pause();
+    else controller.play();
+  });
+  btnStepForward?.addEventListener('click', () => controller?.stepForward());
+  btnStepBack?.addEventListener('click', () => controller?.stepBackward());
+  btnReset?.addEventListener('click', () => controller?.reset());
+  stepScrubber?.addEventListener('input', (e) => {
+    const idx = parseInt((e.target as HTMLInputElement).value, 10);
+    controller?.goToStep(idx);
+  });
+  speedSelect?.addEventListener('change', () => {
+    if (speedSelect && controller) {
+      controller.setSpeed(parseInt(speedSelect.value, 10));
+    }
+  });
+
+  // Initialize on load
+  initVisualizer(currentArray, currentAlgo);
+</script>
+
+<style>
+  .visualizer-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-16);
+  }
+
+  /* Breadcrumbs */
+  .breadcrumb-nav {
+    margin-bottom: var(--space-6);
+  }
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .breadcrumb-list a {
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast);
+  }
+  .breadcrumb-list a:hover {
+    color: var(--color-primary-400);
+  }
+  .separator {
+    color: var(--color-border);
+  }
+
+  /* Header */
+  .tool-header {
+    margin-bottom: var(--space-8);
+  }
+  .header-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .category-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .complexity-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-indigo-300);
+    background-color: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+  .tool-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-3);
+  }
+  .tool-lead {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    max-width: 800px;
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Toolbar */
+  .toolbar-section {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .algo-tabs-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .algo-tab {
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
+    min-height: 40px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .algo-tab:hover, .algo-tab.active {
+    color: #ffffff;
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-500);
+  }
+
+  .presets-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .toolbar-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+  .preset-btn {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    min-height: 32px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .preset-btn:hover, .preset-btn.active {
+    color: #ffffff;
+    background-color: rgba(99, 102, 241, 0.2);
+    border-color: var(--color-primary-500);
+  }
+  .btn-randomize {
+    color: var(--color-cyan-400);
+    border-color: rgba(6, 182, 212, 0.3);
+  }
+
+  .custom-input-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-3);
+  }
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 220px;
+  }
+  .input-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+  .config-input {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    outline: none;
+    transition: border-color var(--transition-fast);
+  }
+  .config-input:focus {
+    border-color: var(--color-primary-500);
+  }
+  .btn-apply {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: #ffffff;
+    background-color: var(--color-primary-600);
+    border: 1px solid var(--color-primary-500);
+    border-radius: var(--radius-sm);
+    padding: 9px 16px;
+    min-height: 38px;
+    cursor: pointer;
+  }
+  .validation-error {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: #f87171;
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  /* Lab Bench Grid */
+  .lab-bench-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    margin-bottom: var(--space-12);
+  }
+  @media (min-width: 960px) {
+    .lab-bench-grid {
+      grid-template-columns: 1.6fr 1fr;
+    }
+  }
+
+  .primary-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  /* Stage Container */
+  .stage-container {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-card);
+  }
+  .stage-top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border-subtle);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+  .stage-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .legend-dot.indigo { background-color: var(--color-primary-400); }
+  .legend-dot.amber { background-color: var(--color-amber-400); }
+  .legend-dot.emerald { background-color: var(--color-emerald-400); }
+  .legend-dot.slate { background-color: var(--color-slate-600); }
+
+  /* Bars Viewport */
+  .bars-viewport {
+    overflow-x: auto;
+    padding: var(--space-4) 0;
+    min-height: 240px;
+    display: flex;
+    align-items: flex-end;
+  }
+  .bars-container {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-3);
+    min-width: max-content;
+    height: 200px;
+    margin: 0 auto;
+  }
+  .bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 44px;
+  }
+  .bar-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--color-amber-400);
+    height: 14px;
+    text-transform: uppercase;
+  }
+  .visual-bar {
+    width: 44px;
+    border-radius: 6px 6px 2px 2px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 6px;
+    transition: height 250ms ease-out, background-color 200ms ease, border-color 200ms ease, transform 150ms ease;
+  }
+  .bar-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    user-select: none;
+  }
+  .bar-idx {
+    font-size: 11px;
+    color: var(--color-text-muted);
+  }
+
+  /* Bar States */
+  .visual-bar.unsorted {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+  }
+  .visual-bar.comparing {
+    background-color: rgba(99, 102, 241, 0.4);
+    border: 2px solid var(--color-primary-400);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+    transform: translateY(-4px);
+  }
+  .visual-bar.swapping {
+    background-color: rgba(245, 158, 11, 0.4);
+    border: 2px solid var(--color-amber-400);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+    transform: translateY(-6px);
+  }
+  .visual-bar.key-min {
+    background-color: rgba(245, 158, 11, 0.3);
+    border: 2px solid var(--color-amber-400);
+  }
+  .visual-bar.sorted {
+    background-color: rgba(16, 185, 129, 0.25);
+    border: 1px solid var(--color-emerald-400);
+  }
+
+  /* Status Banner */
+  .sorting-status-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    margin-top: var(--space-4);
+  }
+  .status-in-progress {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+  .status-swap {
+    background-color: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: var(--color-amber-400);
+  }
+  .status-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--color-emerald-400);
+  }
+
+  /* Playback Controls Panel */
+  .playback-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-5);
+  }
+  .playback-controls-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .ctrl-btn {
+    width: 44px; /* Accessible 44px target */
+    height: 44px;
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .ctrl-btn:hover:not(:disabled) {
+    background-color: var(--color-bg-hover);
+    border-color: var(--color-primary-500);
+  }
+  .ctrl-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .btn-play-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    background-color: var(--color-primary-600);
+    border: 1px solid var(--color-primary-500);
+    border-radius: var(--radius-md);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .btn-play-primary:hover {
+    background-color: var(--color-primary-500);
+    transform: translateY(-1px);
+  }
+
+  .scrubber-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+    min-width: 180px;
+  }
+  .step-slider {
+    flex: 1;
+    cursor: pointer;
+  }
+  .step-counter-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .speed-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .speed-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+  .speed-select {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    padding: 6px 8px;
+    min-height: 36px;
+    cursor: pointer;
+  }
+
+  /* Narration Card */
+  .narration-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+  }
+  .narration-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+  }
+  .narration-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .action-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: var(--color-primary-300);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+  .narration-body {
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    line-height: var(--leading-relaxed);
+    margin: 0;
+  }
+
+  /* Sidebar */
+  .sidebar-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .panel-box {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+  }
+  .panel-title {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  /* Metrics Grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+  .metric-item {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .metric-label {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+  .metric-val {
+    font-size: var(--text-lg);
+    font-weight: 800;
+    color: var(--color-primary-300);
+  }
+
+  /* Pseudocode List */
+  .pseudocode-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--text-xs);
+  }
+  .code-line {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
+  }
+  .code-line.active {
+    background-color: rgba(99, 102, 241, 0.2);
+    color: #ffffff;
+    font-weight: 700;
+    border-left: 3px solid var(--color-primary-400);
+  }
+  .line-num {
+    color: var(--color-text-dim);
+    min-width: 16px;
+    user-select: none;
+  }
+  .line-code {
+    white-space: pre;
+  }
+
+  /* Properties List */
+  .properties-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+  .properties-list code {
+    font-family: var(--font-mono);
+    color: var(--color-emerald-400);
+    background-color: rgba(16, 185, 129, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  /* Educational Section */
+  .educational-section {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+  }
+  .edu-header {
+    margin-bottom: var(--space-6);
+  }
+  .edu-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .edu-title {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    margin: var(--space-2) 0;
+  }
+  .edu-lead {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 800px;
+  }
+  .edu-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+  @media (min-width: 768px) {
+    .edu-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .edu-card {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+  .edu-card-title {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+  .edu-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Related Links Bar */
+  .related-links-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  .related-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+  }
+  .related-label {
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+  .related-link {
+    color: var(--color-primary-400);
+    font-weight: 600;
+    transition: color var(--transition-fast);
+  }
+  .related-link:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+</style>

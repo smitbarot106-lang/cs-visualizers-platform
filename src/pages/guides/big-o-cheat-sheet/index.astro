@@ -1,24 +1,381 @@
 ---
+// ============================================================================
+// Big-O Complexity Cheat Sheet (Route: /guides/big-o-cheat-sheet/)
+// Comprehensive asymptotic bounds reference linking theory to interactive visualizers
+// ============================================================================
+
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../../components/common/RouteScaffold.astro';
 ---
 
 <BaseLayout
-  title="Big-O Complexity Cheat Sheet"
-  description="Interactive Big-O complexity cheat sheet covering time and space complexities for arrays, trees, and graphs."
+  title="Big-O Complexity Cheat Sheet — Time & Space Bounds"
+  description="Comprehensive Big-O complexity cheat sheet covering time and space complexities for searching, comparison sorting, and graph traversals."
   currentRoute="/guides/big-o-cheat-sheet/"
 >
-  <RouteScaffold
-    title="Big-O Complexity Cheat Sheet"
-    category="ALGORITHM THEORY"
-    badge="COMPLEXITY REFERENCE"
-    description="Interactive Big-O reference connecting asymptotic growth curves (O(1), O(log n), O(n), O(n log n), O(n²)) directly to our interactive visualizers."
-    scheduledPhase="Phase 4 Implementation"
-    features={[
-      'Interactive complexity graph showing growth curves with n = 1 to 10,000',
-      'Time complexity tables: Best, Average, Worst cases for searching and sorting',
-      'Space complexity (auxiliary memory) comparison table',
-      'Direct cross-links to Binary Search, Bubble Sort, Selection Sort, and BFS/DFS',
-    ]}
-  />
+  <div class="guide-article-container container">
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li><a href="/">Home</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li><a href="/guides/">Guides</a></li>
+        <li class="separator" aria-hidden="true">/</li>
+        <li aria-current="page">Big-O Cheat Sheet</li>
+      </ol>
+    </nav>
+
+    <header class="article-header">
+      <div class="badge-row">
+        <span class="category-badge">COMPLEXITY THEORY</span>
+        <span class="badge-pill">CORE REFERENCE</span>
+      </div>
+      <h1 class="article-title">Big-O Complexity Cheat Sheet</h1>
+      <p class="article-lead">
+        Asymptotic analysis describes how the runtime and memory requirements of an algorithm scale as the input size ($n$) grows toward infinity.
+      </p>
+    </header>
+
+    <!-- Asymptotic Hierarchy Overview -->
+    <section class="guide-section">
+      <h2 class="section-title">The Asymptotic Hierarchy (Fastest to Slowest)</h2>
+      <div class="hierarchy-strip font-mono">
+        <span class="h-pill excellent">O(1)</span>
+        <span class="h-sep">&lt;</span>
+        <span class="h-pill good">O(log n)</span>
+        <span class="h-sep">&lt;</span>
+        <span class="h-pill fair">O(n)</span>
+        <span class="h-sep">&lt;</span>
+        <span class="h-pill bad">O(n log n)</span>
+        <span class="h-sep">&lt;</span>
+        <span class="h-pill worst">O(n²)</span>
+      </div>
+
+      <div class="table-scroll-wrapper">
+        <table class="data-table" aria-label="Asymptotic Growth Classes">
+          <thead>
+            <tr>
+              <th scope="col">Notation</th>
+              <th scope="col">Name</th>
+              <th scope="col">Growth Rate ($n = 1,024$)</th>
+              <th scope="col">Typical Algorithms</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="code-pill excellent">O(1)</code></td>
+              <td>Constant</td>
+              <td>1 operation</td>
+              <td>Array index access, hash map lookup (ideal)</td>
+            </tr>
+            <tr>
+              <td><code class="code-pill good">O(log n)</code></td>
+              <td>Logarithmic</td>
+              <td>10 operations</td>
+              <td><a href="/visualizers/binary-search/" class="table-link">Binary Search</a>, balanced BST search</td>
+            </tr>
+            <tr>
+              <td><code class="code-pill fair">O(n)</code></td>
+              <td>Linear</td>
+              <td>1,024 operations</td>
+              <td>Linear search, array traversal</td>
+            </tr>
+            <tr>
+              <td><code class="code-pill bad">O(n log n)</code></td>
+              <td>Linearithmic</td>
+              <td>~10,240 operations</td>
+              <td>Merge Sort, Quick Sort (average), Heap Sort</td>
+            </tr>
+            <tr>
+              <td><code class="code-pill worst">O(n²)</code></td>
+              <td>Quadratic</td>
+              <td>~1,048,576 operations</td>
+              <td><a href="/visualizers/sorting/" class="table-link">Bubble, Selection, Insertion Sort</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Algorithm Complexity Tables -->
+    <section class="guide-section">
+      <h2 class="section-title">Platform Algorithms Comparison Matrix</h2>
+
+      <div class="table-scroll-wrapper">
+        <table class="data-table" aria-label="Algorithms Performance Matrix">
+          <thead>
+            <tr>
+              <th scope="col">Algorithm</th>
+              <th scope="col">Best Time</th>
+              <th scope="col">Average Time</th>
+              <th scope="col">Worst Time</th>
+              <th scope="col">Space (Auxiliary)</th>
+              <th scope="col">Interactive Tool</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Binary Search</strong></td>
+              <td><code class="code-pill excellent">O(1)</code></td>
+              <td><code class="code-pill good">O(log n)</code></td>
+              <td><code class="code-pill good">O(log n)</code></td>
+              <td><code>O(1)</code></td>
+              <td><a href="/visualizers/binary-search/" class="action-link">Launch Visualizer →</a></td>
+            </tr>
+            <tr>
+              <td><strong>Bubble Sort</strong></td>
+              <td><code class="code-pill fair">O(n)</code> (early exit)</td>
+              <td><code class="code-pill worst">O(n²)</code></td>
+              <td><code class="code-pill worst">O(n²)</code></td>
+              <td><code>O(1)</code></td>
+              <td><a href="/visualizers/sorting/" class="action-link">Launch Visualizer →</a></td>
+            </tr>
+            <tr>
+              <td><strong>Selection Sort</strong></td>
+              <td><code class="code-pill worst">O(n²)</code></td>
+              <td><code class="code-pill worst">O(n²)</code></td>
+              <td><code class="code-pill worst">O(n²)</code></td>
+              <td><code>O(1)</code></td>
+              <td><a href="/visualizers/sorting/" class="action-link">Launch Visualizer →</a></td>
+            </tr>
+            <tr>
+              <td><strong>Insertion Sort</strong></td>
+              <td><code class="code-pill fair">O(n)</code> (nearly sorted)</td>
+              <td><code class="code-pill worst">O(n²)</code></td>
+              <td><code class="code-pill worst">O(n²)</code></td>
+              <td><code>O(1)</code></td>
+              <td><a href="/visualizers/sorting/" class="action-link">Launch Visualizer →</a></td>
+            </tr>
+            <tr>
+              <td><strong>BFS (Graph)</strong></td>
+              <td><code class="code-pill fair">O(V + E)</code></td>
+              <td><code class="code-pill fair">O(V + E)</code></td>
+              <td><code class="code-pill fair">O(V + E)</code></td>
+              <td><code>O(V)</code></td>
+              <td><a href="/visualizers/bfs-dfs/" class="action-link">Launch Visualizer →</a></td>
+            </tr>
+            <tr>
+              <td><strong>DFS (Graph)</strong></td>
+              <td><code class="code-pill fair">O(V + E)</code></td>
+              <td><code class="code-pill fair">O(V + E)</code></td>
+              <td><code class="code-pill fair">O(V + E)</code></td>
+              <td><code>O(V)</code></td>
+              <td><a href="/visualizers/bfs-dfs/" class="action-link">Launch Visualizer →</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Practical Decision Advice -->
+    <section class="guide-section">
+      <h2 class="section-title">Common Interview & Practical Guidelines</h2>
+      <div class="advice-grid">
+        <div class="advice-card">
+          <h3 class="advice-title">When to Use Binary Search</h3>
+          <p class="advice-desc">
+            Use whenever the search domain is sorted or monotonically increasing. Even when search data is not in an array (e.g. searching answers in a numeric range $[1 \dots 10^9]$), binary search can find the optimum in under 30 comparisons.
+          </p>
+        </div>
+
+        <div class="advice-card">
+          <h3 class="advice-title">Why Insertion Sort Still Matters</h3>
+          <p class="advice-desc">
+            On small sequences ($n \le 16$) or nearly-sorted data, Insertion Sort has almost zero overhead, low cache miss rates, and runs in $O(n)$ time. Modern production sorts (Timsort in Python/Java, Introsort in C++) use Insertion Sort as their base case.
+          </p>
+        </div>
+
+        <div class="advice-card">
+          <h3 class="advice-title">BFS vs. DFS for Shortest Paths</h3>
+          <p class="advice-desc">
+            In an unweighted graph, BFS is guaranteed to discover the shortest path because it explores vertices in order of edge distance from the source. DFS explores deeply along single branches and cannot guarantee shortest path without exploring all paths.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cross Navigation -->
+    <footer class="article-footer">
+      <div class="footer-nav-row">
+        <a href="/guides/" class="footer-link-back">← All Guides</a>
+        <a href="/guides/binary-search/" class="footer-link-next">Next Guide: Binary Search Demystified →</a>
+      </div>
+    </footer>
+  </div>
 </BaseLayout>
+
+<style>
+  .guide-article-container {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-16);
+    max-width: var(--reading-max);
+  }
+
+  .breadcrumb-nav { margin-bottom: var(--space-6); }
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .breadcrumb-list a { color: var(--color-text-secondary); transition: color var(--transition-fast); }
+  .breadcrumb-list a:hover { color: var(--color-primary-400); }
+  .separator { color: var(--color-border); }
+
+  .article-header { margin-bottom: var(--space-10); }
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  .category-badge {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+  .badge-pill {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-slate-300);
+    background-color: rgba(255, 255, 255, 0.06);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .article-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-4);
+  }
+  .article-lead {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .guide-section {
+    margin-bottom: var(--space-12);
+  }
+  .section-title {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .hierarchy-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+  .h-pill {
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: var(--text-xs);
+  }
+  .h-pill.excellent { background-color: rgba(16, 185, 129, 0.2); color: var(--color-emerald-400); border: 1px solid var(--color-emerald-400); }
+  .h-pill.good { background-color: rgba(6, 182, 212, 0.2); color: var(--color-cyan-400); border: 1px solid var(--color-cyan-400); }
+  .h-pill.fair { background-color: rgba(99, 102, 241, 0.2); color: var(--color-primary-400); border: 1px solid var(--color-primary-400); }
+  .h-pill.bad { background-color: rgba(245, 158, 11, 0.2); color: var(--color-amber-400); border: 1px solid var(--color-amber-400); }
+  .h-pill.worst { background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #f87171; }
+  .h-sep { color: var(--color-text-dim); }
+
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    margin-bottom: var(--space-6);
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-xs);
+    text-align: left;
+  }
+  .data-table th {
+    background-color: var(--color-bg-elevated);
+    color: var(--color-text-secondary);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 700;
+  }
+  .data-table td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+  }
+  .code-pill {
+    font-family: var(--font-mono);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+  .code-pill.excellent { color: var(--color-emerald-400); background-color: rgba(16, 185, 129, 0.1); }
+  .code-pill.good { color: var(--color-cyan-400); background-color: rgba(6, 182, 212, 0.1); }
+  .code-pill.fair { color: var(--color-primary-400); background-color: rgba(99, 102, 241, 0.1); }
+  .code-pill.worst { color: #f87171; background-color: rgba(239, 68, 68, 0.1); }
+
+  .table-link { color: var(--color-primary-400); text-decoration: underline; }
+  .action-link {
+    color: var(--color-primary-400);
+    font-weight: 700;
+    transition: color var(--transition-fast);
+  }
+  .action-link:hover { color: #ffffff; text-decoration: underline; }
+
+  .advice-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 640px) {
+    .advice-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .advice-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+  .advice-title {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+  .advice-desc {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .article-footer {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  .footer-nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+  .footer-link-back { color: var(--color-text-secondary); }
+  .footer-link-back:hover { color: var(--color-primary-400); }
+  .footer-link-next { color: var(--color-primary-400); }
+  .footer-link-next:hover { color: #ffffff; }
+</style>

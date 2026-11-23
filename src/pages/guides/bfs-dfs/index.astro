@@ -1,24 +1,434 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../../components/common/RouteScaffold.astro';
 ---
 
 <BaseLayout
-  title="Graph Traversals: BFS vs DFS Guide"
-  description="Master Breadth-First Search (Queue) and Depth-First Search (Stack/Recursion) on graph structures."
+  title="Breadth-First (BFS) & Depth-First Search (DFS) Guide"
+  description="Master Breadth-First Search and Depth-First Search graph traversal algorithms. Understand FIFO queue vs LIFO stack mechanics, cycle detection, and unweighted shortest paths."
   currentRoute="/guides/bfs-dfs/"
 >
-  <RouteScaffold
-    title="Graph Traversal Foundations: When to Use BFS vs DFS"
-    category="EDUCATIONAL GUIDE"
-    badge="GRAPH THEORY"
-    description="Understand the core paradigms of graph traversal: level-order shortest path with FIFO queues vs deep path exploration with LIFO stacks."
-    scheduledPhase="Phase 4 Implementation"
-    features={[
-      'Breadth-First Search (BFS): Queue-based level exploration and unweighted shortest paths',
-      'Depth-First Search (DFS): Stack-based branch exploration and cycle detection',
-      'Visited sets and preventing infinite loops in cyclic graphs',
-      'Direct cross-link to our interactive BFS & DFS Visualizer',
-    ]}
-  />
+  <main class="guide-page">
+    <div class="guide-header">
+      <div class="badge-row">
+        <span class="guide-badge">Graph Theory</span>
+        <span class="guide-badge">Core Algorithms</span>
+      </div>
+      <h1 class="guide-title">Breadth-First Search (BFS) vs Depth-First Search (DFS)</h1>
+      <p class="guide-lead">
+        Graph traversal is the fundamental technique for visiting every vertex in a graph structure. Explore how <strong>Queue-driven FIFO level-order traversal</strong> differs from <strong>Stack-driven LIFO deep exploration</strong>, how cycle detection works, and when to use each approach.
+      </p>
+      <div class="action-banner">
+        <div>
+          <span class="action-title">Interactive Lab Ready</span>
+          <p class="action-desc">Watch frontier queues and stacks animate node-by-node on directed and undirected graphs.</p>
+        </div>
+        <a href="/visualizers/bfs-dfs/" class="btn-primary">Open Graph Visualizer &rarr;</a>
+      </div>
+    </div>
+
+    <div class="guide-body">
+      <!-- Section 1: Overview and Core Concepts -->
+      <section class="guide-section">
+        <h2 class="section-title">1. Graph Representation: Adjacency List</h2>
+        <p class="text-secondary">
+          A graph \(G = (V, E)\) consists of a set of vertices (nodes) \(V\) and a set of edges \(E\) connecting pairs of vertices. In memory and code, an <strong>Adjacency List</strong> is the standard representation for sparse graphs: each vertex maps to an array of its immediate neighbors.
+        </p>
+
+        <div class="code-card">
+          <div class="code-card-header">
+            <span>TypeScript Graph Adjacency List Structure</span>
+            <span class="tag">O(V + E) Space</span>
+          </div>
+          <pre><code>// Graph represented as a Map of Node ID -&gt; Array of Neighbor Node IDs
+type AdjacencyList = Map&lt;string, string[]&gt;;
+
+const graph: AdjacencyList = new Map([
+  ['A', ['B', 'C']],
+  ['B', ['A', 'D', 'E']],
+  ['C', ['A', 'F']],
+  ['D', ['B']],
+  ['E', ['B', 'F']],
+  ['F', ['C', 'E']],
+]);</code></pre>
+        </div>
+      </section>
+
+      <!-- Section 2: BFS vs DFS Comparison Table -->
+      <section class="guide-section">
+        <h2 class="section-title">2. BFS vs DFS Mechanics at a Glance</h2>
+        <div class="table-wrapper">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Breadth-First Search (BFS)</th>
+                <th>Depth-First Search (DFS)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Frontier Data Structure</strong></td>
+                <td>FIFO Queue (First In, First Out)</td>
+                <td>LIFO Stack (Call stack or explicit array)</td>
+              </tr>
+              <tr>
+                <td><strong>Exploration Pattern</strong></td>
+                <td>Level-by-level, concentric ripples</td>
+                <td>Branch-by-branch, dive to leaf before backtracking</td>
+              </tr>
+              <tr>
+                <td><strong>Time Complexity</strong></td>
+                <td>\(O(V + E)\)</td>
+                <td>\(O(V + E)\)</td>
+              </tr>
+              <tr>
+                <td><strong>Auxiliary Space</strong></td>
+                <td>\(O(V)\) &mdash; proportional to tree width</td>
+                <td>\(O(V)\) &mdash; proportional to tree height / depth</td>
+              </tr>
+              <tr>
+                <td><strong>Shortest Path Guarantee</strong></td>
+                <td>Yes (for unweighted graphs)</td>
+                <td>No (finds any valid path, not shortest)</td>
+              </tr>
+              <tr>
+                <td><strong>Primary Applications</strong></td>
+                <td>Web crawlers, peer-to-peer networks, GPS hops</td>
+                <td>Maze solving, topological sort, cycle detection</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 3: Detailed Algorithm Implementations -->
+      <section class="guide-section">
+        <h2 class="section-title">3. Algorithmic Implementations</h2>
+
+        <div class="dual-code-grid">
+          <div class="code-card">
+            <div class="code-card-header">
+              <span>Breadth-First Search (Queue)</span>
+              <span class="badge-bfs">FIFO Queue</span>
+            </div>
+            <pre><code>function bfs(graph: Map&lt;string, string[]&gt;, start: string): string[] &#123;
+  const visited = new Set&lt;string&gt;();
+  const queue: string[] = [start];
+  const order: string[] = [];
+
+  visited.add(start);
+
+  while (queue.length &gt; 0) &#123;
+    const current = queue.shift()!;
+    order.push(current);
+
+    const neighbors = graph.get(current) || [];
+    for (const neighbor of neighbors) &#123;
+      if (!visited.has(neighbor)) &#123;
+        visited.add(neighbor);
+        queue.push(neighbor);
+      &#125;
+    &#125;
+  &#125;
+
+  return order;
+&#125;</code></pre>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-header">
+              <span>Depth-First Search (Stack)</span>
+              <span class="badge-dfs">LIFO Stack</span>
+            </div>
+            <pre><code>function dfs(graph: Map&lt;string, string[]&gt;, start: string): string[] &#123;
+  const visited = new Set&lt;string&gt;();
+  const stack: string[] = [start];
+  const order: string[] = [];
+
+  while (stack.length &gt; 0) &#123;
+    const current = stack.pop()!;
+    if (visited.has(current)) continue;
+
+    visited.add(current);
+    order.push(current);
+
+    const neighbors = graph.get(current) || [];
+    // Push in reverse to visit lower IDs first
+    for (let i = neighbors.length - 1; i &gt;= 0; i--) &#123;
+      const neighbor = neighbors[i];
+      if (!visited.has(neighbor)) &#123;
+        stack.push(neighbor);
+      &#125;
+    &#125;
+  &#125;
+
+  return order;
+&#125;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Critical Pitfalls & Edge Cases -->
+      <section class="guide-section">
+        <h2 class="section-title">4. Critical Pitfalls & Edge Cases</h2>
+        
+        <div class="pitfalls-grid">
+          <div class="pitfall-card">
+            <h3 class="pitfall-title">1. The Infinite Loop (Cycle Pitfall)</h3>
+            <p>
+              In graphs with cycles (e.g. \(A \leftrightarrow B\)), traversing without a <code>visited</code> set leads to unbounded queue expansion or call stack overflow. In BFS, mark nodes as visited <strong>when enqueuing</strong>, not when dequeuing, to prevent adding duplicate nodes to the queue.
+            </p>
+          </div>
+
+          <div class="pitfall-card">
+            <h3 class="pitfall-title">2. Disconnected Components</h3>
+            <p>
+              A single BFS or DFS traversal starting at vertex \(S\) only visits vertices reachable from \(S\). If the graph has multiple disconnected clusters, an outer loop over all vertices in \(V\) is required to launch traversals for unvisited nodes.
+            </p>
+          </div>
+
+          <div class="pitfall-card">
+            <h3 class="pitfall-title">3. JavaScript Array shift() Performance</h3>
+            <p>
+              In JavaScript, <code>array.shift()</code> runs in \(O(N)\) time because every remaining element must be shifted in memory. For industrial implementations with \(> 10^5\) nodes, always use an indexed head pointer or a doubly linked list queue.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Unweighted Shortest Path Guarantee -->
+      <section class="guide-section">
+        <h2 class="section-title">5. Why BFS Finds the Shortest Path in Unweighted Graphs</h2>
+        <p class="text-secondary">
+          Because BFS explores vertices along uniform concentric frontiers (distance \(d=0\), then \(d=1\), then \(d=2\)), the first time a target vertex is reached, the path taken must have the minimum possible number of edges. DFS, on the other hand, dives deep along the first branch it encounters, often discovering a path of length 6 when a direct edge of length 1 was available.
+        </p>
+      </section>
+    </div>
+  </main>
 </BaseLayout>
+
+<style>
+  .guide-page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-4) var(--space-16);
+  }
+
+  .guide-header {
+    margin-bottom: var(--space-10);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .badge-row {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .guide-badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-secondary);
+  }
+
+  .guide-title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin-bottom: var(--space-4);
+  }
+
+  .guide-lead {
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+    max-width: 820px;
+    margin-bottom: var(--space-6);
+  }
+
+  .action-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-primary-subtle);
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-lg);
+    flex-wrap: wrap;
+  }
+
+  .action-title {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+  }
+
+  .action-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: 2px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-primary-hover);
+  }
+
+  .guide-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  .section-title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .text-secondary {
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-4);
+  }
+
+  .code-card {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .code-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-overlay);
+    border-bottom: 1px solid var(--color-border-subtle);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
+
+  .tag {
+    font-family: var(--font-family-mono);
+    color: var(--color-primary);
+  }
+
+  .badge-bfs {
+    color: #60a5fa;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .badge-dfs {
+    color: #a78bfa;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  pre {
+    margin: 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
+  }
+
+  .dual-code-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 840px) {
+    .dual-code-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+    text-align: left;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .comparison-table th {
+    background: var(--color-surface-overlay);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .comparison-table td {
+    color: var(--color-text-secondary);
+  }
+
+  .comparison-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .pitfalls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .pitfall-card {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+
+  .pitfall-title {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+
+  .pitfall-card p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+</style>

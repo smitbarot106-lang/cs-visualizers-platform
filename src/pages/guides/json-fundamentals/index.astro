@@ -1,24 +1,419 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../../components/common/RouteScaffold.astro';
 ---
 
 <BaseLayout
-  title="JSON Fundamentals Guide"
-  description="Beginner guide to JSON syntax, data types, parsing, RFC 8259 specifications, and common developer pitfalls."
+  title="JSON Fundamentals & RFC 8259 Specification Guide"
+  description="Deep dive into the JSON data interchange format (RFC 8259). Master the 6 primitive data types, grammar rules, top 7 parsing syntax errors, and AST tokenization."
   currentRoute="/guides/json-fundamentals/"
 >
-  <RouteScaffold
-    title="JSON Fundamentals: Syntax, Types & Parsing"
-    category="EDUCATIONAL GUIDE"
-    badge="DATA FORMATS"
-    description="Understand the formal structure of JavaScript Object Notation, from lexical tokens to abstract syntax trees, and learn how to debug common JSON mistakes."
-    scheduledPhase="Phase 4 Implementation"
-    features={[
-      'RFC 8259 formal grammar: strings, numbers, booleans, null, arrays, objects',
-      'The 7 most common JSON syntax errors (trailing commas, unquoted keys, single quotes)',
-      'How parsers tokenize and build JSON ASTs in memory',
-      'Interactive testing with our privacy-first JSON Formatter & Validator tool',
-    ]}
-  />
+  <main class="guide-page">
+    <div class="guide-header">
+      <div class="badge-row">
+        <span class="guide-badge">Data Standards</span>
+        <span class="guide-badge">RFC 8259</span>
+      </div>
+      <h1 class="guide-title">JSON Fundamentals & Grammar (RFC 8259)</h1>
+      <p class="guide-lead">
+        JavaScript Object Notation (JSON) is the universal data interchange format of the modern web. Understand its strict formal grammar, the 6 fundamental data types, how tokenizers construct Abstract Syntax Trees (ASTs), and the top 7 syntax errors.
+      </p>
+      <div class="action-banner">
+        <div>
+          <span class="action-title">Client-Side Developer Tool</span>
+          <p class="action-desc">Validate, format, and inspect JSON in real-time with zero server uploads.</p>
+        </div>
+        <a href="/tools/json-formatter/" class="btn-primary">Open JSON Formatter &rarr;</a>
+      </div>
+    </div>
+
+    <div class="guide-body">
+      <!-- Section 1: The Formal Specification -->
+      <section class="guide-section">
+        <h2 class="section-title">1. Formal Grammar & The 6 Primitive Types</h2>
+        <p class="text-secondary">
+          Codified under <strong>RFC 8259</strong> and <strong>ECMA-404</strong>, JSON is a text format that is completely language-independent. Unlike JavaScript objects, JSON enforces strict lexical rules. Exactly six data types are permitted:
+        </p>
+
+        <div class="types-grid">
+          <div class="type-card">
+            <div class="type-header">
+              <span class="type-name">String</span>
+              <code>"text"</code>
+            </div>
+            <p>Must be enclosed in double quotes (<code>"</code>). Escape sequences include <code>\\\"</code>, <code>\\\\</code>, <code>\\/</code>, <code>\\n</code>, <code>\\r</code>, <code>\\t</code>, and <code>\\uXXXX</code>.</p>
+          </div>
+
+          <div class="type-card">
+            <div class="type-header">
+              <span class="type-name">Number</span>
+              <code>42, -3.14, 1e6</code>
+            </div>
+            <p>Integer or floating-point with optional exponent. Leading zeros (e.g. <code>05</code>), <code>NaN</code>, <code>Infinity</code>, and hex literals are illegal.</p>
+          </div>
+
+          <div class="type-card">
+            <div class="type-header">
+              <span class="type-name">Object</span>
+              <code>&#123; "k": "v" &#125;</code>
+            </div>
+            <p>Unordered collection of key/value pairs. Keys <strong>must</strong> be double-quoted strings. Colons separate keys from values; commas separate pairs.</p>
+          </div>
+
+          <div class="type-card">
+            <div class="type-header">
+              <span class="type-name">Array</span>
+              <code>[1, "two", true]</code>
+            </div>
+            <p>Ordered list of zero or more values separated by commas and enclosed in square brackets. Elements can be heterogeneous.</p>
+          </div>
+
+          <div class="type-card">
+            <div class="type-header">
+              <span class="type-name">Boolean</span>
+              <code>true | false</code>
+            </div>
+            <p>Literal lowercase words <code>true</code> or <code>false</code>. Case variations (e.g. <code>True</code>, <code>FALSE</code>) are syntax errors.</p>
+          </div>
+
+          <div class="type-card">
+            <div class="type-header">
+              <span class="type-name">Null</span>
+              <code>null</code>
+            </div>
+            <p>Literal lowercase word <code>null</code> representing empty, missing, or nullified value states.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: How JSON Parsers Work -->
+      <section class="guide-section">
+        <h2 class="section-title">2. Lexical Tokenization and AST Construction</h2>
+        <p class="text-secondary">
+          When an engine parses JSON, it operates in two sequential phases:
+        </p>
+        <div class="pipeline-row">
+          <div class="pipeline-step">
+            <div class="step-num">Step 1</div>
+            <div class="step-title">Lexical Analysis (Scanner)</div>
+            <p class="step-desc">Breaks raw stream of characters into distinct tokens: <code>LEFT_BRACE</code>, <code>STRING("id")</code>, <code>COLON</code>, <code>NUMBER(100)</code>, <code>RIGHT_BRACE</code>.</p>
+          </div>
+          <div class="pipeline-step">
+            <div class="step-num">Step 2</div>
+            <div class="step-title">Recursive Descent Parsing</div>
+            <p class="step-desc">Validates grammatical relationships and constructs in-memory objects or Abstract Syntax Trees (ASTs) while checking for unexpected tokens.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: The Top 7 Syntax Errors -->
+      <section class="guide-section">
+        <h2 class="section-title">3. The Top 7 JSON Syntax Violations</h2>
+        <div class="errors-list">
+          <div class="error-item">
+            <div class="error-badge">Error 1</div>
+            <div class="error-content">
+              <h4>Trailing Commas in Objects and Arrays</h4>
+              <p>RFC 8259 forbids trailing commas. <code>[1, 2, 3,]</code> and <code>&#123; "a": 1, &#125;</code> fail immediately with <code>Unexpected token</code>.</p>
+            </div>
+          </div>
+
+          <div class="error-item">
+            <div class="error-badge">Error 2</div>
+            <div class="error-content">
+              <h4>Single Quotes Instead of Double Quotes</h4>
+              <p>JSON strings must exclusively use double quotes. <code>'user_id'</code> or <code>'value'</code> are invalid syntax.</p>
+            </div>
+          </div>
+
+          <div class="error-item">
+            <div class="error-badge">Error 3</div>
+            <div class="error-content">
+              <h4>Unquoted Object Keys</h4>
+              <p>Unlike JavaScript object literals (e.g. <code>&#123; name: "Alice" &#125;</code>), JSON keys must be quoted: <code>&#123; "name": "Alice" &#125;</code>.</p>
+            </div>
+          </div>
+
+          <div class="error-item">
+            <div class="error-badge">Error 4</div>
+            <div class="error-content">
+              <h4>Comments (// or /* ... */)</h4>
+              <p>Standard JSON has no comment syntax. Douglas Crockford removed comments from the specification to prevent parsing dialects and compiler directive hijacking.</p>
+            </div>
+          </div>
+
+          <div class="error-item">
+            <div class="error-badge">Error 5</div>
+            <div class="error-content">
+              <h4>Undefined, NaN, and Infinity</h4>
+              <p>JavaScript <code>undefined</code>, <code>NaN</code>, <code>+Infinity</code>, and <code>-Infinity</code> do not exist in JSON. Number values must be finite reals.</p>
+            </div>
+          </div>
+
+          <div class="error-item">
+            <div class="error-badge">Error 6</div>
+            <div class="error-content">
+              <h4>Raw Unescaped Control Characters</h4>
+              <p>Literal unescaped newlines, carriage returns, or tab characters inside string quotes violate grammar. They must be escaped as <code>\\n</code>, <code>\\r</code>, or <code>\\t</code>.</p>
+            </div>
+          </div>
+
+          <div class="error-item">
+            <div class="error-badge">Error 7</div>
+            <div class="error-content">
+              <h4>Duplicate Object Keys</h4>
+              <p>While some parsers take the last value, RFC 8259 states key uniqueness SHOULD be maintained because behavior across platforms is unspecified and dangerous.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Privacy Considerations -->
+      <section class="guide-section">
+        <h2 class="section-title">4. Privacy-First Developer Tooling</h2>
+        <p class="text-secondary">
+          Because JSON is frequently used for configuration payloads, authentication responses, API dumps, and database exports, pasting JSON into online formatters risks leaking authorization tokens, passwords, customer records, and PII. Our <a href="/tools/json-formatter/">JSON Formatter tool</a> processes all input purely in local browser memory without network dispatches.
+        </p>
+      </section>
+    </div>
+  </main>
 </BaseLayout>
+
+<style>
+  .guide-page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-4) var(--space-16);
+  }
+
+  .guide-header {
+    margin-bottom: var(--space-10);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .badge-row {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .guide-badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    color: var(--color-text-secondary);
+  }
+
+  .guide-title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin-bottom: var(--space-4);
+  }
+
+  .guide-lead {
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+    max-width: 820px;
+    margin-bottom: var(--space-6);
+  }
+
+  .action-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-primary-subtle);
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-lg);
+    flex-wrap: wrap;
+  }
+
+  .action-title {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+  }
+
+  .action-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: 2px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-primary-hover);
+  }
+
+  .guide-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  .section-title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .text-secondary {
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-4);
+  }
+
+  .text-secondary a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .type-card {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .type-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .type-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+    font-size: var(--font-size-base);
+  }
+
+  .type-card code {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    background: var(--color-surface-overlay);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .type-card p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  .pipeline-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 640px) {
+    .pipeline-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pipeline-step {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+  }
+
+  .step-num {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-1);
+  }
+
+  .step-title {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+
+  .step-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+  }
+
+  .errors-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .error-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .error-badge {
+    background: #ef444420;
+    color: #ef4444;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xs);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    border: 1px solid #ef444440;
+  }
+
+  .error-content h4 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-1);
+  }
+
+  .error-content p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+</style>
