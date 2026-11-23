@@ -1,47 +1,47 @@
 /* ==========================================================================
    Interactive CS Visualizers & Developer Tools — Design Tokens
-   Refined Dark Theme Design System: Slate Neutral Surfaces, Controlled Indigo Accents,
-   Emerald Success States, and Balanced Mathematical Radix Accents.
+   Refined Dark Theme Design System: Obsidian Algorithmic Surfaces, Crisp Geometric Borders,
+   Restrained Indigo/Lavender Accents, Cyan/Mint Data States, and High-Contrast Typography.
    WCAG 2.1 / 2.2 AA Contrast Compliance (Headings AAA > 14:1, Body AA > 7:1)
    ========================================================================== */
 
 :root {
   /* ------------------------------------------------------------------------
-     1. Semantic Color Palette Tokens
+     1. Semantic Color Palette Tokens (Obsidian Algorithmic Specification)
      ------------------------------------------------------------------------ */
 
-  /* Slate Scale — Deep neutral slate surfaces & high-contrast typography */
-  --color-slate-950: #080C15; /* Deep ground */
-  --color-slate-900: #0D121F; /* Main application background */
-  --color-slate-850: #121829; /* Card surface */
-  --color-slate-800: #192138; /* Elevated component surface */
-  --color-slate-750: #202B47; /* Hover surface */
-  --color-slate-700: #2D3B5E; /* Defined borders */
-  --color-slate-600: #44547B; /* Subtle dividers */
-  --color-slate-500: #64748B; /* Tertiary / Dim metadata */
+  /* Obsidian Scale — Deep neutral obsidian-slate surfaces & high-contrast typography */
+  --color-slate-950: #0A0E16; /* Ground / deepest void */
+  --color-slate-900: #0F131C; /* Main application background */
+  --color-slate-850: #141923; /* Card surface low */
+  --color-slate-800: #181C24; /* Card surface standard */
+  --color-slate-750: #222B3D; /* Elevated component / border outline */
+  --color-slate-700: #262A33; /* Surface container high / hover */
+  --color-slate-600: #31353E; /* Surface container highest */
+  --color-slate-500: #94A3B8; /* Tertiary / Dim metadata (elevated for WCAG AA 6.34:1 contrast) */
   --color-slate-400: #94A3B8; /* Secondary body text (readable, non-glaring) */
   --color-slate-300: #CBD5E1; /* Subheadings */
-  --color-slate-200: #E2E8F0; /* High contrast text */
+  --color-slate-200: #DFE2EE; /* High contrast text */
   --color-slate-100: #F1F5F9; /* Bright accents */
   --color-slate-50:  #F8FAFC; /* Primary heading off-white */
 
-  /* Indigo Scale — Restrained primary actions, focus, badges */
+  /* Indigo & Lavender Scale — Restrained primary actions, focus, badges */
   --color-indigo-950: #1E1B4B;
-  --color-indigo-900: #312E81;
-  --color-indigo-700: #4338CA;
+  --color-indigo-900: #292A60;
+  --color-indigo-700: #414279; /* Primary container */
   --color-indigo-600: #4F46E5;
-  --color-indigo-500: #6366F1;
-  --color-indigo-400: #818CF8;
-  --color-indigo-300: #A5B4FC;
+  --color-indigo-500: #6366F1; /* Primary action button */
+  --color-indigo-400: #818CF8; /* Focus ring & hover */
+  --color-indigo-300: #C1C1FF; /* Primary tint */
 
-  /* Emerald Scale — Algorithm completion, sorted elements, valid JSON */
-  --color-emerald-950: #022C22;
-  --color-emerald-800: #065F46;
+  /* Mint & Emerald Scale — Algorithm completion, sorted elements, valid JSON */
+  --color-emerald-950: #002113;
+  --color-emerald-800: #005337;
   --color-emerald-600: #059669;
   --color-emerald-500: #10B981;
-  --color-emerald-400: #34D399;
+  --color-emerald-400: #4EDEA3; /* Mint accent */
 
-  /* Amber Scale — Radix values, active comparisons, warnings */
+  /* Amber & Coral Scale — Radix values, active comparisons, warnings */
   --color-amber-950: #451A03;
   --color-amber-800: #92400E;
   --color-amber-600: #D97706;
@@ -49,9 +49,10 @@
   --color-amber-400: #FBBF24;
 
   /* Cyan Scale — Search pointers, queue elements, graph nodes */
-  --color-cyan-900: #164E63;
+  --color-cyan-900: #003640;
+  --color-cyan-600: #03B5D3;
   --color-cyan-500: #06B6D4;
-  --color-cyan-400: #22D3EE;
+  --color-cyan-400: #4CD7F6; /* Electric cyan secondary */
 
   /* Purple Scale — Tree traversals, recursive call frames */
   --color-purple-900: #3B0764;
@@ -65,25 +66,25 @@
   /* Backgrounds & Surfaces */
   --color-bg: var(--color-slate-900);
   --color-bg-alt: var(--color-slate-950);
-  --color-bg-card: var(--color-slate-850);
-  --color-bg-elevated: var(--color-slate-800);
-  --color-bg-hover: var(--color-slate-750);
-  --color-surface: var(--color-slate-850);
-  --color-surface-elevated: var(--color-slate-800);
-  --color-surface-hover: var(--color-slate-750);
+  --color-bg-card: var(--color-slate-800);
+  --color-bg-elevated: var(--color-slate-750);
+  --color-bg-hover: var(--color-slate-700);
+  --color-surface: var(--color-slate-800);
+  --color-surface-elevated: var(--color-slate-750);
+  --color-surface-hover: var(--color-slate-700);
 
   /* Borders */
-  --color-border: rgba(148, 163, 184, 0.16);
-  --color-border-subtle: rgba(148, 163, 184, 0.08);
-  --color-border-hover: rgba(99, 102, 241, 0.35);
-  --color-border-active: var(--color-indigo-500);
+  --color-border: #222B3D;
+  --color-border-subtle: #1C2436;
+  --color-border-hover: rgba(99, 102, 241, 0.45);
+  --color-border-active: var(--color-indigo-400);
 
   /* Typography Colors */
   --color-text: var(--color-slate-50);
   --color-text-primary: var(--color-slate-50);
   --color-text-secondary: var(--color-slate-400);
   --color-text-muted: var(--color-slate-400);
-  --color-text-dim: var(--color-slate-500);
+  --color-text-dim: var(--color-slate-400);
 
   /* Primary Interactive */
   --color-primary: var(--color-indigo-500);
@@ -96,16 +97,16 @@
 
   /* Status States */
   --color-success: var(--color-emerald-400);
-  --color-success-bg: rgba(16, 185, 129, 0.08);
-  --color-success-border: rgba(16, 185, 129, 0.25);
+  --color-success-bg: rgba(78, 222, 163, 0.10);
+  --color-success-border: rgba(78, 222, 163, 0.30);
 
   --color-warning: var(--color-amber-400);
-  --color-warning-bg: rgba(245, 158, 11, 0.08);
-  --color-warning-border: rgba(245, 158, 11, 0.25);
+  --color-warning-bg: rgba(245, 158, 11, 0.10);
+  --color-warning-border: rgba(245, 158, 11, 0.30);
 
-  --color-error: #F87171;
-  --color-error-bg: rgba(239, 68, 68, 0.08);
-  --color-error-border: rgba(239, 68, 68, 0.25);
+  --color-error: #FFB4AB;
+  --color-error-bg: rgba(147, 0, 10, 0.20);
+  --color-error-border: rgba(255, 180, 171, 0.35);
 
   /* ------------------------------------------------------------------------
      3. 8px Modular Spacing Scale
@@ -159,11 +160,11 @@
   --radius-xl: 16px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
-  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
-  --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.12);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.15);
 
   /* ------------------------------------------------------------------------
      6. Focus & Transitions
@@ -176,6 +177,19 @@
   --transition-normal: 200ms ease-out;
 }
 
+/* Tabular numbers for counters, metrics, tables, and indices */
+.tabular-nums,
+.step-counter,
+.metric-value,
+.stat-num,
+.counter-num,
+.stat-val,
+.cell-index,
+.cell-value,
+.bar-value {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Reduced Motion Override */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -185,5 +199,50 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   7. Print Media Optimizations (Paper & PDF)
+   ------------------------------------------------------------------------ */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  header,
+  footer,
+  nav.mobile-drawer,
+  #search-dialog,
+  .interactive-callout,
+  .playback-toolbar,
+  .controls-zone,
+  .btn-primary,
+  .btn-secondary,
+  .action-banner,
+  .breadcrumb-nav {
+    display: none !important;
+  }
+
+  .guide-article-container,
+  .content-container,
+  .guide-page {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  pre,
+  code,
+  table {
+    break-inside: avoid;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  h1, h2, h3 {
+    color: #0f172a !important;
+    break-after: avoid;
   }
 }

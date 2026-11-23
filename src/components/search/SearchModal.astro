@@ -119,22 +119,44 @@ const SEARCH_ITEMS = [
     <!-- Search Results / Item List -->
     <div class="search-results-zone">
       <ul id="search-results-list" class="search-results-list" role="listbox">
-        {SEARCH_ITEMS.map((item, idx) => (
-          <li class="search-result-item" role="option" aria-selected="false" data-item-idx={idx} data-tags={item.tags.join(' ')}>
-            <a href={item.href} class="search-result-link">
-              <div class="result-meta">
-                <span class="result-title">{item.title}</span>
-                <span class="result-category">{item.category}</span>
-              </div>
-              <p class="result-desc">{item.description}</p>
-            </a>
-          </li>
-        ))}
+        {SEARCH_ITEMS.map((item, idx) => {
+          const categoryClass = item.category === 'Visualizer' 
+            ? 'badge-visualizer' 
+            : item.category === 'Developer Tool' 
+              ? 'badge-tool' 
+              : 'badge-guide';
+          return (
+            <li class="search-result-item" role="option" aria-selected="false" data-item-idx={idx} data-tags={item.tags.join(' ')}>
+              <a href={item.href} class="search-result-link">
+                <div class="result-meta">
+                  <span class="result-title">{item.title}</span>
+                  <span class={`result-category ${categoryClass}`}>{item.category}</span>
+                </div>
+                <p class="result-desc">{item.description}</p>
+              </a>
+            </li>
+          );
+        })}
       </ul>
       <div id="search-empty-state" class="search-empty-state" style="display: none;">
-        <p>No matching visualizers or tools found.</p>
+        <div class="empty-glyph" aria-hidden="true">[ ∅ ]</div>
+        <p class="empty-title">No matching visualizers or tools found.</p>
+        <span class="empty-hint">Try searching for "binary", "sort", "json", "graph", or "base"</span>
       </div>
     </div>
+
+    <!-- Standardized Obsidian Modal Footer -->
+    <footer class="search-modal-footer">
+      <div class="search-status-box">
+        <span class="search-status-dot" aria-hidden="true">●</span>
+        <span class="search-scope-label">LOCAL INDEX // ALL SCOPES</span>
+      </div>
+      <div class="search-kbd-hints" aria-hidden="true">
+        <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+        <span><kbd>↵</kbd> open</span>
+        <span><kbd>ESC</kbd> close</span>
+      </div>
+    </footer>
   </div>
 </dialog>
 
@@ -151,6 +173,41 @@ const SEARCH_ITEMS = [
     if (!dialog || !input || !closeBtn || !resultsList) return;
 
     let lastTrigger: HTMLElement | null = null;
+    let selectedIdx = -1;
+
+    function getVisibleItems(): HTMLLIElement[] {
+      return Array.from(resultsList?.querySelectorAll<HTMLLIElement>('.search-result-item') || [])
+        .filter(el => el.style.display !== 'none');
+    }
+
+    function updateSelection(newIdx: number) {
+      const visible = getVisibleItems();
+      visible.forEach(el => {
+        el.setAttribute('aria-selected', 'false');
+        el.querySelector('.search-result-link')?.classList.remove('active-nav');
+      });
+
+      if (visible.length === 0) {
+        selectedIdx = -1;
+        return;
+      }
+
+      if (newIdx < 0) {
+        selectedIdx = 0;
+      } else if (newIdx >= visible.length) {
+        selectedIdx = visible.length - 1;
+      } else {
+        selectedIdx = newIdx;
+      }
+
+      const activeEl = visible[selectedIdx];
+      if (activeEl) {
+        activeEl.setAttribute('aria-selected', 'true');
+        const link = activeEl.querySelector<HTMLAnchorElement>('.search-result-link');
+        link?.classList.add('active-nav');
+        activeEl.scrollIntoView({ block: 'nearest' });
+      }
+    }
 
     function openModal(triggerElement?: HTMLElement | null) {
       if (dialog?.open) return;
@@ -190,6 +247,8 @@ const SEARCH_ITEMS = [
       if (emptyState) {
         emptyState.style.display = matchCount === 0 ? 'block' : 'none';
       }
+
+      updateSelection(0);
     }
 
     input.addEventListener('input', () => {
@@ -220,6 +279,25 @@ const SEARCH_ITEMS = [
       }
     });
 
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        updateSelection(selectedIdx + 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        updateSelection(selectedIdx - 1);
+      } else if (e.key === 'Enter') {
+        const visible = getVisibleItems();
+        if (selectedIdx >= 0 && selectedIdx < visible.length) {
+          e.preventDefault();
+          const link = visible[selectedIdx].querySelector<HTMLAnchorElement>('a');
+          if (link) {
+            link.click();
+          }
+        }
+      }
+    });
+
     dialog.addEventListener('close', () => {
       if (pageShell) pageShell.removeAttribute('inert');
       if (lastTrigger) lastTrigger.focus();
@@ -237,25 +315,26 @@ const SEARCH_ITEMS = [
   .search-dialog {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    background-color: var(--color-surface);
+    background-color: var(--color-slate-850);
     color: var(--color-text);
     padding: 0;
-    max-width: 600px;
-    width: min(92vw, 600px);
-    box-shadow: var(--shadow-lg);
+    max-width: 620px;
+    width: min(92vw, 620px);
+    box-shadow: var(--shadow-lg), 0 20px 40px -15px rgba(0, 0, 0, 0.7);
     margin: 80px auto auto auto;
+    overflow: hidden;
   }
 
   .search-dialog::backdrop {
-    background-color: rgba(2, 6, 23, 0.7);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background-color: rgba(10, 14, 22, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .search-modal-box {
     display: flex;
     flex-direction: column;
-    max-height: 80vh;
+    max-height: 82vh;
   }
 
   .search-input-wrapper {
@@ -263,11 +342,12 @@ const SEARCH_ITEMS = [
     align-items: center;
     gap: var(--space-3);
     padding: var(--space-4);
+    background-color: var(--color-slate-900);
     border-bottom: 1px solid var(--color-border);
   }
 
   .search-icon {
-    color: var(--color-text-muted);
+    color: var(--color-cyan-400);
     flex-shrink: 0;
   }
 
@@ -303,7 +383,7 @@ const SEARCH_ITEMS = [
     font-size: 11px;
     line-height: 1;
     padding: 4px 8px;
-    background-color: var(--color-bg);
+    background-color: var(--color-slate-950);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     color: var(--color-text-dim);
@@ -312,7 +392,7 @@ const SEARCH_ITEMS = [
 
   .modal-close-btn:hover kbd {
     color: var(--color-text);
-    border-color: var(--color-indigo-400);
+    border-color: var(--color-cyan-400);
   }
 
   .search-chips-row {
@@ -322,7 +402,7 @@ const SEARCH_ITEMS = [
     gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
     border-bottom: 1px solid var(--color-border-subtle);
-    background-color: rgba(15, 23, 42, 0.4);
+    background-color: rgba(10, 14, 22, 0.4);
     box-sizing: border-box;
     width: 100%;
   }
@@ -341,9 +421,9 @@ const SEARCH_ITEMS = [
     display: inline-flex;
     align-items: center;
     min-height: 28px;
-    padding: 4px 10px;
+    padding: 3px 10px;
     border-radius: var(--radius-sm);
-    background-color: var(--color-surface-elevated);
+    background-color: var(--color-slate-800);
     border: 1px solid var(--color-border);
     color: var(--color-text-muted);
     cursor: pointer;
@@ -352,15 +432,15 @@ const SEARCH_ITEMS = [
   }
 
   .search-chip:hover {
-    background-color: var(--color-indigo-600);
-    color: #FFFFFF;
-    border-color: var(--color-indigo-500);
+    background-color: rgba(76, 215, 246, 0.15);
+    color: var(--color-cyan-400);
+    border-color: var(--color-cyan-400);
   }
 
   .search-results-zone {
-    padding: var(--space-3) var(--space-2);
+    padding: var(--space-3) var(--space-3);
     overflow-y: auto;
-    max-height: 400px;
+    max-height: 380px;
   }
 
   .search-results-list {
@@ -368,22 +448,33 @@ const SEARCH_ITEMS = [
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+  }
+
+  .search-result-item {
+    margin: 0;
+    padding: 0;
   }
 
   .search-result-link {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
     padding: var(--space-3);
     border-radius: var(--radius-md);
     text-decoration: none;
     color: var(--color-text);
-    transition: background-color var(--transition-fast);
+    border: 1px solid transparent;
+    background-color: transparent;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
   }
 
   .search-result-link:hover,
+  .search-result-link.active-nav,
   .search-result-link:focus-visible {
-    background-color: var(--color-surface-hover);
+    background-color: var(--color-slate-700);
+    border-color: var(--color-border);
     outline: none;
   }
 
@@ -404,10 +495,27 @@ const SEARCH_ITEMS = [
   .result-category {
     font-family: var(--font-mono);
     font-size: 11px;
-    color: var(--color-indigo-400);
-    background-color: rgba(99, 102, 241, 0.1);
-    padding: 1px 6px;
+    padding: 2px 8px;
     border-radius: var(--radius-sm);
+    font-weight: 600;
+  }
+
+  .badge-visualizer {
+    color: var(--color-cyan-400);
+    background-color: rgba(76, 215, 246, 0.12);
+    border: 1px solid rgba(76, 215, 246, 0.3);
+  }
+
+  .badge-tool {
+    color: var(--color-emerald-400);
+    background-color: rgba(78, 222, 163, 0.12);
+    border: 1px solid rgba(78, 222, 163, 0.3);
+  }
+
+  .badge-guide {
+    color: var(--color-indigo-400);
+    background-color: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.3);
   }
 
   .result-desc {
@@ -421,7 +529,73 @@ const SEARCH_ITEMS = [
     padding: var(--space-8) var(--space-4);
     text-align: center;
     font-family: var(--font-sans);
-    font-size: var(--text-sm);
     color: var(--color-text-dim);
+  }
+
+  .empty-glyph {
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    color: var(--color-cyan-400);
+    margin-bottom: var(--space-2);
+  }
+
+  .empty-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-slate-300);
+    margin: 0 0 var(--space-1) 0;
+  }
+
+  .empty-hint {
+    font-size: var(--text-xs);
+    color: var(--color-slate-400);
+  }
+
+  .search-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-slate-900);
+    border-top: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-dim);
+  }
+
+  .search-status-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .search-status-dot {
+    color: var(--color-emerald-400);
+    font-size: 10px;
+  }
+
+  .search-scope-label {
+    letter-spacing: 0.05em;
+  }
+
+  .search-kbd-hints {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .search-kbd-hints span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .search-kbd-hints kbd {
+    background-color: var(--color-slate-950);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    color: var(--color-slate-300);
+    font-size: 10px;
   }
 </style>
