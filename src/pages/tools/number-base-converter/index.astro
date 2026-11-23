@@ -662,12 +662,22 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     padding: var(--space-3) var(--space-4);
     border-radius: var(--radius-md);
     margin-bottom: var(--space-6);
+    min-width: 0;
+    max-width: 100%;
+  }
+  @media (max-width: 480px) {
+    .toolbar-section {
+      padding: var(--space-3);
+      gap: var(--space-3);
+    }
   }
   .presets-group {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2);
+    min-width: 0;
+    max-width: 100%;
   }
   .toolbar-label {
     font-size: var(--text-xs);
@@ -844,6 +854,13 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     border-radius: var(--radius-lg);
     padding: var(--space-6);
     margin-bottom: var(--space-12);
+    min-width: 0;
+    max-width: 100%;
+  }
+  @media (max-width: 480px) {
+    .explanation-section {
+      padding: var(--space-4);
+    }
   }
   .explanation-header {
     display: flex;
@@ -854,6 +871,12 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     margin-bottom: var(--space-6);
     padding-bottom: var(--space-4);
     border-bottom: 1px solid var(--color-border);
+    min-width: 0;
+    max-width: 100%;
+  }
+  .explanation-title-group {
+    min-width: 0;
+    max-width: 100%;
   }
   .edu-pill {
     font-size: var(--text-xs);
@@ -871,11 +894,14 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     display: flex;
     align-items: center;
     gap: var(--space-2);
+    min-width: 0;
+    max-width: 100%;
   }
   .selector-label {
     font-size: var(--text-xs);
     font-weight: 600;
     color: var(--color-text-muted);
+    white-space: nowrap;
   }
   .mode-select {
     font-family: inherit;
@@ -888,6 +914,25 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     padding: 6px 12px;
     min-height: 36px;
     cursor: pointer;
+    max-width: 100%;
+  }
+  @media (max-width: 640px) {
+    .explanation-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+    .explanation-selector {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+    .mode-select {
+      width: 100%;
+    }
+    .selector-label {
+      white-space: normal;
+    }
   }
 
   .division-instruction, .positional-instruction {
@@ -898,8 +943,12 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   }
 
   .table-scroll-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     overflow-x: auto;
     margin-bottom: var(--space-6);
+    -webkit-overflow-scrolling: touch;
   }
   .math-table {
     width: 100%;
