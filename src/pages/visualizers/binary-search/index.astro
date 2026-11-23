@@ -90,8 +90,8 @@ import { BINARY_SEARCH_PSEUDOCODE } from '../../../core/algorithms/binary-search
         <section class="stage-container" aria-label="Binary Search Visual Stage">
           <div class="stage-top-bar">
             <span class="stage-legend-item"><span class="legend-dot cyan"></span>Low</span>
-            <span class="stage-legend-item"><span class="legend-dot indigo"></span>Mid (Current)</span>
-            <span class="stage-legend-item"><span class="legend-dot amber"></span>High</span>
+            <span class="stage-legend-item"><span class="legend-dot amber"></span>Mid (Current)</span>
+            <span class="stage-legend-item"><span class="legend-dot purple"></span>High</span>
             <span class="stage-legend-item"><span class="legend-dot emerald"></span>Found</span>
             <span class="stage-legend-item"><span class="legend-dot muted"></span>Eliminated</span>
           </div>
@@ -430,9 +430,9 @@ import { BINARY_SEARCH_PSEUDOCODE } from '../../../core/algorithms/binary-search
         col.className = 'pointer-col';
         const badges: string[] = [];
         if (idx === s.foundIndex) badges.push('<span class="ptr-pill emerald">Found</span>');
-        if (idx === s.mid && idx !== s.foundIndex) badges.push('<span class="ptr-pill indigo">Mid</span>');
+        if (idx === s.mid && idx !== s.foundIndex) badges.push('<span class="ptr-pill amber">Mid</span>');
         if (idx === s.low) badges.push('<span class="ptr-pill cyan">Low</span>');
-        if (idx === s.high) badges.push('<span class="ptr-pill amber">High</span>');
+        if (idx === s.high) badges.push('<span class="ptr-pill purple">High</span>');
 
         col.innerHTML = badges.join('');
         pointerLabelsContainer.appendChild(col);
@@ -807,8 +807,8 @@ import { BINARY_SEARCH_PSEUDOCODE } from '../../../core/algorithms/binary-search
     border-radius: 50%;
   }
   .legend-dot.cyan { background-color: var(--color-cyan-400); }
-  .legend-dot.indigo { background-color: var(--color-primary-400); }
   .legend-dot.amber { background-color: var(--color-amber-400); }
+  .legend-dot.purple { background-color: var(--color-purple-400); }
   .legend-dot.emerald { background-color: var(--color-emerald-400); }
   .legend-dot.muted { background-color: var(--color-slate-600); }
 
@@ -838,10 +838,10 @@ import { BINARY_SEARCH_PSEUDOCODE } from '../../../core/algorithms/binary-search
     border-radius: 3px;
     text-transform: uppercase;
   }
-  .ptr-pill.cyan { background-color: rgba(6, 182, 212, 0.2); color: var(--color-cyan-400); border: 1px solid var(--color-cyan-400); }
-  .ptr-pill.indigo { background-color: rgba(99, 102, 241, 0.2); color: var(--color-primary-400); border: 1px solid var(--color-primary-400); }
-  .ptr-pill.amber { background-color: rgba(245, 158, 11, 0.2); color: var(--color-amber-400); border: 1px solid var(--color-amber-400); }
-  .ptr-pill.emerald { background-color: rgba(16, 185, 129, 0.2); color: var(--color-emerald-400); border: 1px solid var(--color-emerald-400); }
+  .ptr-pill.cyan { background-color: rgba(76, 215, 246, 0.15); color: var(--color-cyan-400); border: 1px solid var(--color-cyan-400); }
+  .ptr-pill.amber { background-color: rgba(251, 191, 36, 0.15); color: var(--color-amber-400); border: 1px solid var(--color-amber-400); }
+  .ptr-pill.purple { background-color: rgba(192, 132, 252, 0.15); color: var(--color-purple-400); border: 1px solid var(--color-purple-400); }
+  .ptr-pill.emerald { background-color: rgba(78, 222, 163, 0.15); color: var(--color-emerald-400); border: 1px solid var(--color-emerald-400); }
 
   .array-scroll-wrapper {
     overflow-x: auto;
@@ -880,25 +880,25 @@ import { BINARY_SEARCH_PSEUDOCODE } from '../../../core/algorithms/binary-search
   }
 
   .array-element.active-mid .element-box {
-    border-color: var(--color-primary-400);
-    background-color: rgba(99, 102, 241, 0.2);
+    border-color: var(--color-amber-400);
+    background-color: rgba(251, 191, 36, 0.18);
     transform: translateY(-2px);
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
   }
   .array-element.found .element-box {
     border-color: var(--color-emerald-400);
-    background-color: rgba(16, 185, 129, 0.25);
+    background-color: rgba(78, 222, 163, 0.25);
     color: var(--color-emerald-400);
     transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 15px rgba(78, 222, 163, 0.5);
   }
   .array-element.in-range .element-box {
     border-color: rgba(148, 163, 184, 0.5);
   }
   .array-element.eliminated .element-box {
-    opacity: 0.3;
+    opacity: 0.35;
     border-style: dashed;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.25);
   }
 
   /* Status Banner */
