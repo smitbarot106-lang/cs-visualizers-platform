@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Understanding Binary Search Guide"
+  description="Master binary search logic, pointer mechanics, mid calculation overflow prevention, and logarithmic complexity."
+  currentRoute="/guides/binary-search/"
+>
+  <RouteScaffold
+    title="Understanding Binary Search & O(log n) Efficiency"
+    category="EDUCATIONAL GUIDE"
+    badge="ALGORITHM THEORY"
+    description="A deep dive into divide-and-conquer searching, loop invariants, pointer mechanics (Low, Mid, High), and why O(log n) scales to billions of elements."
+    scheduledPhase="Phase 4 Implementation"
+    features={[
+      'Divide-and-conquer principles and sorted array prerequisites',
+      'Preventing integer overflow: low + Math.floor((high - low) / 2)',
+      'Step-by-step trace comparison with linear search O(n)',
+      'Direct cross-link to our interactive Binary Search Visualizer',
+    ]}
+  />
+</BaseLayout>

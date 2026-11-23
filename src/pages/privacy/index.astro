@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Privacy Policy & Local Processing Guarantee"
+  description="Commitment to 100% in-browser processing, zero tracking cookies, and zero server logging."
+  currentRoute="/privacy/"
+>
+  <div class="content-container">
+    <header class="page-header">
+      <span class="page-badge">PRIVACY FIRST</span>
+      <h1 class="page-title">PRIVACY DECLARATION</h1>
+      <p class="page-lead">
+        Your code, data, numbers, and inputs never leave your web browser.
+      </p>
+    </header>
+
+    <div class="prose-body">
+      <section class="prose-section">
+        <h2>1. Zero Telemetry & Zero Tracking</h2>
+        <p>
+          The CS Visualizers platform does not embed Google Analytics, marketing trackers, session recorders, tracking cookies, or advertising pixels. When you visit this platform, you leave no digital surveillance footprint with advertising networks.
+        </p>
+      </section>
+
+      <section class="prose-section">
+        <h2>2. 100% Client-Side Computation</h2>
+        <p>
+          All developer utilities (including the JSON Formatter and Number Base Converter) and all algorithm visualizers (Sorting, Binary Search, BFS/DFS) execute exclusively using the JavaScript runtime of your own web browser.
+        </p>
+        <p>
+          Unlike cloud-based formatters that upload sensitive JSON payloads to external servers, this platform does not have a backend API or server-side logging mechanism. Even if your internet connection drops after loading the page, all tools continue to function entirely offline.
+        </p>
+      </section>
+
+      <section class="prose-section">
+        <h2>3. Third-Party Requests</h2>
+        <p>
+          To maintain strict privacy guarantees:
+        </p>
+        <ul>
+          <li>We avoid third-party typography CDNs. System font fallbacks and locally served assets prevent IP logging by font distributors.</li>
+          <li>No external JavaScript libraries or runtime frameworks are loaded from third-party CDNs.</li>
+        </ul>
+      </section>
+
+      <section class="prose-section">
+        <h2>4. Contact & Inquiries</h2>
+        <p>
+          As a static educational platform, we do not maintain public marketing mailing lists or collect contact databases.
+        </p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .content-container {
+    max-width: var(--reading-max);
+    margin: 0 auto;
+    padding: var(--space-12) var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-6);
+  }
+
+  .page-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-emerald-400);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .page-title {
+    font-family: var(--font-sans);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text);
+  }
+
+  .page-lead {
+    font-family: var(--font-sans);
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+  }
+
+  .prose-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .prose-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .prose-section h2 {
+    font-family: var(--font-sans);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .prose-section p {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .prose-section ul {
+    padding-left: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .prose-section li {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-muted);
+  }
+</style>

@@ -1,0 +1,233 @@
+---
+// ============================================================================
+// RouteScaffold — Placeholder container for routes scheduled for Phase 2+
+// Clear honest indicator that functionality is scheduled for next phases
+// ============================================================================
+
+interface Props {
+  title: string;
+  category: string;
+  badge: string;
+  description: string;
+  scheduledPhase: string;
+  features?: string[];
+}
+
+const { title, category, badge, description, scheduledPhase, features = [] } = Astro.props;
+---
+
+<div class="scaffold-container">
+  <div class="scaffold-header">
+    <div class="badge-row">
+      <span class="category-badge">{category}</span>
+      {badge && <span class="item-badge">{badge}</span>}
+      <span class="phase-pill">{scheduledPhase}</span>
+    </div>
+    <h1 class="scaffold-title">{title}</h1>
+    <p class="scaffold-desc">{description}</p>
+  </div>
+
+  <div class="scaffold-box">
+    <div class="status-banner">
+      <div class="status-dot" aria-hidden="true"></div>
+      <span class="status-text">Step 1 Architecture Established • Algorithm Implementation Scheduled</span>
+    </div>
+
+    {features.length > 0 && (
+      <div class="planned-features">
+        <h2 class="features-heading">Target Features (V1 Architecture):</h2>
+        <ul class="features-list">
+          {features.map(f => (
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <div class="scaffold-actions">
+      <a href="/" class="btn-return">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Return to Platform Overview</span>
+      </a>
+      <a href="/guides/" class="btn-guide">
+        <span>View Architecture Guides</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .scaffold-container {
+    max-width: var(--reading-max);
+    margin: 0 auto;
+    padding: var(--space-12) var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .scaffold-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .badge-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .category-badge,
+  .item-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-indigo-400);
+    background-color: rgba(99, 102, 241, 0.12);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .phase-pill {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-amber-400);
+    background-color: rgba(245, 158, 11, 0.12);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .scaffold-title {
+    font-family: var(--font-sans);
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text);
+  }
+
+  .scaffold-desc {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .scaffold-box {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .status-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--radius-md);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-emerald-400);
+    flex-shrink: 0;
+  }
+
+  .status-text {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-emerald-400);
+  }
+
+  .planned-features {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .features-heading {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .features-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .features-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .scaffold-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .btn-return,
+  .btn-guide {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .btn-return {
+    background-color: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .btn-return:hover {
+    background-color: var(--color-surface-hover);
+    border-color: var(--color-indigo-500);
+  }
+
+  .btn-guide {
+    background-color: rgba(99, 102, 241, 0.15);
+    color: var(--color-indigo-400);
+  }
+
+  .btn-guide:hover {
+    background-color: rgba(99, 102, 241, 0.25);
+  }
+</style>

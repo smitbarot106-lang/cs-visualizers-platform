@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Graph Traversals: BFS vs DFS Guide"
+  description="Master Breadth-First Search (Queue) and Depth-First Search (Stack/Recursion) on graph structures."
+  currentRoute="/guides/bfs-dfs/"
+>
+  <RouteScaffold
+    title="Graph Traversal Foundations: When to Use BFS vs DFS"
+    category="EDUCATIONAL GUIDE"
+    badge="GRAPH THEORY"
+    description="Understand the core paradigms of graph traversal: level-order shortest path with FIFO queues vs deep path exploration with LIFO stacks."
+    scheduledPhase="Phase 4 Implementation"
+    features={[
+      'Breadth-First Search (BFS): Queue-based level exploration and unweighted shortest paths',
+      'Depth-First Search (DFS): Stack-based branch exploration and cycle detection',
+      'Visited sets and preventing infinite loops in cyclic graphs',
+      'Direct cross-link to our interactive BFS & DFS Visualizer',
+    ]}
+  />
+</BaseLayout>

@@ -1,0 +1,155 @@
+/* ==========================================================================
+   Interactive CS Visualizers & Developer Tools — Design Tokens
+   Palette: Slate (neutral surfaces), Indigo (interactions), Emerald (success), Amber (warning)
+   WCAG Conformance: 2.1 / 2.2 AA Contrast Compliance
+   ========================================================================== */
+
+:root {
+  /* ------------------------------------------------------------------------
+     1. Semantic Color Palette Tokens
+     ------------------------------------------------------------------------ */
+
+  /* Slate Scale — Dark mode surfaces & text */
+  --color-slate-950: #020617;
+  --color-slate-900: #0F172A;
+  --color-slate-850: #131E35;
+  --color-slate-800: #1E293B;
+  --color-slate-700: #334155;
+  --color-slate-600: #475569;
+  --color-slate-500: #64748B;
+  --color-slate-400: #94A3B8;
+  --color-slate-300: #CBD5E1;
+  --color-slate-200: #E2E8F0;
+  --color-slate-100: #F1F5F9;
+  --color-slate-50:  #F8FAFC;
+
+  /* Indigo Scale — Primary actions, focus, links */
+  --color-indigo-900: #312E81;
+  --color-indigo-700: #4338CA;
+  --color-indigo-600: #4F46E5;
+  --color-indigo-500: #6366F1;
+  --color-indigo-400: #818CF8;
+  --color-indigo-300: #A5B4FC;
+
+  /* Emerald Scale — Algorithm completion, sorted elements, matched items */
+  --color-emerald-950: #022C22;
+  --color-emerald-800: #065F46;
+  --color-emerald-600: #059669;
+  --color-emerald-500: #10B981;
+  --color-emerald-400: #34D399;
+
+  /* Amber Scale — Pointers, active comparisons, warnings */
+  --color-amber-950: #451A03;
+  --color-amber-800: #92400E;
+  --color-amber-600: #D97706;
+  --color-amber-500: #F59E0B;
+  --color-amber-400: #FBBF24;
+
+  /* Cyan Scale — Secondary pointers, queue elements, alternate tracking */
+  --color-cyan-900: #164E63;
+  --color-cyan-500: #06B6D4;
+  --color-cyan-400: #22D3EE;
+
+  /* Semantic UI Bindings */
+  --color-bg: var(--color-slate-900);
+  --color-bg-alt: var(--color-slate-950);
+  --color-surface: var(--color-slate-800);
+  --color-surface-elevated: var(--color-slate-850);
+  --color-surface-hover: #26354D;
+  --color-border: var(--color-slate-700);
+  --color-border-subtle: var(--color-slate-800);
+  --color-border-active: var(--color-indigo-500);
+
+  --color-text: var(--color-slate-50);
+  --color-text-muted: var(--color-slate-400);
+  --color-text-dim: var(--color-slate-500);
+
+  --color-primary: var(--color-indigo-500);
+  --color-primary-hover: var(--color-indigo-400);
+  --color-primary-text: #FFFFFF;
+
+  --color-success: var(--color-emerald-400);
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-success-border: var(--color-emerald-500);
+
+  --color-warning: var(--color-amber-400);
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-warning-border: var(--color-amber-500);
+
+  /* ------------------------------------------------------------------------
+     2. 8px Modular Spacing Scale
+     ------------------------------------------------------------------------ */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Layout Widths */
+  --container-max: 1200px;
+  --reading-max: 760px;
+  --gutter: 16px;
+
+  /* ------------------------------------------------------------------------
+     3. Typography Scales & Weights
+     ------------------------------------------------------------------------ */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  --tracking-tight: -0.015em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+
+  /* ------------------------------------------------------------------------
+     4. Radii & Elevations
+     ------------------------------------------------------------------------ */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+
+  /* ------------------------------------------------------------------------
+     5. Focus & Transitions
+     ------------------------------------------------------------------------ */
+  --focus-ring-width: 2px;
+  --focus-ring-color: var(--color-indigo-400);
+  --focus-ring-offset: 2px;
+
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 200ms ease-out;
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

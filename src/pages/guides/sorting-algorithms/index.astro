@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Comparison Sorting Algorithms Guide"
+  description="Compare Bubble Sort, Selection Sort, and Insertion Sort: time complexities, swap mechanics, and stability."
+  currentRoute="/guides/sorting-algorithms/"
+>
+  <RouteScaffold
+    title="Comparison Sorting Demystified: Bubble, Selection & Insertion"
+    category="EDUCATIONAL GUIDE"
+    badge="ALGORITHM THEORY"
+    description="Understand the fundamental mechanics, comparisons, swaps, stability, and trade-offs of elementary O(n²) comparison sorting algorithms."
+    scheduledPhase="Phase 4 Implementation"
+    features={[
+      'Bubble Sort: Adjacent comparisons, early exit optimization, and bubbling effect',
+      'Selection Sort: Finding the minimum element and invariant sorted sub-arrays',
+      'Insertion Sort: Adaptive online sorting and why it excels on nearly-sorted data',
+      'Direct cross-link to our interactive Sorting Visualizer',
+    ]}
+  />
+</BaseLayout>

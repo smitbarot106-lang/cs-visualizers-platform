@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="JSON Formatter & Validator"
+  description="Client-side JSON formatting, minification, and syntax error validation with beginner guidance."
+  currentRoute="/tools/json-formatter/"
+>
+  <RouteScaffold
+    title="JSON Formatter & Validator"
+    category="DEVELOPER TOOL"
+    badge="100% LOCAL PROCESSING"
+    description="Format, validate, and minify JSON data directly in your browser. Translates cryptic JSON.parse errors into friendly, actionable guidance."
+    scheduledPhase="Phase 2 Implementation"
+    features={[
+      'Syntax Error Guidance: Explains missing commas, unquoted keys, and trailing commas',
+      'Exact Position Mapping: Highlights exact line and column numbers',
+      'Format & Minify Options: 2-space, 4-space, or compact output',
+      'Safe Input Protection: Handles large documents without locking browser UI',
+    ]}
+  />
+</BaseLayout>

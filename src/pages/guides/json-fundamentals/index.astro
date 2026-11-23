@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="JSON Fundamentals Guide"
+  description="Beginner guide to JSON syntax, data types, parsing, RFC 8259 specifications, and common developer pitfalls."
+  currentRoute="/guides/json-fundamentals/"
+>
+  <RouteScaffold
+    title="JSON Fundamentals: Syntax, Types & Parsing"
+    category="EDUCATIONAL GUIDE"
+    badge="DATA FORMATS"
+    description="Understand the formal structure of JavaScript Object Notation, from lexical tokens to abstract syntax trees, and learn how to debug common JSON mistakes."
+    scheduledPhase="Phase 4 Implementation"
+    features={[
+      'RFC 8259 formal grammar: strings, numbers, booleans, null, arrays, objects',
+      'The 7 most common JSON syntax errors (trailing commas, unquoted keys, single quotes)',
+      'How parsers tokenize and build JSON ASTs in memory',
+      'Interactive testing with our privacy-first JSON Formatter & Validator tool',
+    ]}
+  />
+</BaseLayout>

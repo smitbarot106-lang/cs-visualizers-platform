@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Algorithm Visualizers Directory"
+  description="Interactive step-by-step visualizers for sorting, binary search, and graph traversal algorithms."
+  currentRoute="/visualizers/"
+>
+  <RouteScaffold
+    title="Algorithm Visualizers"
+    category="DIRECTORY"
+    badge="VISUALIZERS"
+    description="Interactive visualizers for fundamental algorithms. Observe state transitions, pointer tracking, and variable watches."
+    scheduledPhase="Phase 2/3 Implementation"
+    features={[
+      'Binary Search: Low, Mid, High pointer tracking & narration',
+      'Sorting: Bubble, Selection, and Insertion Sort with comparison/swap counters',
+      'BFS & DFS: Queue/Stack inspection with visited-node tracking',
+      'Universal Playback: Play, Pause, Step Forward, Step Backward, Speed Control',
+    ]}
+  />
+</BaseLayout>

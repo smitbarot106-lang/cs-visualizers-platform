@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Big-O Complexity Cheat Sheet"
+  description="Interactive Big-O complexity cheat sheet covering time and space complexities for arrays, trees, and graphs."
+  currentRoute="/guides/big-o-cheat-sheet/"
+>
+  <RouteScaffold
+    title="Big-O Complexity Cheat Sheet"
+    category="ALGORITHM THEORY"
+    badge="COMPLEXITY REFERENCE"
+    description="Interactive Big-O reference connecting asymptotic growth curves (O(1), O(log n), O(n), O(n log n), O(n²)) directly to our interactive visualizers."
+    scheduledPhase="Phase 4 Implementation"
+    features={[
+      'Interactive complexity graph showing growth curves with n = 1 to 10,000',
+      'Time complexity tables: Best, Average, Worst cases for searching and sorting',
+      'Space complexity (auxiliary memory) comparison table',
+      'Direct cross-links to Binary Search, Bubble Sort, Selection Sort, and BFS/DFS',
+    ]}
+  />
+</BaseLayout>

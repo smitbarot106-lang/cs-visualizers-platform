@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Binary Search Visualizer"
+  description="Step-by-step binary search visualization with Low, Mid, and High pointers."
+  currentRoute="/visualizers/binary-search/"
+>
+  <RouteScaffold
+    title="Binary Search Visualizer"
+    category="VISUALIZER"
+    badge="O(log n) SEARCH"
+    description="Step-by-step logarithmic search visualization. Watch Low, Mid, and High pointer indices converge toward the target value."
+    scheduledPhase="Phase 3 Implementation"
+    features={[
+      'Low, Mid, and High pointer tracking with visual flags',
+      'Step-by-step plain-English comparison narration',
+      'Synchronized pseudocode highlighting matching active step',
+      'Preloaded sorted arrays and edge-case targets (boundary, missing)',
+    ]}
+  />
+</BaseLayout>

@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Number Base Converter"
+  description="Convert numbers between Binary, Decimal, Octal, and Hexadecimal with step-by-step arithmetic."
+  currentRoute="/tools/number-base-converter/"
+>
+  <RouteScaffold
+    title="Number Base Converter"
+    category="DEVELOPER TOOL"
+    badge="RADIX ARITHMETIC"
+    description="Interactive base converter for Binary (Base 2), Octal (Base 8), Decimal (Base 10), and Hexadecimal (Base 16). Breaks down conversion algorithms step-by-step."
+    scheduledPhase="Phase 2 Implementation"
+    features={[
+      'Step-by-Step Division Math: Shows successive division by base and remainder collection',
+      'Place-Value Powers Table: Displays binary weights (128, 64, 32, 16, 8, 4, 2, 1)',
+      'Large Integer & Negative Support: Accurate representation with overflow prevention',
+      'Synchronized Bidirectional Inputs: Edit any base to update all others in real time',
+    ]}
+  />
+</BaseLayout>

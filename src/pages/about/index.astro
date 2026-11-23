@@ -1,0 +1,134 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About the Platform & Mission"
+  description="Mission, philosophy, and architectural principles of the Interactive CS Visualizers platform."
+  currentRoute="/about/"
+>
+  <div class="content-container">
+    <header class="page-header">
+      <span class="page-badge">MISSION & PHILOSOPHY</span>
+      <h1 class="page-title">ABOUT THE PLATFORM</h1>
+      <p class="page-lead">
+        “Don't just see the answer — understand how it works.”
+      </p>
+    </header>
+
+    <div class="prose-body">
+      <section class="prose-section">
+        <h2>1. Why This Platform Exists</h2>
+        <p>
+          Learning data structures and algorithms is often intimidating. Traditional textbooks show static diagrams, while modern AI tools generate instant answers without teaching the underlying mechanics.
+        </p>
+        <p>
+          This platform was built to bridge that gap for CS/IT students, self-taught developers, and coding interview candidates across the globe. By rendering algorithms as step-by-step, reversible interactive state machines, learners can inspect exactly how pointers move, why swaps occur, and where algorithmic efficiency comes from.
+        </p>
+      </section>
+
+      <section class="prose-section">
+        <h2>2. Core Architectural Principles</h2>
+        <ul>
+          <li><strong>Zero Data Transmission:</strong> Every calculation, JSON parse, and algorithm step runs 100% inside your local web browser. Your inputs are never transmitted to a server.</li>
+          <li><strong>Deterministic Reversibility:</strong> Our step-engine precomputes immutable state snapshots, enabling instant, bug-free backward and forward stepping.</li>
+          <li><strong>Plain-English Narration:</strong> Instead of generic status messages, every step explains in clear English what the algorithm is doing and why.</li>
+          <li><strong>Zero Account Barrier:</strong> No logins, no paywalls, no tracking cookies, and no third-party telemetry.</li>
+        </ul>
+      </section>
+
+      <section class="prose-section">
+        <h2>3. Target Audience</h2>
+        <p>
+          Tailored for international English-speaking learners, especially students and aspiring software engineers in India, the United States, the United Kingdom, and worldwide.
+        </p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .content-container {
+    max-width: var(--reading-max);
+    margin: 0 auto;
+    padding: var(--space-12) var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-6);
+  }
+
+  .page-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-indigo-400);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .page-title {
+    font-family: var(--font-sans);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text);
+  }
+
+  .page-lead {
+    font-family: var(--font-sans);
+    font-size: var(--text-lg);
+    font-style: italic;
+    color: var(--color-emerald-400);
+  }
+
+  .prose-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .prose-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .prose-section h2 {
+    font-family: var(--font-sans);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .prose-section p {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .prose-section ul {
+    padding-left: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .prose-section li {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .prose-section strong {
+    color: var(--color-text);
+  }
+</style>

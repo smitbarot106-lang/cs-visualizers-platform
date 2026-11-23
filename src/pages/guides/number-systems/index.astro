@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Number Systems & Radix Math Guide"
+  description="Master binary, octal, decimal, and hexadecimal representations, positional notation, and bitwise fundamentals."
+  currentRoute="/guides/number-systems/"
+>
+  <RouteScaffold
+    title="Number Systems: Binary, Octal, Decimal & Hexadecimal"
+    category="EDUCATIONAL GUIDE"
+    badge="RADIX ARITHMETIC"
+    description="Demystifying positional number systems in computer architecture, repeated division algorithms, and power-of-two groupings."
+    scheduledPhase="Phase 4 Implementation"
+    features={[
+      'Positional weighting and polynomial expansion across arbitrary bases',
+      'Repeated division-by-radix algorithm explained step-by-step',
+      'Direct binary-to-hex nibble mapping (4-bit chunks)',
+      'Arbitrary precision integer representation and Two’s Complement negative numbers',
+    ]}
+  />
+</BaseLayout>

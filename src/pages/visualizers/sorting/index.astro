@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Sorting Visualizer"
+  description="Interactive sorting algorithm visualizer for Bubble Sort, Selection Sort, and Insertion Sort."
+  currentRoute="/visualizers/sorting/"
+>
+  <RouteScaffold
+    title="Sorting Visualizer"
+    category="VISUALIZER"
+    badge="BUBBLE • SELECTION • INSERTION"
+    description="Interactive visualizer for elementary comparison-based sorting algorithms. Observe array comparisons, element swaps, and sorted boundary growth."
+    scheduledPhase="Phase 3 Implementation"
+    features={[
+      'Bubble Sort: Adjacent comparisons, bubbling passes, and early-exit optimization',
+      'Selection Sort: Minimum-element scanning and boundary expansion',
+      'Insertion Sort: Key selection, element shifting, and sorted partition insertion',
+      'Active comparison & swap counters with Big-O complexity notes',
+    ]}
+  />
+</BaseLayout>

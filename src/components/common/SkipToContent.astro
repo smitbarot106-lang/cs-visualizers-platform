@@ -1,0 +1,36 @@
+---
+// ============================================================================
+// SkipToContent — WCAG 2.2 SC 2.4.1 Bypass Link
+// Must be the first interactive element in DOM order
+// ============================================================================
+---
+
+<a href="#main-content" class="skip-link" id="skip-link">
+  Skip to main content
+</a>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: var(--space-4, 16px);
+    z-index: 1000;
+    padding: var(--space-3, 12px) var(--space-5, 20px);
+    background-color: var(--color-indigo-600, #4F46E5);
+    color: #FFFFFF;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm, 14px);
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--radius-md, 8px);
+    box-shadow: var(--shadow-md);
+    transition: top var(--transition-fast, 150ms ease-out);
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    top: var(--space-4, 16px);
+    outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, #818CF8);
+    outline-offset: var(--focus-ring-offset, 2px);
+  }
+</style>

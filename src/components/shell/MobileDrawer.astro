@@ -1,0 +1,303 @@
+---
+// ============================================================================
+// MobileDrawer — Accessible Slide-Over Navigation
+// Provides focus-trapping, Escape dismiss, and body-scroll locking on mobile
+// ============================================================================
+
+interface Props {
+  currentRoute?: string;
+}
+
+const { currentRoute = '/' } = Astro.props;
+
+const NAV_LINKS = [
+  { href: '/', label: 'Overview Home' },
+  { href: '/visualizers/', label: 'All Visualizers' },
+  { href: '/visualizers/sorting/', label: 'Sorting Visualizer' },
+  { href: '/visualizers/binary-search/', label: 'Binary Search' },
+  { href: '/visualizers/bfs-dfs/', label: 'BFS & DFS Graphs' },
+  { href: '/tools/', label: 'Developer Utilities' },
+  { href: '/tools/json-formatter/', label: 'JSON Formatter & Validator' },
+  { href: '/tools/number-base-converter/', label: 'Base Converter' },
+  { href: '/guides/', label: 'Guides & Big-O Cheat Sheet' },
+  { href: '/about/', label: 'About & Methodology' },
+  { href: '/privacy/', label: 'Privacy Declaration' },
+];
+---
+
+<!-- Scrim Backdrop -->
+<div id="drawer-scrim" class="drawer-scrim" aria-hidden="true" data-drawer-scrim></div>
+
+<!-- Drawer Surface -->
+<nav
+  id="mobile-nav-drawer"
+  class="mobile-nav-drawer"
+  aria-label="Mobile Navigation"
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+>
+  <div class="drawer-header">
+    <span class="drawer-title">Navigation Menu</span>
+    <button
+      type="button"
+      id="drawer-close-btn"
+      class="drawer-close-btn"
+      aria-label="Close navigation menu"
+      data-drawer-close
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="drawer-body">
+    <ul class="drawer-nav-list">
+      {NAV_LINKS.map(link => {
+        const isActive = currentRoute === link.href;
+        return (
+          <li>
+            <a
+              href={link.href}
+              class={`drawer-nav-link ${isActive ? 'active' : ''}`}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <span>{link.label}</span>
+              {isActive && <span class="active-dot" aria-hidden="true">•</span>}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+
+  <div class="drawer-footer">
+    <span class="drawer-privacy-pill">100% In-Browser Privacy</span>
+  </div>
+</nav>
+
+<script>
+  function setupMobileDrawer() {
+    const rawDrawer = document.getElementById('mobile-nav-drawer');
+    const rawScrim = document.getElementById('drawer-scrim');
+    const rawToggle = document.querySelector<HTMLButtonElement>('[data-drawer-toggle]');
+    const rawClose = document.querySelector<HTMLButtonElement>('[data-drawer-close]');
+    const pageShell = document.getElementById('page-shell');
+
+    if (!rawDrawer || !rawScrim || !rawToggle || !rawClose) return;
+
+    const drawer: HTMLElement = rawDrawer;
+    const scrim: HTMLElement = rawScrim;
+    const toggleBtn: HTMLButtonElement = rawToggle;
+    const closeBtn: HTMLButtonElement = rawClose;
+
+    let isOpen = false;
+
+    function getFocusableElements(): HTMLElement[] {
+      const selector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+      return Array.from(drawer.querySelectorAll<HTMLElement>(selector)).filter(
+        el => !el.hasAttribute('disabled') && el.offsetParent !== null
+      );
+    }
+
+    function handleKeydown(e: KeyboardEvent) {
+      if (!isOpen) return;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeDrawer();
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const focusable = getFocusableElements();
+        if (focusable.length === 0) {
+          e.preventDefault();
+          return;
+        }
+
+        const firstEl = focusable[0];
+        const lastEl = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          // Shift + Tab: wrap from first to last
+          if (document.activeElement === firstEl || !drawer.contains(document.activeElement)) {
+            e.preventDefault();
+            lastEl.focus();
+          }
+        } else {
+          // Tab: wrap from last to first
+          if (document.activeElement === lastEl || !drawer.contains(document.activeElement)) {
+            e.preventDefault();
+            firstEl.focus();
+          }
+        }
+      }
+    }
+
+    function openDrawer() {
+      if (isOpen) return;
+      isOpen = true;
+      drawer.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      scrim.classList.add('is-open');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+
+      if (pageShell) pageShell.setAttribute('inert', '');
+      window.addEventListener('keydown', handleKeydown);
+      closeBtn.focus();
+    }
+
+    function closeDrawer() {
+      if (!isOpen) return;
+      isOpen = false;
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      scrim.classList.remove('is-open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+
+      window.removeEventListener('keydown', handleKeydown);
+      if (pageShell) pageShell.removeAttribute('inert');
+      toggleBtn.focus();
+    }
+
+    toggleBtn.addEventListener('click', openDrawer);
+    closeBtn.addEventListener('click', closeDrawer);
+    scrim.addEventListener('click', closeDrawer);
+  }
+
+  setupMobileDrawer();
+</script>
+
+<style>
+  .drawer-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background-color: rgba(2, 6, 23, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
+  }
+
+  .drawer-scrim.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-nav-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(320px, 85vw);
+    z-index: 100;
+    background-color: var(--color-surface);
+    border-left: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform var(--transition-normal);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .mobile-nav-drawer.is-open {
+    transform: translateX(0);
+  }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .drawer-title {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .drawer-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .drawer-nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .drawer-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .drawer-nav-link:hover {
+    color: var(--color-text);
+    background-color: var(--color-surface-hover);
+  }
+
+  .drawer-nav-link.active {
+    color: var(--color-indigo-400);
+    background-color: rgba(99, 102, 241, 0.12);
+    font-weight: 600;
+  }
+
+  .active-dot {
+    color: var(--color-indigo-400);
+    font-size: 18px;
+  }
+
+  .drawer-footer {
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .drawer-privacy-pill {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-emerald-400);
+    background-color: var(--color-emerald-950);
+    border: 1px solid var(--color-emerald-800);
+    border-radius: var(--radius-full);
+  }
+</style>

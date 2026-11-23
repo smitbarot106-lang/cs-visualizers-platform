@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="BFS & DFS Graph Visualizer"
+  description="Breadth-First Search and Depth-First Search graph traversal visualizer."
+  currentRoute="/visualizers/bfs-dfs/"
+>
+  <RouteScaffold
+    title="BFS & DFS Visualizer"
+    category="VISUALIZER"
+    badge="GRAPHS & TREES"
+    description="Interactive graph traversal visualizer comparing Queue-based Breadth-First Search against Stack-based Depth-First Search."
+    scheduledPhase="Phase 3 Implementation"
+    features={[
+      'Queue and Stack live inspection panels',
+      'Visited-node set tracking with color-coded node states',
+      'Beginner-friendly preset graphs (Binary Tree, Grid, Cycle Graph)',
+      'Step-by-step traversal order and path reconstruction',
+    ]}
+  />
+</BaseLayout>

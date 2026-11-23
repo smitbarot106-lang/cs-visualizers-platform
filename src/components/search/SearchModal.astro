@@ -1,0 +1,392 @@
+---
+// ============================================================================
+// SearchModal — Accessible In-Memory Quick Finder
+// Native HTML5 <dialog> with keyboard shortcuts (Ctrl+K, Esc) and focus trap
+// ============================================================================
+
+const SEARCH_ITEMS = [
+  {
+    title: 'Binary Search Visualizer',
+    description: 'Low, Mid, High pointer visualization with comparison narration',
+    category: 'Visualizer',
+    href: '/visualizers/binary-search/',
+    tags: ['binary search', 'algorithm', 'pointer', 'search', 'o(log n)'],
+  },
+  {
+    title: 'Sorting Visualizer',
+    description: 'Bubble, Selection, and Insertion Sort with comparison/swap counters',
+    category: 'Visualizer',
+    href: '/visualizers/sorting/',
+    tags: ['sorting', 'bubble sort', 'selection sort', 'insertion sort', 'array'],
+  },
+  {
+    title: 'BFS & DFS Visualizer',
+    description: 'Breadth-First and Depth-First graph traversals with Queue/Stack inspect',
+    category: 'Visualizer',
+    href: '/visualizers/bfs-dfs/',
+    tags: ['bfs', 'dfs', 'graph', 'tree', 'traversal', 'queue', 'stack'],
+  },
+  {
+    title: 'JSON Formatter & Validator',
+    description: 'Format, validate and minify JSON with beginner syntax error guidance',
+    category: 'Developer Tool',
+    href: '/tools/json-formatter/',
+    tags: ['json', 'formatter', 'validator', 'minify', 'lint'],
+  },
+  {
+    title: 'Number Base Converter',
+    description: 'Binary, Decimal, Octal and Hexadecimal with step-by-step division math',
+    category: 'Developer Tool',
+    href: '/tools/number-base-converter/',
+    tags: ['base', 'converter', 'binary', 'hexadecimal', 'decimal', 'octal', 'radix'],
+  },
+  {
+    title: 'Big-O Complexity Cheat Sheet',
+    description: 'Interactive time and space complexity reference for common data structures',
+    category: 'Guide',
+    href: '/guides/big-o-cheat-sheet/',
+    tags: ['big o', 'complexity', 'time complexity', 'space complexity', 'cheat sheet'],
+  },
+];
+---
+
+<dialog id="search-dialog" class="search-dialog" aria-labelledby="search-modal-title">
+  <div class="search-modal-box">
+    <!-- Header Input Zone -->
+    <header class="search-input-wrapper">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input
+        type="search"
+        id="search-input"
+        class="search-input"
+        placeholder="Type a tool, visualizer, or algorithm..."
+        aria-label="Search visualizers and tools"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button type="button" id="search-close-btn" class="modal-close-btn" aria-label="Close search">
+        <kbd aria-hidden="true">ESC</kbd>
+      </button>
+    </header>
+
+    <!-- Suggestion Chips -->
+    <div class="search-chips-row" aria-label="Quick suggestions">
+      <span class="chips-label">Quick:</span>
+      <button type="button" class="search-chip" data-chip="Binary Search">Binary Search</button>
+      <button type="button" class="search-chip" data-chip="Sorting">Sorting</button>
+      <button type="button" class="search-chip" data-chip="JSON">JSON Formatter</button>
+      <button type="button" class="search-chip" data-chip="Base">Base Converter</button>
+    </div>
+
+    <!-- Search Results / Item List -->
+    <div class="search-results-zone">
+      <ul id="search-results-list" class="search-results-list" role="listbox">
+        {SEARCH_ITEMS.map((item, idx) => (
+          <li class="search-result-item" role="option" aria-selected="false" data-item-idx={idx} data-tags={item.tags.join(' ')}>
+            <a href={item.href} class="search-result-link">
+              <div class="result-meta">
+                <span class="result-title">{item.title}</span>
+                <span class="result-category">{item.category}</span>
+              </div>
+              <p class="result-desc">{item.description}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div id="search-empty-state" class="search-empty-state" style="display: none;">
+        <p>No matching visualizers or tools found.</p>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  function setupSearchModal() {
+    const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
+    const input = document.getElementById('search-input') as HTMLInputElement | null;
+    const closeBtn = document.getElementById('search-close-btn');
+    const resultsList = document.getElementById('search-results-list');
+    const emptyState = document.getElementById('search-empty-state');
+    const chips = document.querySelectorAll<HTMLButtonElement>('.search-chip');
+    const pageShell = document.getElementById('page-shell');
+
+    if (!dialog || !input || !closeBtn || !resultsList) return;
+
+    let lastTrigger: HTMLElement | null = null;
+
+    function openModal(triggerElement?: HTMLElement | null) {
+      if (dialog?.open) return;
+      lastTrigger = triggerElement || (document.activeElement as HTMLElement | null);
+      dialog?.showModal();
+      if (pageShell) pageShell.setAttribute('inert', '');
+      input?.focus();
+      filterResults('');
+    }
+
+    function closeModal() {
+      if (!dialog?.open) return;
+      dialog.close();
+      if (pageShell) pageShell.removeAttribute('inert');
+      if (lastTrigger) lastTrigger.focus();
+    }
+
+    function filterResults(query: string) {
+      const q = query.trim().toLowerCase();
+      const items = resultsList?.querySelectorAll<HTMLLIElement>('.search-result-item') || [];
+      let matchCount = 0;
+
+      items.forEach(item => {
+        const title = item.querySelector('.result-title')?.textContent?.toLowerCase() || '';
+        const desc = item.querySelector('.result-desc')?.textContent?.toLowerCase() || '';
+        const tags = item.dataset.tags || '';
+
+        const isMatch = !q || title.includes(q) || desc.includes(q) || tags.includes(q);
+        if (isMatch) {
+          item.style.display = '';
+          matchCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      if (emptyState) {
+        emptyState.style.display = matchCount === 0 ? 'block' : 'none';
+      }
+    }
+
+    input.addEventListener('input', () => {
+      filterResults(input.value);
+    });
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const term = chip.dataset.chip || '';
+        input.value = term;
+        filterResults(term);
+        input.focus();
+      });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+
+    dialog.addEventListener('click', (e) => {
+      const rect = dialog.getBoundingClientRect();
+      const isInDialog = (
+        rect.top <= e.clientY &&
+        e.clientY <= rect.top + rect.height &&
+        rect.left <= e.clientX &&
+        e.clientX <= rect.left + rect.width
+      );
+      if (!isInDialog) {
+        closeModal();
+      }
+    });
+
+    dialog.addEventListener('close', () => {
+      if (pageShell) pageShell.removeAttribute('inert');
+      if (lastTrigger) lastTrigger.focus();
+    });
+
+    document.addEventListener('open-search-modal', () => {
+      openModal();
+    });
+  }
+
+  setupSearchModal();
+</script>
+
+<style>
+  .search-dialog {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    padding: 0;
+    max-width: 600px;
+    width: min(92vw, 600px);
+    box-shadow: var(--shadow-lg);
+    margin: 80px auto auto auto;
+  }
+
+  .search-dialog::backdrop {
+    background-color: rgba(2, 6, 23, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .search-modal-box {
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+  }
+
+  .search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .search-icon {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+  }
+
+  .search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    color: var(--color-text);
+  }
+
+  .search-input::placeholder {
+    color: var(--color-text-dim);
+  }
+
+  .modal-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    min-width: 44px;
+    padding: var(--space-1) var(--space-2);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+  }
+
+  .modal-close-btn kbd {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1;
+    padding: 4px 8px;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-dim);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .modal-close-btn:hover kbd {
+    color: var(--color-text);
+    border-color: var(--color-indigo-400);
+  }
+
+  .search-chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--color-border-subtle);
+    background-color: rgba(15, 23, 42, 0.4);
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .chips-label {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    color: var(--color-text-dim);
+    font-weight: 600;
+  }
+
+  .search-chip {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .search-chip:hover {
+    background-color: var(--color-indigo-600);
+    color: #FFFFFF;
+    border-color: var(--color-indigo-500);
+  }
+
+  .search-results-zone {
+    padding: var(--space-3) var(--space-2);
+    overflow-y: auto;
+    max-height: 400px;
+  }
+
+  .search-results-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .search-result-link {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--color-text);
+    transition: background-color var(--transition-fast);
+  }
+
+  .search-result-link:hover,
+  .search-result-link:focus-visible {
+    background-color: var(--color-surface-hover);
+    outline: none;
+  }
+
+  .result-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .result-title {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .result-category {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-indigo-400);
+    background-color: rgba(99, 102, 241, 0.1);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+  }
+
+  .result-desc {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+
+  .search-empty-state {
+    padding: var(--space-8) var(--space-4);
+    text-align: center;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-text-dim);
+  }
+</style>

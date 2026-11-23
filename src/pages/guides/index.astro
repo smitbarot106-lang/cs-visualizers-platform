@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const GUIDES = [
+  {
+    title: 'Big-O Complexity Cheat Sheet',
+    category: 'ALGORITHM THEORY',
+    badge: 'COMPLEXITY REFERENCE',
+    description: 'Interactive Big-O reference connecting asymptotic growth curves directly to our interactive visualizers.',
+    href: '/guides/big-o-cheat-sheet/',
+  },
+  {
+    title: 'JSON Fundamentals: Syntax, Types & Parsing',
+    category: 'EDUCATIONAL GUIDE',
+    badge: 'DATA FORMATS',
+    description: 'Understand the formal structure of JSON, lexical tokens, AST generation, and how to debug common JSON mistakes.',
+    href: '/guides/json-fundamentals/',
+  },
+  {
+    title: 'Number Systems: Binary, Octal, Decimal & Hexadecimal',
+    category: 'EDUCATIONAL GUIDE',
+    badge: 'RADIX ARITHMETIC',
+    description: 'Demystifying positional number systems, repeated division algorithms, and power-of-two groupings in computing.',
+    href: '/guides/number-systems/',
+  },
+  {
+    title: 'Understanding Binary Search & O(log n) Efficiency',
+    category: 'EDUCATIONAL GUIDE',
+    badge: 'ALGORITHM THEORY',
+    description: 'A deep dive into divide-and-conquer searching, loop invariants, pointer mechanics, and logarithmic scaling.',
+    href: '/guides/binary-search/',
+  },
+  {
+    title: 'Comparison Sorting Demystified: Bubble, Selection & Insertion',
+    category: 'EDUCATIONAL GUIDE',
+    badge: 'ALGORITHM THEORY',
+    description: 'Understand the mechanics, comparisons, swaps, stability, and trade-offs of elementary O(n²) sorting algorithms.',
+    href: '/guides/sorting-algorithms/',
+  },
+  {
+    title: 'Graph Traversal Foundations: When to Use BFS vs DFS',
+    category: 'EDUCATIONAL GUIDE',
+    badge: 'GRAPH THEORY',
+    description: 'The core paradigms of graph traversal: level-order shortest path with FIFO queues vs deep path exploration with LIFO stacks.',
+    href: '/guides/bfs-dfs/',
+  },
+];
+---
+
+<BaseLayout
+  title="CS Guides & Big-O Reference"
+  description="Beginner-friendly computer science guides and Big-O complexity reference linking theory to interactive visualizers."
+  currentRoute="/guides/"
+>
+  <div class="guides-directory container">
+    <header class="directory-header">
+      <div class="header-badge">
+        <span class="badge-dot"></span>
+        <span>EDUCATIONAL ARCHIVE</span>
+      </div>
+      <h1 class="directory-title">Computer Science Guides & Cheat Sheets</h1>
+      <p class="directory-desc">
+        Comprehensive, plain-English educational guides designed to bridge theoretical computer science concepts with hands-on interactive tools and visualizers.
+      </p>
+    </header>
+
+    <div class="guides-grid">
+      {GUIDES.map(guide => (
+        <a href={guide.href} class="guide-card">
+          <div class="card-meta">
+            <span class="category-tag">{guide.category}</span>
+            <span class="badge-tag">{guide.badge}</span>
+          </div>
+          <h2 class="card-title">{guide.title}</h2>
+          <p class="card-desc">{guide.description}</p>
+          <div class="card-action">
+            <span>Read guide</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .guides-directory {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-16);
+  }
+
+  .directory-header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto var(--space-12);
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    background-color: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-4);
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-primary-400);
+    border-radius: 50%;
+  }
+
+  .directory-title {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-4);
+  }
+
+  .directory-desc {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .guides-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .guide-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6);
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .guide-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-primary-500);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .category-tag {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-primary-400);
+    letter-spacing: 0.05em;
+  }
+
+  .badge-tag {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    background-color: var(--color-bg-elevated);
+    color: var(--color-text-secondary);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .card-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: var(--leading-snug);
+    margin-bottom: var(--space-2);
+  }
+
+  .card-desc {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    margin-bottom: var(--space-6);
+    flex: 1;
+  }
+
+  .card-action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-primary-400);
+    transition: gap var(--transition-fast);
+  }
+
+  .guide-card:hover .card-action {
+    gap: var(--space-2);
+  }
+</style>

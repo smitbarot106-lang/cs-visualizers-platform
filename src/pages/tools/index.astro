@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RouteScaffold from '../../components/common/RouteScaffold.astro';
+---
+
+<BaseLayout
+  title="Developer Tools Directory"
+  description="Client-side developer tools: JSON Formatter & Validator and Number Base Converter."
+  currentRoute="/tools/"
+>
+  <RouteScaffold
+    title="Privacy-First Developer Utilities"
+    category="DIRECTORY"
+    badge="DEV TOOLS"
+    description="In-browser utilities prioritizing educational explanations, privacy, and zero data transmission."
+    scheduledPhase="Phase 2 Implementation"
+    features={[
+      'JSON Formatter & Validator: Beginner error messages with exact line/column hints',
+      'Number Base Converter: Binary, Decimal, Octal, Hex with step-by-step division math',
+      '100% Client-Side Execution: Zero server roundtrips, zero storage of your data',
+      'Safe Rendering: Strict DOM textContent usage, zero unsafe innerHTML',
+    ]}
+  />
+</BaseLayout>
