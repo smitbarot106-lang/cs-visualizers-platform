@@ -1,7 +1,8 @@
 /* ==========================================================================
    Interactive CS Visualizers & Developer Tools — Design Tokens
-   Palette: Slate (neutral surfaces), Indigo (interactions), Emerald (success), Amber (warning)
-   WCAG Conformance: 2.1 / 2.2 AA Contrast Compliance
+   Refined Dark Theme Design System: Slate Neutral Surfaces, Controlled Indigo Accents,
+   Emerald Success States, and Balanced Mathematical Radix Accents.
+   WCAG 2.1 / 2.2 AA Contrast Compliance (Headings AAA > 14:1, Body AA > 7:1)
    ========================================================================== */
 
 :root {
@@ -9,21 +10,23 @@
      1. Semantic Color Palette Tokens
      ------------------------------------------------------------------------ */
 
-  /* Slate Scale — Dark mode surfaces & text */
-  --color-slate-950: #020617;
-  --color-slate-900: #0F172A;
-  --color-slate-850: #131E35;
-  --color-slate-800: #1E293B;
-  --color-slate-700: #334155;
-  --color-slate-600: #475569;
-  --color-slate-500: #64748B;
-  --color-slate-400: #94A3B8;
-  --color-slate-300: #CBD5E1;
-  --color-slate-200: #E2E8F0;
-  --color-slate-100: #F1F5F9;
-  --color-slate-50:  #F8FAFC;
+  /* Slate Scale — Deep neutral slate surfaces & high-contrast typography */
+  --color-slate-950: #080C15; /* Deep ground */
+  --color-slate-900: #0D121F; /* Main application background */
+  --color-slate-850: #121829; /* Card surface */
+  --color-slate-800: #192138; /* Elevated component surface */
+  --color-slate-750: #202B47; /* Hover surface */
+  --color-slate-700: #2D3B5E; /* Defined borders */
+  --color-slate-600: #44547B; /* Subtle dividers */
+  --color-slate-500: #64748B; /* Tertiary / Dim metadata */
+  --color-slate-400: #94A3B8; /* Secondary body text (readable, non-glaring) */
+  --color-slate-300: #CBD5E1; /* Subheadings */
+  --color-slate-200: #E2E8F0; /* High contrast text */
+  --color-slate-100: #F1F5F9; /* Bright accents */
+  --color-slate-50:  #F8FAFC; /* Primary heading off-white */
 
-  /* Indigo Scale — Primary actions, focus, links */
+  /* Indigo Scale — Restrained primary actions, focus, badges */
+  --color-indigo-950: #1E1B4B;
   --color-indigo-900: #312E81;
   --color-indigo-700: #4338CA;
   --color-indigo-600: #4F46E5;
@@ -31,53 +34,81 @@
   --color-indigo-400: #818CF8;
   --color-indigo-300: #A5B4FC;
 
-  /* Emerald Scale — Algorithm completion, sorted elements, matched items */
+  /* Emerald Scale — Algorithm completion, sorted elements, valid JSON */
   --color-emerald-950: #022C22;
   --color-emerald-800: #065F46;
   --color-emerald-600: #059669;
   --color-emerald-500: #10B981;
   --color-emerald-400: #34D399;
 
-  /* Amber Scale — Pointers, active comparisons, warnings */
+  /* Amber Scale — Radix values, active comparisons, warnings */
   --color-amber-950: #451A03;
   --color-amber-800: #92400E;
   --color-amber-600: #D97706;
   --color-amber-500: #F59E0B;
   --color-amber-400: #FBBF24;
 
-  /* Cyan Scale — Secondary pointers, queue elements, alternate tracking */
+  /* Cyan Scale — Search pointers, queue elements, graph nodes */
   --color-cyan-900: #164E63;
   --color-cyan-500: #06B6D4;
   --color-cyan-400: #22D3EE;
 
-  /* Semantic UI Bindings */
+  /* Purple Scale — Tree traversals, recursive call frames */
+  --color-purple-900: #3B0764;
+  --color-purple-500: #A855F7;
+  --color-purple-400: #C084FC;
+
+  /* ------------------------------------------------------------------------
+     2. Semantic Aliases & Component UI Bindings
+     ------------------------------------------------------------------------ */
+
+  /* Backgrounds & Surfaces */
   --color-bg: var(--color-slate-900);
   --color-bg-alt: var(--color-slate-950);
-  --color-surface: var(--color-slate-800);
-  --color-surface-elevated: var(--color-slate-850);
-  --color-surface-hover: #26354D;
-  --color-border: var(--color-slate-700);
-  --color-border-subtle: var(--color-slate-800);
+  --color-bg-card: var(--color-slate-850);
+  --color-bg-elevated: var(--color-slate-800);
+  --color-bg-hover: var(--color-slate-750);
+  --color-surface: var(--color-slate-850);
+  --color-surface-elevated: var(--color-slate-800);
+  --color-surface-hover: var(--color-slate-750);
+
+  /* Borders */
+  --color-border: rgba(148, 163, 184, 0.16);
+  --color-border-subtle: rgba(148, 163, 184, 0.08);
+  --color-border-hover: rgba(99, 102, 241, 0.35);
   --color-border-active: var(--color-indigo-500);
 
+  /* Typography Colors */
   --color-text: var(--color-slate-50);
+  --color-text-primary: var(--color-slate-50);
+  --color-text-secondary: var(--color-slate-400);
   --color-text-muted: var(--color-slate-400);
   --color-text-dim: var(--color-slate-500);
 
+  /* Primary Interactive */
   --color-primary: var(--color-indigo-500);
   --color-primary-hover: var(--color-indigo-400);
+  --color-primary-300: var(--color-indigo-300);
+  --color-primary-400: var(--color-indigo-400);
+  --color-primary-500: var(--color-indigo-500);
+  --color-primary-600: var(--color-indigo-600);
   --color-primary-text: #FFFFFF;
 
+  /* Status States */
   --color-success: var(--color-emerald-400);
-  --color-success-bg: rgba(16, 185, 129, 0.12);
-  --color-success-border: var(--color-emerald-500);
+  --color-success-bg: rgba(16, 185, 129, 0.08);
+  --color-success-border: rgba(16, 185, 129, 0.25);
 
   --color-warning: var(--color-amber-400);
-  --color-warning-bg: rgba(245, 158, 11, 0.12);
-  --color-warning-border: var(--color-amber-500);
+  --color-warning-bg: rgba(245, 158, 11, 0.08);
+  --color-warning-border: rgba(245, 158, 11, 0.25);
+
+  --color-error: #F87171;
+  --color-error-bg: rgba(239, 68, 68, 0.08);
+  --color-error-border: rgba(239, 68, 68, 0.25);
 
   /* ------------------------------------------------------------------------
-     2. 8px Modular Spacing Scale
+     3. 8px Modular Spacing Scale
      ------------------------------------------------------------------------ */
   --space-0: 0px;
   --space-1: 4px;
@@ -94,10 +125,10 @@
   /* Layout Widths */
   --container-max: 1200px;
   --reading-max: 760px;
-  --gutter: 16px;
+  --gutter: 20px;
 
   /* ------------------------------------------------------------------------
-     3. Typography Scales & Weights
+     4. Typography Scales & Weights
      ------------------------------------------------------------------------ */
   --text-xs: 12px;
   --text-sm: 14px;
@@ -110,6 +141,7 @@
 
   --leading-none: 1;
   --leading-tight: 1.25;
+  --leading-snug: 1.375;
   --leading-normal: 1.5;
   --leading-relaxed: 1.65;
 
@@ -119,7 +151,7 @@
   --tracking-wider: 0.05em;
 
   /* ------------------------------------------------------------------------
-     4. Radii & Elevations
+     5. Radii & Elevations
      ------------------------------------------------------------------------ */
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -127,12 +159,14 @@
   --radius-xl: 16px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.12);
 
   /* ------------------------------------------------------------------------
-     5. Focus & Transitions
+     6. Focus & Transitions
      ------------------------------------------------------------------------ */
   --focus-ring-width: 2px;
   --focus-ring-color: var(--color-indigo-400);
