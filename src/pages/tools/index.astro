@@ -1,24 +1,280 @@
 ---
+// ============================================================================
+// Developer Tools Directory (Route: /tools/)
+// In-browser utilities prioritizing educational explanations, privacy, and zero data transmission
+// ============================================================================
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import RouteScaffold from '../../components/common/RouteScaffold.astro';
+
+const TOOLS = [
+  {
+    title: 'JSON Formatter & Validator',
+    category: 'DATA UTILITIES',
+    badge: 'Syntax AST Lint',
+    theme: 'emerald',
+    href: '/tools/json-formatter/',
+    description: 'Format, validate, and minify JSON payloads in your browser. Features syntax error detection with exact line and column indicators, sample fixtures, and clipboard integration.',
+    highlights: [
+      'Real-Time Syntax Diagnostic Engine',
+      'Precise Line & Column Error Carets',
+      '2-Space, 4-Space & Minify Formatting',
+      '100% In-Memory Local Processing',
+    ],
+  },
+  {
+    title: 'Number Base Converter',
+    category: 'RADIX ARITHMETIC',
+    badge: 'Binary • Octal • Decimal • Hex',
+    theme: 'amber',
+    href: '/tools/number-base-converter/',
+    description: 'Convert integers between Binary (base 2), Octal (base 8), Decimal (base 10), and Hexadecimal (base 16) in real time. Includes step-by-step repeated division arithmetic and arbitrary BigInt precision.',
+    highlights: [
+      '4-Radix Synchronized Inputs',
+      'Educational Step-by-Step Division Math',
+      'Arbitrary Precision BigInt Support',
+      'Bit-Width Detection & Clean Prefixes',
+    ],
+  },
+];
 ---
 
 <BaseLayout
-  title="Developer Tools Directory"
-  description="Client-side developer tools: JSON Formatter & Validator and Number Base Converter."
+  title="Developer Tools Directory — Privacy-First CS Utilities"
+  description="Client-side developer utilities: JSON Formatter & Validator and Number Base Converter with step-by-step arithmetic and zero tracking."
   currentRoute="/tools/"
 >
-  <RouteScaffold
-    title="Privacy-First Developer Utilities"
-    category="DIRECTORY"
-    badge="DEV TOOLS"
-    description="In-browser utilities prioritizing educational explanations, privacy, and zero data transmission."
-    scheduledPhase="Phase 2 Implementation"
-    features={[
-      'JSON Formatter & Validator: Beginner error messages with exact line/column hints',
-      'Number Base Converter: Binary, Decimal, Octal, Hex with step-by-step division math',
-      '100% Client-Side Execution: Zero server roundtrips, zero storage of your data',
-      'Safe Rendering: Strict DOM textContent usage, zero unsafe innerHTML',
-    ]}
-  />
+  <div class="tools-directory container">
+    <header class="directory-header">
+      <div class="header-badge">
+        <span class="badge-dot" aria-hidden="true"></span>
+        <span>100% CLIENT-SIDE • ZERO TELEMETRY • NO DATA SENT</span>
+      </div>
+      <h1 class="directory-title">Privacy-First Developer Tools</h1>
+      <p class="directory-lead">
+        Fast, offline-ready utility engines designed for educational transparency and immediate development tasks. All parsing and conversion executes entirely in your browser.
+      </p>
+    </header>
+
+    <div class="tools-grid">
+      {TOOLS.map(tool => (
+        <article class="tool-card">
+          <div class="card-meta">
+            <span class={`theme-pill ${tool.theme}`}>{tool.category}</span>
+            <span class="badge-pill">{tool.badge}</span>
+          </div>
+
+          <h2 class="card-title">
+            <a href={tool.href}>{tool.title}</a>
+          </h2>
+
+          <p class="card-desc">{tool.description}</p>
+
+          <ul class="highlights-list">
+            {tool.highlights.map(h => (
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4EDEA3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>{h}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div class="card-footer">
+            <a href={tool.href} class="btn-launch">
+              <span>Open Tool</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  .tools-directory {
+    padding-top: var(--space-10);
+    padding-bottom: var(--space-16);
+  }
+
+  .directory-header {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto var(--space-12);
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 4px 12px;
+    background-color: rgba(78, 222, 163, 0.08);
+    border: 1px solid rgba(78, 222, 163, 0.25);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-emerald-400);
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-4);
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-emerald-400);
+    border-radius: 50%;
+  }
+
+  .directory-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-3);
+  }
+
+  .directory-lead {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  @media (min-width: 640px) {
+    .tools-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .tool-card {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .tool-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .theme-pill {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+  }
+  .theme-pill.emerald {
+    color: var(--color-emerald-400);
+    background-color: rgba(78, 222, 163, 0.1);
+    border: 1px solid rgba(78, 222, 163, 0.25);
+  }
+  .theme-pill.amber {
+    color: var(--color-amber-400);
+    background-color: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  .badge-pill {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-slate-300);
+    background-color: rgba(255, 255, 255, 0.06);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .card-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: var(--leading-snug);
+    margin-bottom: var(--space-2);
+  }
+
+  .card-title a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+  .card-title a:hover {
+    color: var(--color-cyan-400);
+  }
+
+  .card-desc {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    margin-bottom: var(--space-5);
+  }
+
+  .highlights-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-slate-300);
+    flex: 1;
+  }
+  .highlights-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .card-footer {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .btn-launch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    width: 100%;
+    min-height: 44px; /* Accessible 44px touch target */
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #ffffff;
+    background-color: var(--color-primary-600);
+    border: 1px solid var(--color-primary-500);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+  .btn-launch:hover {
+    background-color: var(--color-primary-500);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
+</style>

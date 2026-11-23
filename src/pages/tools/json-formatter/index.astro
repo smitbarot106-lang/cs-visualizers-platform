@@ -634,17 +634,21 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     font-size: var(--text-xs);
     font-weight: 600;
     color: var(--color-text-secondary);
-    background-color: transparent;
+    background-color: var(--color-slate-800);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    padding: 4px 10px;
-    min-height: 28px;
+    padding: 8px 14px;
+    min-height: 44px; /* Accessible 44px touch target (resolving RISK-002) */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     transition: all var(--transition-fast);
   }
   .action-btn-sm:hover {
-    color: var(--color-primary-400);
-    border-color: var(--color-primary-500);
+    color: var(--color-cyan-400);
+    border-color: var(--color-cyan-400);
+    background-color: rgba(76, 215, 246, 0.08);
   }
 
   .textarea-wrapper {
