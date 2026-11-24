@@ -7,42 +7,57 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const FEATURED_VISUALIZERS = [
   {
-    title: 'Binary Search Visualizer',
-    description: 'Track Low, Mid, and High pointers step-by-step with synchronized pseudocode and plain-English narration.',
+    index: '01',
+    title: 'Binary Search',
+    description: 'Track the Low, Mid and High pointers as the search interval halves, with synchronized pseudocode and plain-English narration.',
     href: '/visualizers/binary-search/',
-    badge: 'Search',
-    color: 'indigo',
+    meta: 'O(log n)',
   },
   {
-    title: 'Sorting Visualizer',
-    description: 'Observe Bubble Sort, Selection Sort, and Insertion Sort with comparison and swap counters.',
+    index: '02',
+    title: 'Sorting Algorithms',
+    description: 'Compare Bubble, Selection and Insertion Sort side by side with live comparison and swap counters.',
     href: '/visualizers/sorting/',
-    badge: 'Sorting',
-    color: 'emerald',
+    meta: 'O(n²)',
   },
   {
-    title: 'BFS & DFS Graph Visualizer',
-    description: 'Inspect Queue and Stack operations with visited-node tracking across structured preset graphs.',
+    index: '03',
+    title: 'BFS & DFS Graphs',
+    description: 'Watch the Queue and Stack evolve while visited nodes and examined edges light up across preset graphs.',
     href: '/visualizers/bfs-dfs/',
-    badge: 'Graphs & Trees',
-    color: 'cyan',
+    meta: 'O(V + E)',
   },
 ];
 
 const FEATURED_TOOLS = [
   {
     title: 'JSON Formatter & Validator',
-    description: 'Format, validate, and minify JSON with beginner-friendly line/column syntax error explanations.',
+    description: 'Format, validate and minify JSON. Syntax errors are explained in plain English with line and column pointers.',
     href: '/tools/json-formatter/',
-    badge: 'Developer Tool',
   },
   {
     title: 'Number Base Converter',
-    description: 'Convert between Binary, Decimal, Octal, and Hexadecimal with step-by-step division and place-value math.',
+    description: 'Convert between binary, decimal, octal and hex with the division and place-value math shown step by step.',
     href: '/tools/number-base-converter/',
-    badge: 'Radix Conversion',
   },
 ];
+
+const PRINCIPLES = [
+  {
+    title: 'Reversible by design',
+    desc: 'Every step is a precomputed snapshot, so you can scrub backwards as easily as forwards. No playback drift.',
+  },
+  {
+    title: 'Nothing leaves your browser',
+    desc: 'Algorithms, conversions and JSON parsing all run locally. There is no backend to send data to.',
+  },
+  {
+    title: 'Built for keyboards and screen readers',
+    desc: 'Every control is reachable by keyboard, and each step is announced through an aria-live narration.',
+  },
+];
+
+const DEMO_ARRAY = [2, 5, 8, 12, 16, 23, 38, 56, 72];
 ---
 
 <BaseLayout
@@ -50,400 +65,564 @@ const FEATURED_TOOLS = [
   description="Don't just see the answer — understand how it works. Interactive algorithm visualizers, pointer tracking, and privacy-first developer tools."
   currentRoute="/"
 >
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="container hero-container">
-      <div class="hero-badge">
-        <span class="badge-dot"></span>
-        <span>Open Educational Platform • 100% Client-Side Privacy</span>
-      </div>
-
-      <h1 class="hero-title">
-        Don’t just see the answer — <br />
-        <span class="gradient-text">understand how it works.</span>
-      </h1>
-
-      <p class="hero-lead">
-        Step-by-step interactive visualizers for core computer science algorithms and everyday developer tools. 
-        Featuring reversible stepping, variable watch, synchronized pseudocode, and zero tracking.
-      </p>
-
-      <div class="hero-actions">
-        <a href="/visualizers/binary-search/" class="btn-primary">
-          <span>Try Binary Search</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </a>
-        <a href="/tools/json-formatter/" class="btn-secondary">
-          <span>JSON Formatter</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Visualizers Grid -->
-  <section class="features-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Core Algorithm Visualizers</h2>
-        <p class="section-desc">Interactive step engines designed for CS students and interview preparation.</p>
-      </div>
-
-      <div class="cards-grid">
-        {FEATURED_VISUALIZERS.map(v => (
-          <a href={v.href} class="feature-card">
-            <div class="card-top">
-              <span class={`card-badge ${v.color}`}>{v.badge}</span>
-            </div>
-            <h3 class="card-title">{v.title}</h3>
-            <p class="card-desc">{v.description}</p>
-            <div class="card-link-row">
-              <span>Launch Visualizer</span>
-              <span aria-hidden="true">→</span>
-            </div>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Open educational platform</p>
+        <h1 class="hero-title">
+          Don&rsquo;t just see the answer.
+          <span class="hero-title-accent">Understand how it works.</span>
+        </h1>
+        <p class="hero-lead">
+          Step-by-step visualizers for core algorithms and everyday developer tools, with reversible stepping,
+          a live variable watch, and pseudocode that follows along.
+        </p>
+        <div class="hero-actions">
+          <a href="/visualizers/binary-search/" class="btn-primary">
+            Try Binary Search
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
           </a>
-        ))}
+          <a href="/tools/json-formatter/" class="btn-secondary">JSON Formatter</a>
+        </div>
       </div>
+
+      <figure class="hero-demo" aria-label="Illustration of a binary search for 23 in a sorted array">
+        <div class="demo-chrome">
+          <span class="demo-title">binary_search(arr, 23)</span>
+          <span class="demo-step">step 2 / 4</span>
+        </div>
+        <div class="demo-body">
+          <ol class="demo-array">
+            {DEMO_ARRAY.map((v, i) => (
+              <li class:list={['demo-cell', { out: i < 4, low: i === 4, high: i === 8 }]} data-i={i}>
+                <span class="demo-value">{v}</span>
+                <span class="demo-index">{i}</span>
+              </li>
+            ))}
+          </ol>
+          <div class="demo-pointers" aria-hidden="true">
+            <span class="ptr ptr-low" style="grid-column: 5">L</span>
+            <span class="ptr ptr-mid" style="grid-column: 7">M</span>
+            <span class="ptr ptr-high" style="grid-column: 9">H</span>
+          </div>
+          <p class="demo-narration">
+            <span class="demo-prompt">&gt;</span> arr[6] = 38 &gt; 23, so discard the right half. high = 5.
+          </p>
+        </div>
+        <figcaption class="sr-only">
+          Cells 0 to 3 are eliminated. Low points at index 4, mid at index 6 and high at index 8.
+        </figcaption>
+      </figure>
     </div>
   </section>
 
-  <!-- Developer Tools Section -->
-  <section class="tools-section">
+  <section class="section">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Privacy-First Developer Tools</h2>
-        <p class="section-desc">Practical utilities that explain errors in plain English instead of cryptic stack traces.</p>
-      </div>
+      <header class="section-header">
+        <p class="eyebrow">Visualizers</p>
+        <h2 class="section-title">Core algorithm visualizers</h2>
+        <p class="section-desc">Interactive step engines for CS coursework and interview preparation.</p>
+      </header>
+
+      <ul class="index-list">
+        {FEATURED_VISUALIZERS.map(v => (
+          <li>
+            <a href={v.href} class="index-row">
+              <span class="row-index">{v.index}</span>
+              <span class="row-main">
+                <span class="row-title">{v.title}</span>
+                <span class="row-desc">{v.description}</span>
+              </span>
+              <span class="row-meta">{v.meta}</span>
+              <span class="row-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <header class="section-header">
+        <p class="eyebrow">Developer tools</p>
+        <h2 class="section-title">Privacy-first utilities</h2>
+        <p class="section-desc">Practical tools that explain errors in plain English instead of cryptic stack traces.</p>
+      </header>
 
       <div class="tools-grid">
         {FEATURED_TOOLS.map(t => (
           <a href={t.href} class="tool-card">
-            <div class="card-top">
-              <span class="card-badge slate">{t.badge}</span>
-            </div>
-            <h3 class="card-title">{t.title}</h3>
-            <p class="card-desc">{t.description}</p>
-            <div class="card-link-row">
-              <span>Open Tool</span>
-              <span aria-hidden="true">→</span>
-            </div>
+            <h3 class="tool-title">{t.title}</h3>
+            <p class="tool-desc">{t.description}</p>
+            <span class="tool-link">Open tool <span aria-hidden="true">&rarr;</span></span>
           </a>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Educational & Privacy Principles -->
-  <section class="trust-section">
+  <section class="section">
     <div class="container">
-      <div class="trust-box">
-        <div class="trust-item">
-          <div class="trust-icon" aria-hidden="true">⏪</div>
-          <h3 class="trust-title">Fully Reversible</h3>
-          <p class="trust-desc">Step forward and backward. Precomputed immutable state snapshots eliminate playback bugs.</p>
-        </div>
-        <div class="trust-item">
-          <div class="trust-icon" aria-hidden="true">🛡️</div>
-          <h3 class="trust-title">Zero Data Transmission</h3>
-          <p class="trust-desc">All algorithms, conversions, and JSON parsing execute strictly inside your local browser.</p>
-        </div>
-        <div class="trust-item">
-          <div class="trust-icon" aria-hidden="true">♿</div>
-          <h3 class="trust-title">Accessible & Clean</h3>
-          <p class="trust-desc">Built with keyboard shortcuts, screen-reader narration (aria-live), and WCAG 2.2 AA standards.</p>
-        </div>
-      </div>
+      <ul class="principles">
+        {PRINCIPLES.map(p => (
+          <li class="principle">
+            <h3 class="principle-title">{p.title}</h3>
+            <p class="principle-desc">{p.desc}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .hero-section {
-    padding: var(--space-16) 0 var(--space-12);
-    border-bottom: 1px solid var(--color-border);
-    background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
-  .hero-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 860px;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-1) var(--space-4);
-    border-radius: var(--radius-full);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    font-family: var(--font-sans);
+  .eyebrow {
+    font-family: var(--font-mono);
     font-size: var(--text-xs);
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-6);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--color-indigo-400);
+    margin-bottom: var(--space-4);
   }
 
-  .badge-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: var(--radius-full);
-    background-color: var(--color-emerald-400);
+  /* Hero */
+  .hero {
+    padding: var(--space-16) 0 var(--space-20);
+    border-bottom: 1px solid var(--color-border);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.16) 0%, transparent 65%),
+      radial-gradient(circle at 90% 60%, rgba(168, 85, 247, 0.08) 0%, transparent 55%);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: var(--space-16);
+    }
   }
 
   .hero-title {
-    font-family: var(--font-sans);
-    font-size: clamp(32px, 5.5vw, 54px);
-    font-weight: 800;
-    line-height: var(--leading-tight);
-    letter-spacing: var(--tracking-tight);
-    margin-bottom: var(--space-4);
+    font-size: clamp(2.25rem, 5.5vw, var(--text-5xl));
+    line-height: 1.08;
+    font-weight: 700;
+    letter-spacing: -0.03em;
     color: var(--color-text);
+    text-wrap: balance;
   }
 
-  .gradient-text {
+  .hero-title-accent {
+    display: block;
     background: linear-gradient(135deg, #818CF8 0%, #38BDF8 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: var(--color-indigo-400);
   }
 
   .hero-lead {
-    font-family: var(--font-sans);
+    margin-top: var(--space-6);
+    max-width: 52ch;
     font-size: var(--text-lg);
     line-height: var(--leading-relaxed);
-    color: var(--color-text-muted);
-    max-width: 680px;
-    margin-bottom: var(--space-8);
+    color: var(--color-text-secondary);
   }
 
   .hero-actions {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: var(--space-3);
-    width: 100%;
+    margin-top: var(--space-8);
   }
 
-  @media (min-width: 480px) {
-    .hero-actions {
-      flex-direction: row;
-      justify-content: center;
-      width: auto;
-    }
-  }
-
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    height: 48px;
-    padding: 0 var(--space-6);
-    background-color: var(--color-indigo-600);
-    color: #FFFFFF;
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: var(--radius-md);
-    transition: background-color var(--transition-fast);
-  }
-
-  .btn-primary:hover {
-    background-color: var(--color-indigo-500);
-  }
-
+  .btn-primary,
   .btn-secondary {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: var(--space-2);
-    height: 48px;
-    padding: 0 var(--space-6);
-    background-color: var(--color-surface);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    font-family: var(--font-sans);
+    height: 44px;
+    padding: 0 var(--space-5);
+    border-radius: var(--radius-md);
     font-size: var(--text-sm);
     font-weight: 600;
-    text-decoration: none;
-    border-radius: var(--radius-md);
-    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: var(--color-primary-text);
+    border: 1px solid var(--color-primary);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+  }
+
+  .btn-secondary {
+    color: var(--color-text);
+    border: 1px solid var(--color-slate-600);
   }
 
   .btn-secondary:hover {
-    border-color: var(--color-indigo-500);
-    background-color: var(--color-surface-hover);
-  }
-
-  .features-section,
-  .tools-section {
-    padding: var(--space-12) 0;
-  }
-
-  .section-header {
-    margin-bottom: var(--space-8);
-  }
-
-  .section-title {
-    font-family: var(--font-sans);
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    letter-spacing: var(--tracking-tight);
-    color: var(--color-text);
-    margin-bottom: var(--space-2);
-  }
-
-  .section-desc {
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
-  }
-
-  .cards-grid,
-  .tools-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-  }
-
-  @media (min-width: 640px) {
-    .cards-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .cards-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .tools-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  .feature-card,
-  .tool-card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-6);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    text-decoration: none;
-    transition: transform var(--transition-fast), border-color var(--transition-fast);
-  }
-
-  .feature-card:hover,
-  .tool-card:hover {
-    border-color: var(--color-indigo-500);
-    transform: translateY(-2px);
-  }
-
-  .card-top {
-    display: flex;
-  }
-
-  .card-badge {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: var(--radius-sm);
-  }
-
-  .card-badge.indigo {
-    background-color: rgba(99, 102, 241, 0.15);
+    border-color: var(--color-indigo-400);
     color: var(--color-indigo-400);
   }
 
-  .card-badge.emerald {
-    background-color: rgba(16, 185, 129, 0.15);
-    color: var(--color-emerald-400);
+  /* Hero demo */
+  .hero-demo {
+    background: var(--color-slate-950);
+    border: 1px solid var(--color-slate-600);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    min-width: 0;
   }
 
-  .card-badge.cyan {
-    background-color: rgba(6, 182, 212, 0.15);
-    color: var(--color-cyan-400);
+  .demo-chrome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-dim);
   }
 
-  .card-badge.slate {
-    background-color: rgba(148, 163, 184, 0.15);
+  .demo-title {
     color: var(--color-slate-300);
   }
 
-  .card-title {
-    font-family: var(--font-sans);
-    font-size: var(--text-lg);
+  .demo-body {
+    padding: var(--space-6) var(--space-4) var(--space-5);
+  }
+
+  .demo-array {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .demo-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: var(--space-3) 0 var(--space-2);
+    border: 1px solid var(--color-slate-600);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    background: var(--color-slate-850);
+  }
+
+  .demo-value {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .demo-index {
+    font-size: 11px;
+    color: var(--color-text-dim);
+  }
+
+  .demo-cell.out {
+    opacity: 0.35;
+    border-style: dashed;
+  }
+
+  .demo-cell.low {
+    border-color: var(--color-cyan-400);
+  }
+
+  .demo-cell.high {
+    border-color: var(--color-purple-400);
+  }
+
+  .demo-cell[data-i='6'] {
+    border-color: var(--color-amber-400);
+    background: rgba(251, 191, 36, 0.08);
+  }
+
+  .demo-pointers {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: var(--space-2);
+  }
+
+  .ptr {
+    justify-self: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+  }
+
+  .ptr-low {
+    color: var(--color-cyan-400);
+    border: 1px solid var(--color-cyan-400);
+  }
+
+  .ptr-mid {
+    color: var(--color-amber-400);
+    border: 1px solid var(--color-amber-400);
+  }
+
+  .ptr-high {
+    color: var(--color-purple-400);
+    border: 1px solid var(--color-purple-400);
+  }
+
+  .demo-narration {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-relaxed);
+    color: var(--color-slate-300);
+  }
+
+  .demo-prompt {
+    color: var(--color-indigo-400);
+  }
+
+  /* Sections */
+  .section {
+    padding: var(--space-20) 0;
+  }
+
+  .section-alt {
+    background: var(--color-slate-950);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .section-header {
+    margin-bottom: var(--space-10);
+    max-width: 60ch;
+  }
+
+  .section-title {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     font-weight: 700;
     color: var(--color-text);
   }
 
-  .card-desc {
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
-    line-height: var(--leading-normal);
+  .section-desc {
+    margin-top: var(--space-3);
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
   }
 
-  .card-link-row {
-    margin-top: auto;
-    padding-top: var(--space-3);
+  /* Visualizer index rows */
+  .index-list {
+    list-style: none;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .index-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'idx main arrow'
+      'idx meta arrow';
+    gap: var(--space-1) var(--space-5);
+    align-items: start;
+    padding: var(--space-6) var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color var(--transition-fast);
+  }
+
+  @media (min-width: 720px) {
+    .index-row {
+      grid-template-columns: 56px minmax(0, 1fr) 100px 32px;
+      grid-template-areas: 'idx main meta arrow';
+      align-items: center;
+      padding: var(--space-6) var(--space-4);
+    }
+  }
+
+  .index-row:hover {
+    background: var(--color-slate-850);
+  }
+
+  .row-index {
+    grid-area: idx;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-dim);
+  }
+
+  .row-main {
+    grid-area: main;
     display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-family: var(--font-sans);
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .row-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text);
+  }
+
+  .row-desc {
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-secondary);
+    max-width: 62ch;
+  }
+
+  .row-meta {
+    grid-area: meta;
+    font-family: var(--font-mono);
     font-size: var(--text-xs);
+    color: var(--color-indigo-400);
+    margin-top: var(--space-2);
+  }
+
+  @media (min-width: 720px) {
+    .row-meta {
+      margin-top: 0;
+      justify-self: end;
+    }
+  }
+
+  .row-arrow {
+    grid-area: arrow;
+    color: var(--color-text-dim);
+    font-size: var(--text-lg);
+    transition: color var(--transition-fast), transform var(--transition-fast);
+    align-self: center;
+  }
+
+  .index-row:hover .row-arrow {
+    color: var(--color-indigo-400);
+    transform: translateX(4px);
+  }
+
+  /* Tools */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 720px) {
+    .tools-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .tool-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--transition-fast);
+  }
+
+  .tool-card:hover {
+    border-color: var(--color-indigo-400);
+  }
+
+  .tool-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .tool-desc {
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  .tool-link {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    font-size: var(--text-sm);
     font-weight: 600;
     color: var(--color-indigo-400);
   }
 
-  .trust-section {
-    padding: var(--space-8) 0 var(--space-16);
-  }
-
-  .trust-box {
+  /* Principles */
+  .principles {
+    list-style: none;
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-6);
-    background-color: var(--color-surface-elevated);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    padding: var(--space-8);
+    gap: var(--space-8);
   }
 
-  @media (min-width: 768px) {
-    .trust-box {
-      grid-template-columns: repeat(3, 1fr);
+  @media (min-width: 800px) {
+    .principles {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-10);
     }
   }
 
-  .trust-item {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+  .principle {
+    padding-top: var(--space-4);
+    border-top: 2px solid var(--color-indigo-400);
   }
 
-  .trust-icon {
-    font-size: 24px;
-    margin-bottom: var(--space-1);
+  .principle-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
   }
 
-  .trust-title {
-    font-family: var(--font-sans);
-    font-size: var(--text-base);
-    font-weight: 700;
-    color: var(--color-text);
-  }
-
-  .trust-desc {
-    font-family: var(--font-sans);
+  .principle-desc {
     font-size: var(--text-sm);
-    color: var(--color-text-muted);
-    line-height: var(--leading-normal);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      padding: var(--space-10) 0 var(--space-12);
+    }
+    .section {
+      padding: var(--space-12) 0;
+    }
+    .demo-cell {
+      padding: var(--space-2) 0 6px;
+    }
+    .demo-value {
+      font-size: 12px;
+    }
   }
 </style>

@@ -1,15 +1,12 @@
 /* ==========================================================================
-   Interactive CS Visualizers & Developer Tools — Design Tokens
-   Refined Dark Theme Design System: Obsidian Algorithmic Surfaces, Crisp Geometric Borders,
-   Restrained Indigo/Lavender Accents, Cyan/Mint Data States, and High-Contrast Typography.
-   WCAG 2.1 / 2.2 AA Contrast Compliance (Headings AAA > 14:1, Body AA > 7:1)
+   CS Visualizers - Design Tokens
+   Colour palette is the original brand identity: obsidian navy surfaces,
+   indigo / lavender primary actions with violet accents, and cyan / mint /
+   amber data-state colours. Layout, type scale, radii and spacing below are
+   the refined 2.0 values.
    ========================================================================== */
 
 :root {
-  /* ------------------------------------------------------------------------
-     1. Semantic Color Palette Tokens (Obsidian Algorithmic Specification)
-     ------------------------------------------------------------------------ */
-
   /* Obsidian Scale — Deep neutral obsidian-slate surfaces & high-contrast typography */
   --color-slate-950: #0A0E16; /* Ground / deepest void */
   --color-slate-900: #0F131C; /* Main application background */
@@ -87,8 +84,8 @@
   --color-text-dim: var(--color-slate-400);
 
   /* Primary Interactive */
-  --color-primary: var(--color-indigo-500);
-  --color-primary-hover: var(--color-indigo-400);
+  --color-primary: var(--color-indigo-600);
+  --color-primary-hover: var(--color-indigo-500);
   --color-primary-300: var(--color-indigo-300);
   --color-primary-400: var(--color-indigo-400);
   --color-primary-500: var(--color-indigo-500);
@@ -108,9 +105,7 @@
   --color-error-bg: rgba(147, 0, 10, 0.20);
   --color-error-border: rgba(255, 180, 171, 0.35);
 
-  /* ------------------------------------------------------------------------
-     3. 8px Modular Spacing Scale
-     ------------------------------------------------------------------------ */
+  /* Spacing */
   --space-0: 0px;
   --space-1: 4px;
   --space-2: 8px;
@@ -122,59 +117,56 @@
   --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
 
-  /* Layout Widths */
   --container-max: 1200px;
   --reading-max: 760px;
-  --gutter: 20px;
+  --gutter: 24px;
 
-  /* ------------------------------------------------------------------------
-     4. Typography Scales & Weights
-     ------------------------------------------------------------------------ */
+  /* Type scale */
   --text-xs: 12px;
   --text-sm: 14px;
   --text-base: 16px;
   --text-lg: 18px;
   --text-xl: 20px;
   --text-2xl: 24px;
-  --text-3xl: 30px;
-  --text-4xl: 36px;
+  --text-3xl: 32px;
+  --text-4xl: 40px;
+  --text-5xl: 56px;
 
   --leading-none: 1;
-  --leading-tight: 1.25;
+  --leading-tight: 1.2;
   --leading-snug: 1.375;
   --leading-normal: 1.5;
   --leading-relaxed: 1.65;
 
-  --tracking-tight: -0.015em;
+  --tracking-tight: -0.02em;
   --tracking-normal: 0em;
-  --tracking-wide: 0.025em;
-  --tracking-wider: 0.05em;
+  --tracking-wide: 0.04em;
+  --tracking-wider: 0.08em;
 
-  /* ------------------------------------------------------------------------
-     5. Radii & Elevations
-     ------------------------------------------------------------------------ */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* Radii: tighter and more technical than before */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.45);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+  /* Elevation: flat surfaces separated by hairlines */
+  --shadow-sm: none;
+  --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
   --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.55);
   --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.15);
 
-  /* ------------------------------------------------------------------------
-     6. Focus & Transitions
-     ------------------------------------------------------------------------ */
+  /* Focus and motion */
   --focus-ring-width: 2px;
   --focus-ring-color: var(--color-indigo-400);
   --focus-ring-offset: 2px;
 
-  --transition-fast: 150ms ease-out;
-  --transition-normal: 200ms ease-out;
+  --transition-fast: 120ms ease-out;
+  --transition-normal: 180ms ease-out;
 }
 
 /* Tabular numbers for counters, metrics, tables, and indices */

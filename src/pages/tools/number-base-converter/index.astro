@@ -509,7 +509,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
       try {
         await navigator.clipboard.writeText(targetInput.value);
         const originalText = btn.textContent;
-        btn.textContent = 'Copied! ✔';
+        btn.textContent = 'Copied';
         setTimeout(() => {
           btn.textContent = originalText;
         }, 1800);
@@ -517,7 +517,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         targetInput.select();
         document.execCommand('copy');
         const originalText = btn.textContent;
-        btn.textContent = 'Copied! ✔';
+        btn.textContent = 'Copied';
         setTimeout(() => {
           btn.textContent = originalText;
         }, 1800);
@@ -969,7 +969,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     color: var(--color-text-primary);
     font-family: var(--font-mono);
   }
-  .highlight-remainder {
+  :global(.highlight-remainder) {
     color: var(--color-emerald-400);
     font-weight: 800;
     font-size: var(--text-sm);
