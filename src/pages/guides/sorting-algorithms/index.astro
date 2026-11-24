@@ -35,7 +35,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
     <!-- Interactive Callout -->
     <div class="interactive-callout">
-      <div class="callout-icon" aria-hidden="true">📊</div>
+      <div class="callout-icon" aria-hidden="true">&gt;_</div>
       <div class="callout-content">
         <h2 class="callout-title">Interactive Tool Available</h2>
         <p class="callout-desc">Observe dynamic bar heights, swap counters, and pass animations live.</p>
@@ -185,9 +185,9 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   .badge-pill {
     font-size: var(--text-xs);
     font-weight: 600;
-    color: var(--color-indigo-300);
-    background-color: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.25);
+    color: var(--color-brand-300);
+    background-color: rgba(190, 229, 75, 0.1);
+    border: 1px solid rgba(190, 229, 75, 0.25);
     padding: 2px 8px;
     border-radius: var(--radius-sm);
   }
@@ -212,8 +212,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    background: linear-gradient(135deg, rgba(190, 229, 75, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    border: 1px solid rgba(190, 229, 75, 0.3);
     border-radius: var(--radius-lg);
     padding: var(--space-5);
     margin-bottom: var(--space-10);
@@ -225,7 +225,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   .btn-callout {
     font-size: var(--text-xs);
     font-weight: 700;
-    color: #ffffff;
+    color: var(--color-primary-text);
     background-color: var(--color-primary-600);
     border: 1px solid var(--color-primary-500);
     border-radius: var(--radius-md);
@@ -319,7 +319,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     color: var(--color-text-secondary);
     line-height: var(--leading-relaxed);
   }
-  .stability-box code { font-family: var(--font-mono); color: var(--color-indigo-300); }
+  .stability-box code { font-family: var(--font-mono); color: var(--color-brand-300); }
 
   .article-footer {
     padding-top: var(--space-6);

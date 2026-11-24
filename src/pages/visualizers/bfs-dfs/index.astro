@@ -108,7 +108,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
           <!-- Status Banner -->
           <div id="graph-status-banner" class="graph-status-banner status-in-progress" role="status" aria-live="polite">
-            <span id="status-icon" class="status-icon">🔍</span>
+            <span id="status-icon" class="status-icon">&gt;</span>
             <span id="status-text" class="status-text">Ready to traverse. Click Play or Step Forward.</span>
           </div>
         </section>
@@ -430,7 +430,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     if (statusBanner && statusIcon && statusText) {
       if (step.actionType === 'COMPLETE') {
         statusBanner.className = 'graph-status-banner status-success';
-        statusIcon.textContent = '✔';
+        statusIcon.textContent = 'OK';
         statusText.textContent = `Traversal complete! Visited: ${s.traversalOrder.join(' → ')}`;
       } else if (step.actionType === 'VISIT' || step.actionType === 'DEQUEUE') {
         statusBanner.className = 'graph-status-banner status-visit';
@@ -438,7 +438,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
         statusText.textContent = `Processing node ${s.currentNode}.`;
       } else {
         statusBanner.className = 'graph-status-banner status-in-progress';
-        statusIcon.textContent = '🔍';
+        statusIcon.textContent = '>';
         statusText.textContent = `Exploring from ${s.currentNode ?? s.startNode}...`;
       }
     }
@@ -690,8 +690,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     cursor: pointer;
     transition: all var(--transition-fast);
   }
-  .algo-tab:hover, .algo-tab.active {
-    color: #ffffff;
+  .algo-tab:hover, .algo-tab:global(.active) {
+    color: var(--color-primary-text);
     background-color: var(--color-primary-600);
     border-color: var(--color-primary-500);
   }
@@ -720,9 +720,9 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     cursor: pointer;
     transition: all var(--transition-fast);
   }
-  .preset-btn:hover, .preset-btn.active {
+  .preset-btn:hover, .preset-btn:global(.active) {
     color: #ffffff;
-    background-color: rgba(99, 102, 241, 0.2);
+    background-color: rgba(190, 229, 75, 0.2);
     border-color: var(--color-primary-500);
   }
 
@@ -782,6 +782,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   }
 
   .primary-col {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
@@ -840,7 +841,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     stroke-width: 2.5;
     transition: stroke 200ms ease, stroke-width 200ms ease;
   }
-  :global(.graph-edge.active-edge) {
+  :global(.graph-edge:global(.active-edge)) {
     stroke: var(--color-amber-400);
     stroke-width: 4.5;
   }
@@ -848,37 +849,37 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     cursor: default;
     transition: transform 200ms ease;
   }
-  :global(.graph-node .node-circle) {
+  :global(.graph-node :global(.node-circle)) {
     fill: var(--color-slate-800);
     stroke: var(--color-slate-600);
     stroke-width: 2.5;
     transition: all 200ms ease;
   }
-  :global(.graph-node .node-text) {
+  :global(.graph-node :global(.node-text)) {
     fill: #ffffff;
     font-size: 13px;
     font-weight: 700;
   }
-  :global(.graph-node.current-node .node-circle) {
+  :global(.graph-node:global(.current-node) :global(.node-circle)) {
     fill: var(--color-emerald-500);
     stroke: #ffffff;
     stroke-width: 3;
     filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.6));
   }
-  :global(.graph-node.neighbor-node .node-circle) {
+  :global(.graph-node:global(.neighbor-node) :global(.node-circle)) {
     fill: var(--color-amber-500);
     stroke: #ffffff;
     stroke-width: 3;
   }
-  :global(.graph-node.visited-node .node-circle) {
+  :global(.graph-node:global(.visited-node) :global(.node-circle)) {
     fill: var(--color-purple-500);
     stroke: var(--color-purple-400);
   }
-  :global(.graph-node.queued-node .node-circle) {
+  :global(.graph-node:global(.queued-node) :global(.node-circle)) {
     fill: var(--color-primary-600);
     stroke: var(--color-primary-400);
   }
-  :global(.graph-node.unreached-node .node-circle) {
+  :global(.graph-node:global(.unreached-node) :global(.node-circle)) {
     stroke-dasharray: 4;
     opacity: 0.5;
   }
@@ -936,9 +937,9 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     font-weight: 700;
     color: #ffffff;
   }
-  :global(.ds-item.head-item) {
+  :global(.ds-item:global(.head-item)) {
     border-color: var(--color-primary-400);
-    background-color: rgba(99, 102, 241, 0.2);
+    background-color: rgba(190, 229, 75, 0.2);
   }
   :global(.ds-pointer) {
     font-size: 9px;
@@ -992,7 +993,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   }
 
   /* Status Banner */
-  .graph-status-banner {
+  :global(.graph-status-banner) {
     display: flex;
     align-items: center;
     gap: var(--space-3);
@@ -1001,17 +1002,17 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     font-size: var(--text-xs);
     font-weight: 600;
   }
-  .status-in-progress {
+  :global(.status-in-progress) {
     background-color: var(--color-bg-elevated);
     border: 1px solid var(--color-border);
     color: var(--color-text-secondary);
   }
-  .status-visit {
+  :global(.status-visit) {
     background-color: rgba(168, 85, 247, 0.1);
     border: 1px solid rgba(168, 85, 247, 0.3);
     color: var(--color-purple-400);
   }
-  .status-success {
+  :global(.status-success) {
     background-color: rgba(168, 85, 247, 0.12);
     border: 1px solid rgba(168, 85, 247, 0.35);
     color: #ffffff;
@@ -1064,7 +1065,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     background-color: var(--color-primary-600);
     border: 1px solid var(--color-primary-500);
     border-radius: var(--radius-md);
-    color: #ffffff;
+    color: var(--color-primary-text);
     font-weight: 700;
     font-size: var(--text-sm);
     cursor: pointer;
@@ -1138,7 +1139,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     font-family: var(--font-mono);
     font-size: 10px;
     font-weight: 700;
-    background-color: rgba(99, 102, 241, 0.15);
+    background-color: rgba(190, 229, 75, 0.15);
     color: var(--color-primary-300);
     padding: 2px 6px;
     border-radius: var(--radius-sm);
@@ -1203,7 +1204,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     gap: 2px;
     font-size: var(--text-xs);
   }
-  .code-line {
+  :global(.code-line) {
     display: flex;
     align-items: baseline;
     gap: var(--space-3);
@@ -1212,18 +1213,18 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     color: var(--color-text-secondary);
     transition: all var(--transition-fast);
   }
-  .code-line.active {
-    background-color: rgba(99, 102, 241, 0.2);
+  :global(.code-line):global(.active) {
+    background-color: rgba(190, 229, 75, 0.2);
     color: #ffffff;
     font-weight: 700;
     border-left: 3px solid var(--color-primary-400);
   }
-  .line-num {
+  :global(.line-num) {
     color: var(--color-text-dim);
     min-width: 16px;
     user-select: none;
   }
-  .line-code {
+  :global(.line-code) {
     white-space: pre;
   }
 

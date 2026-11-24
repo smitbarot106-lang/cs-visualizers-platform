@@ -1,69 +1,59 @@
 /* ==========================================================================
-   Interactive CS Visualizers & Developer Tools — Design Tokens
-   Refined Dark Theme Design System: Obsidian Algorithmic Surfaces, Crisp Geometric Borders,
-   Restrained Indigo/Lavender Accents, Cyan/Mint Data States, and High-Contrast Typography.
-   WCAG 2.1 / 2.2 AA Contrast Compliance (Headings AAA > 14:1, Body AA > 7:1)
+   CS Visualizers — Design Tokens
+   Direction: "ink & phosphor". Green-tinted graphite surfaces with a single
+   signal-lime brand colour. Algorithm state colours (cyan / amber / purple /
+   mint) stay separate from the brand so they always mean something in a
+   visualizer. Body text on surfaces is >= 7:1; lime on ink is ~14:1.
    ========================================================================== */
 
 :root {
-  /* ------------------------------------------------------------------------
-     1. Semantic Color Palette Tokens (Obsidian Algorithmic Specification)
-     ------------------------------------------------------------------------ */
+  /* Graphite scale */
+  --color-slate-950: #090A09;
+  --color-slate-900: #0E100E; /* page background */
+  --color-slate-850: #131512;
+  --color-slate-800: #171A16; /* panel surface */
+  --color-slate-750: #20241E; /* hairlines */
+  --color-slate-700: #292E26; /* hover surface */
+  --color-slate-600: #3A4034;
+  --color-slate-500: #8F978A; /* dim metadata (5.9:1 on slate-900) */
+  --color-slate-400: #A3AB9D; /* secondary text (7.6:1) */
+  --color-slate-300: #C5CBBE;
+  --color-slate-200: #DDE1D6;
+  --color-slate-100: #EDEFE7;
+  --color-slate-50:  #F6F7F1;
 
-  /* Obsidian Scale — Deep neutral obsidian-slate surfaces & high-contrast typography */
-  --color-slate-950: #0A0E16; /* Ground / deepest void */
-  --color-slate-900: #0F131C; /* Main application background */
-  --color-slate-850: #141923; /* Card surface low */
-  --color-slate-800: #181C24; /* Card surface standard */
-  --color-slate-750: #222B3D; /* Elevated component / border outline */
-  --color-slate-700: #262A33; /* Surface container high / hover */
-  --color-slate-600: #31353E; /* Surface container highest */
-  --color-slate-500: #94A3B8; /* Tertiary / Dim metadata (elevated for WCAG AA 6.34:1 contrast) */
-  --color-slate-400: #94A3B8; /* Secondary body text (readable, non-glaring) */
-  --color-slate-300: #CBD5E1; /* Subheadings */
-  --color-slate-200: #DFE2EE; /* High contrast text */
-  --color-slate-100: #F1F5F9; /* Bright accents */
-  --color-slate-50:  #F8FAFC; /* Primary heading off-white */
+  /* Brand: signal lime */
+  --color-brand-950: #151C05;
+  --color-brand-900: #202B08;
+  --color-brand-700: #3C4F10;
+  --color-brand-600: #BEE54B; /* primary action fill (dark text on top) */
+  --color-brand-500: #D2F26A; /* hover fill */
+  --color-brand-400: #CBEE6B; /* links, active indicators on dark */
+  --color-brand-300: #E3F9A6;
 
-  /* Indigo & Lavender Scale — Restrained primary actions, focus, badges */
-  --color-indigo-950: #1E1B4B;
-  --color-indigo-900: #292A60;
-  --color-indigo-700: #414279; /* Primary container */
-  --color-indigo-600: #4F46E5;
-  --color-indigo-500: #6366F1; /* Primary action button */
-  --color-indigo-400: #818CF8; /* Focus ring & hover */
-  --color-indigo-300: #C1C1FF; /* Primary tint */
-
-  /* Mint & Emerald Scale — Algorithm completion, sorted elements, valid JSON */
+  /* Data-state colours */
   --color-emerald-950: #002113;
   --color-emerald-800: #005337;
   --color-emerald-600: #059669;
   --color-emerald-500: #10B981;
-  --color-emerald-400: #4EDEA3; /* Mint accent */
+  --color-emerald-400: #4EDEA3;
 
-  /* Amber & Coral Scale — Radix values, active comparisons, warnings */
   --color-amber-950: #451A03;
   --color-amber-800: #92400E;
   --color-amber-600: #D97706;
   --color-amber-500: #F59E0B;
   --color-amber-400: #FBBF24;
 
-  /* Cyan Scale — Search pointers, queue elements, graph nodes */
   --color-cyan-900: #003640;
   --color-cyan-600: #03B5D3;
   --color-cyan-500: #06B6D4;
-  --color-cyan-400: #4CD7F6; /* Electric cyan secondary */
+  --color-cyan-400: #4CD7F6;
 
-  /* Purple Scale — Tree traversals, recursive call frames */
   --color-purple-900: #3B0764;
   --color-purple-500: #A855F7;
   --color-purple-400: #C084FC;
 
-  /* ------------------------------------------------------------------------
-     2. Semantic Aliases & Component UI Bindings
-     ------------------------------------------------------------------------ */
-
-  /* Backgrounds & Surfaces */
+  /* Semantic aliases */
   --color-bg: var(--color-slate-900);
   --color-bg-alt: var(--color-slate-950);
   --color-bg-card: var(--color-slate-800);
@@ -73,29 +63,25 @@
   --color-surface-elevated: var(--color-slate-750);
   --color-surface-hover: var(--color-slate-700);
 
-  /* Borders */
-  --color-border: #222B3D;
-  --color-border-subtle: #1C2436;
-  --color-border-hover: rgba(99, 102, 241, 0.45);
-  --color-border-active: var(--color-indigo-400);
+  --color-border: #262B23;
+  --color-border-subtle: #1C201A;
+  --color-border-hover: rgba(190, 229, 75, 0.45);
+  --color-border-active: var(--color-brand-400);
 
-  /* Typography Colors */
   --color-text: var(--color-slate-50);
   --color-text-primary: var(--color-slate-50);
   --color-text-secondary: var(--color-slate-400);
   --color-text-muted: var(--color-slate-400);
-  --color-text-dim: var(--color-slate-400);
+  --color-text-dim: var(--color-slate-500);
 
-  /* Primary Interactive */
-  --color-primary: var(--color-indigo-500);
-  --color-primary-hover: var(--color-indigo-400);
-  --color-primary-300: var(--color-indigo-300);
-  --color-primary-400: var(--color-indigo-400);
-  --color-primary-500: var(--color-indigo-500);
-  --color-primary-600: var(--color-indigo-600);
-  --color-primary-text: #FFFFFF;
+  --color-primary: var(--color-brand-600);
+  --color-primary-hover: var(--color-brand-500);
+  --color-primary-300: var(--color-brand-300);
+  --color-primary-400: var(--color-brand-400);
+  --color-primary-500: var(--color-brand-500);
+  --color-primary-600: var(--color-brand-600);
+  --color-primary-text: #0E1405; /* text on lime fills */
 
-  /* Status States */
   --color-success: var(--color-emerald-400);
   --color-success-bg: rgba(78, 222, 163, 0.10);
   --color-success-border: rgba(78, 222, 163, 0.30);
@@ -104,13 +90,11 @@
   --color-warning-bg: rgba(245, 158, 11, 0.10);
   --color-warning-border: rgba(245, 158, 11, 0.30);
 
-  --color-error: #FFB4AB;
+  --color-error: #FF9C93;
   --color-error-bg: rgba(147, 0, 10, 0.20);
-  --color-error-border: rgba(255, 180, 171, 0.35);
+  --color-error-border: rgba(255, 156, 147, 0.35);
 
-  /* ------------------------------------------------------------------------
-     3. 8px Modular Spacing Scale
-     ------------------------------------------------------------------------ */
+  /* Spacing */
   --space-0: 0px;
   --space-1: 4px;
   --space-2: 8px;
@@ -122,59 +106,56 @@
   --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
 
-  /* Layout Widths */
   --container-max: 1200px;
   --reading-max: 760px;
-  --gutter: 20px;
+  --gutter: 24px;
 
-  /* ------------------------------------------------------------------------
-     4. Typography Scales & Weights
-     ------------------------------------------------------------------------ */
+  /* Type scale */
   --text-xs: 12px;
   --text-sm: 14px;
   --text-base: 16px;
   --text-lg: 18px;
   --text-xl: 20px;
   --text-2xl: 24px;
-  --text-3xl: 30px;
-  --text-4xl: 36px;
+  --text-3xl: 32px;
+  --text-4xl: 40px;
+  --text-5xl: 56px;
 
   --leading-none: 1;
-  --leading-tight: 1.25;
+  --leading-tight: 1.2;
   --leading-snug: 1.375;
   --leading-normal: 1.5;
   --leading-relaxed: 1.65;
 
-  --tracking-tight: -0.015em;
+  --tracking-tight: -0.02em;
   --tracking-normal: 0em;
-  --tracking-wide: 0.025em;
-  --tracking-wider: 0.05em;
+  --tracking-wide: 0.04em;
+  --tracking-wider: 0.08em;
 
-  /* ------------------------------------------------------------------------
-     5. Radii & Elevations
-     ------------------------------------------------------------------------ */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* Radii: tighter and more technical than before */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.45);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
-  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.55);
-  --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.15);
+  /* Elevation: flat surfaces separated by hairlines */
+  --shadow-sm: none;
+  --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+  --shadow-card: none;
+  --shadow-glow: none;
 
-  /* ------------------------------------------------------------------------
-     6. Focus & Transitions
-     ------------------------------------------------------------------------ */
+  /* Focus and motion */
   --focus-ring-width: 2px;
-  --focus-ring-color: var(--color-indigo-400);
+  --focus-ring-color: var(--color-brand-400);
   --focus-ring-offset: 2px;
 
-  --transition-fast: 150ms ease-out;
-  --transition-normal: 200ms ease-out;
+  --transition-fast: 120ms ease-out;
+  --transition-normal: 180ms ease-out;
 }
 
 /* Tabular numbers for counters, metrics, tables, and indices */

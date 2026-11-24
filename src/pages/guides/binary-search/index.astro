@@ -35,7 +35,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
     <!-- Interactive Callout -->
     <div class="interactive-callout">
-      <div class="callout-icon" aria-hidden="true">🎯</div>
+      <div class="callout-icon" aria-hidden="true">&gt;_</div>
       <div class="callout-content">
         <h2 class="callout-title">Interactive Tool Available</h2>
         <p class="callout-desc">Step through pointers, array dimming, and synchronized code line-by-line.</p>
@@ -68,11 +68,11 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
       <div class="code-comparison-box">
         <div class="code-col bad">
-          <span class="code-col-label">❌ Naive (Overflow Bug):</span>
+          <span class="code-col-label">Naive (Overflow Bug):</span>
           <code>const mid = Math.floor((low + high) / 2);</code>
         </div>
         <div class="code-col good">
-          <span class="code-col-label">✔ Robust (Overflow Safe):</span>
+          <span class="code-col-label">Robust (Overflow Safe):</span>
           <code>const mid = low + Math.floor((high - low) / 2);</code>
         </div>
       </div>
@@ -218,7 +218,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
-    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(190, 229, 75, 0.1) 100%);
     border: 1px solid rgba(6, 182, 212, 0.3);
     border-radius: var(--radius-lg);
     padding: var(--space-5);
@@ -239,7 +239,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   .btn-callout {
     font-size: var(--text-xs);
     font-weight: 700;
-    color: #ffffff;
+    color: var(--color-primary-text);
     background-color: var(--color-primary-600);
     border: 1px solid var(--color-primary-500);
     border-radius: var(--radius-md);

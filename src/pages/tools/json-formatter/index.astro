@@ -184,22 +184,22 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
           <ul class="edu-list">
             <li>
               <strong>1. Single Quotes vs Double Quotes:</strong><br />
-              <span class="code-bad">❌ &#123;'key': 'val'&#125;</span> → <span class="code-good">✔ &#123;"key": "val"&#125;</span><br />
+              <span class="code-bad">Bad: &#123;'key': 'val'&#125;</span> → <span class="code-good">Good: &#123;"key": "val"&#125;</span><br />
               JSON syntax requires double quotes (<code>"</code>) for all strings and object keys.
             </li>
             <li>
               <strong>2. Trailing Commas:</strong><br />
-              <span class="code-bad">❌ [1, 2, 3,]</span> → <span class="code-good">✔ [1, 2, 3]</span><br />
+              <span class="code-bad">Bad: [1, 2, 3,]</span> → <span class="code-good">Good: [1, 2, 3]</span><br />
               Standard JSON parsers reject commas before a closing bracket (<code>]</code>) or brace (<code>&#125;</code>).
             </li>
             <li>
               <strong>3. Unquoted Object Keys:</strong><br />
-              <span class="code-bad">❌ &#123; name: "Alice" &#125;</span> → <span class="code-good">✔ &#123; "name": "Alice" &#125;</span><br />
+              <span class="code-bad">Bad: &#123; name: "Alice" &#125;</span> → <span class="code-good">Good: &#123; "name": "Alice" &#125;</span><br />
               Unlike JavaScript object literals, every JSON key must be explicitly double-quoted.
             </li>
             <li>
               <strong>4. Comments Are Not Permitted:</strong><br />
-              <span class="code-bad">❌ // Comment</span> → Standard JSON specifications contain no syntax for comments.
+              <span class="code-bad">Bad: // Comment</span> → Standard JSON specifications contain no syntax for comments.
             </li>
           </ul>
         </div>
@@ -284,7 +284,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     statusCard.className = `status-card status-${type}`;
     statusTitle.textContent = title;
     statusDesc.textContent = desc;
-    statusIcon.textContent = type === 'success' ? '✔' : type === 'error' ? '✖' : 'ℹ';
+    statusIcon.textContent = type === 'success' ? 'OK' : type === 'error' ? 'ERR' : 'i';
 
     if (diagnostic && statusDetails && diagnosticBadge && diagnosticSuggestion && diagnosticSnippet) {
       statusDetails.style.display = 'block';
@@ -395,14 +395,14 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
     if (!jsonOutput || !jsonOutput.value) return;
     try {
       await navigator.clipboard.writeText(jsonOutput.value);
-      if (copyBtnText) copyBtnText.textContent = 'Copied! ✔';
+      if (copyBtnText) copyBtnText.textContent = 'Copied';
       setTimeout(() => {
         if (copyBtnText) copyBtnText.textContent = 'Copy Output';
       }, 2000);
     } catch {
       jsonOutput.select();
       document.execCommand('copy');
-      if (copyBtnText) copyBtnText.textContent = 'Copied! ✔';
+      if (copyBtnText) copyBtnText.textContent = 'Copied';
       setTimeout(() => {
         if (copyBtnText) copyBtnText.textContent = 'Copy Output';
       }, 2000);
@@ -560,7 +560,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   .preset-btn:hover {
     color: var(--color-text-primary);
     border-color: var(--color-primary-500);
-    background-color: rgba(99, 102, 241, 0.08);
+    background-color: rgba(190, 229, 75, 0.08);
   }
   .warning-preset {
     color: var(--color-amber-400);
@@ -660,7 +660,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   }
   .textarea-wrapper:focus-within {
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 0 2px rgba(190, 229, 75, 0.2);
   }
   .code-textarea {
     width: 100%;
@@ -699,7 +699,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
   }
   .btn-primary {
     background-color: var(--color-primary-600);
-    color: #ffffff;
+    color: var(--color-primary-text);
     border: 1px solid var(--color-primary-500);
   }
   .btn-primary:hover {
